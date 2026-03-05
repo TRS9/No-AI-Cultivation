@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 432ecbef4c3561342b1e6f543765a9c3, type: 3}
+  m_Name: SpiritForrest
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.MinorRealmConfig
+  biome: 6
+  shapeProfile:
+    octaves:
+    - frequency: 2.5
+      amplitude: 0.48
+    - frequency: 5.5
+      amplitude: 0.28
+    - frequency: 12
+      amplitude: 0.16
+    - frequency: 24
+      amplitude: 0.08
+    ridgeWeight: 0.15
+    terraceSteps: 0
+    terraceSharpness: 0
+    heightContrast: 1.2
+    heightFloor: 0.08
+    heightCeiling: 0.9
+  terrainLayers:
+  - {fileID: 8574412962073106934, guid: f7ce30ec9b280b34cacb1a1005349890, type: 2}
+  - {fileID: 8574412962073106934, guid: 52ac57c2c14c60b4d88913beb57dce00, type: 2}
+  maxHeight: 50
+  water:
+    enabled: 1
+    waterPrefab: {fileID: 802339559495243202, guid: 623ff708cff91794fb1a71aa999d1476, type: 3}
+    waterLevel: 0.12
+    beachBandWidth: 0.08
+    beachFlattenStrength: 0.65
+    lakeCount: 5
+    lakeRadius: 0.09
+    lakeDepth: 0.2
+  caves:
+    cavePrefabs: []
+    caveCount: 0
+    minSlopeDegrees: 0
+    maxSlopeDegrees: 0
+    minHeight: 0
+    maxHeight: 0
+  multiBiome:
+    allowMultiBiome: 1
+    multiBiomeChance: 1
+    secondaryBiomes: 0400000005000000
+    voronoiCellCount: 5
+    blendRadius: 22
+  decorationPrefabs:
+  - {fileID: 4944280553967320908, guid: 8bd96f4d3289c1246b943d72ee41d622, type: 3}
+  - {fileID: 6025389439302526993, guid: 16402f43de9da6f43859a010a4d5e239, type: 3}
+  - {fileID: 368329325096245657, guid: a049721a248bbf742a0ba8057c885a34, type: 3}
+  - {fileID: 8613086161171974773, guid: 8ea693ca435c06240afc74a307b5d93e, type: 3}
+  - {fileID: 5853596959982655087, guid: 24d4631ab71189a4eaa128b8679c3509, type: 3}
+  - {fileID: 3127717678723679313, guid: 12e19ab263a24fc4cb540b393623a4b7, type: 3}
+  - {fileID: 7703657488077527746, guid: b6301e92ae67c1d4d98037e95328295e, type: 3}
+  - {fileID: 6116630976365693112, guid: f761645346febec498d81ba6ab902eab, type: 3}
+  - {fileID: 3309342225668747777, guid: 13064d76061f4174daad4369c51c80c5, type: 3}
+  - {fileID: 3663580998063662075, guid: 573a325ed9e49ba4b8167febe352a86c, type: 3}
+  - {fileID: 2358478967120540145, guid: 1f8c878fb44f5c64aa840fa0495a1a45, type: 3}
+  - {fileID: 5391627588080722439, guid: 688dc793c88c2ec44b8ae06c6371af1a, type: 3}
+  - {fileID: 4422540735045612277, guid: 06258f74aeb16dd49b3b296c571c2181, type: 3}
+  - {fileID: 7014262704926446256, guid: b02f38da06b8771438aa5fc13197a1b8, type: 3}
+  - {fileID: 6952572478250835917, guid: c147afb89ee023f41a21235d77c0ec43, type: 3}
+  - {fileID: 2618959593728084839, guid: b7eb1d692f4278e44bde108a6dcae13b, type: 3}
+  - {fileID: 5262242542175549265, guid: 5b459e6169057cf4ba9e85b2aad837b7, type: 3}
+  - {fileID: 1541556110078046999, guid: 1badfa4d070b9e54f868daf0f8ca397b, type: 3}
+  - {fileID: 5468898995146236623, guid: 9c63f9a97b6d80146b2af59e8cd984b0, type: 3}
+  - {fileID: 5142530682963835832, guid: 9f56cf124d407e545b96d0b2bbefed34, type: 3}
+  - {fileID: 7014262704926446256, guid: 1d7dfee3f92514c40befa0ee8690dc22, type: 3}
+  - {fileID: 5468898995146236623, guid: 9c63f9a97b6d80146b2af59e8cd984b0, type: 3}
+  decorationGroups:
+  - label: Bamboo1
+    prefabs:
+    - {fileID: 1776239283755337283, guid: c146131798374a8448678c38c65f6380, type: 3}
+    - {fileID: 2935776773744451764, guid: 55ca892f62a74684a91d13e4cdd5b74a, type: 3}
+    - {fileID: 7562859085174299745, guid: 2b2218bd69e06f14f9697caaa017bdff, type: 3}
+    - {fileID: 8525100563838984193, guid: 75a4172e7b14ab64b9ef0f2867ea43e7, type: 3}
+    minHeight: 0.357
+    maxHeight: 1
+  - label: Bamboo2
+    prefabs:
+    - {fileID: 8471836477426040970, guid: 079b46740f138e2469c3f8c58b16f8b2, type: 3}
+    - {fileID: 7541250299759639816, guid: dc1742d6a2a4006408960207539c84bb, type: 3}
+    - {fileID: 402524150210057409, guid: 152f2e34f54059340b456cd3a7011005, type: 3}
+    - {fileID: 7723881542472486499, guid: 907abd667cd567a4bbf04f04f378af3d, type: 3}
+    minHeight: 0.456
+    maxHeight: 1
+  decorationCount: 600
+  minDecorSpacing: 1.5
+  poiCount: 3
+  poiSpacing: 30
+  poiRingCount: 3
+  clusterSize: 5
+  clusterSpread: 5
+  essencePrefabs: []
+  essenceCount: 5
+  fogColor: {r: 0.7, g: 0.75, b: 0.8, a: 1}
+  fogDensity: 0
+  ambientLight: {r: 1, g: 1, b: 1, a: 1}

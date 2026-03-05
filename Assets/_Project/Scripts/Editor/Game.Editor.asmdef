@@ -1,0 +1,24 @@
+{
+    "name": "Game.Editor",
+    "rootNamespace": "CultivationGame.Editor",
+    "references": [
+        "Game.Core",
+        "Game.Data",
+        "Game.Systems",
+        "Game.Player",
+        "Game.UI",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 432ecbef4c3561342b1e6f543765a9c3, type: 3}
+  m_Name: StoneMountain
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.MinorRealmConfig
+  biome: 5
+  shapeProfile:
+    octaves:
+    - frequency: 2
+      amplitude: 0.45
+    - frequency: 5
+      amplitude: 0.3
+    - frequency: 11
+      amplitude: 0.17
+    - frequency: 22
+      amplitude: 0.08
+    ridgeWeight: 0.6
+    terraceSteps: 3
+    terraceSharpness: 0.6
+    heightContrast: 2
+    heightFloor: 0.03
+    heightCeiling: 1
+  terrainLayers:
+  - {fileID: 8574412962073106934, guid: 735c383f20b1bd04e9c427d0aa612006, type: 2}
+  maxHeight: 120
+  water:
+    enabled: 1
+    waterPrefab: {fileID: 802339559495243202, guid: 623ff708cff91794fb1a71aa999d1476, type: 3}
+    waterLevel: 0.08
+    beachBandWidth: 0.04
+    beachFlattenStrength: 0.5
+    lakeCount: 2
+    lakeRadius: 0.07
+    lakeDepth: 0.22
+  caves:
+    cavePrefabs: []
+    caveCount: 0
+    minSlopeDegrees: 0
+    maxSlopeDegrees: 0
+    minHeight: 0
+    maxHeight: 0
+  multiBiome:
+    allowMultiBiome: 1
+    multiBiomeChance: 1
+    secondaryBiomes: 0500000002000000
+    voronoiCellCount: 4
+    blendRadius: 20
+  decorationPrefabs:
+  - {fileID: 351720490677871901, guid: 3bdd971261f50284dbcf9ad07cc75e0e, type: 3}
+  - {fileID: 8997777358036083150, guid: 07ad69fd18a0ae4409a57c08441acbde, type: 3}
+  - {fileID: 8362336819944152280, guid: 858158bdf4a305740baf756e42131928, type: 3}
+  - {fileID: 5404506105498546968, guid: 3759edc56b8f15d4f9d5f026b49f6078, type: 3}
+  - {fileID: 386873251733242900, guid: 672124e21477157428eddacdb7587899, type: 3}
+  - {fileID: 6217885513399749457, guid: 56b10f2572d11b74688e8dd140bd6b2c, type: 3}
+  - {fileID: 359269672542480427, guid: c536cdb18a6acb747bdbbefb22aeda00, type: 3}
+  - {fileID: 8998298355171756908, guid: 5e8c171ab29199845b0e8c92e8d5886c, type: 3}
+  - {fileID: 7229463542983277211, guid: c655fdaa65afecf4686840c4669b905b, type: 3}
+  - {fileID: 7762413491659557286, guid: 887bbcde6a40cc942bb35a5ad0c5a042, type: 3}
+  - {fileID: 5274386797110210762, guid: c64049fdafcd8e0408a99fadf303f1c2, type: 3}
+  - {fileID: 7455140895876954567, guid: bd3a06be3ae23c44b8230a37f59efce1, type: 3}
+  - {fileID: 8998298355171756908, guid: 5e8c171ab29199845b0e8c92e8d5886c, type: 3}
+  - {fileID: 1506789064469092839, guid: d67ca20882bc73d48960f2c9fe95a31f, type: 3}
+  - {fileID: 1598408220932709703, guid: ba50b6a2ba7523441adfe93579d23b10, type: 3}
+  decorationGroups: []
+  decorationCount: 80
+  minDecorSpacing: 3.5
+  poiCount: 3
+  poiSpacing: 30
+  poiRingCount: 3
+  clusterSize: 2
+  clusterSpread: 2
+  essencePrefabs: []
+  essenceCount: 5
+  fogColor: {r: 0.7, g: 0.75, b: 0.8, a: 1}
+  fogDensity: 0
+  ambientLight: {r: 1, g: 1, b: 1, a: 1}

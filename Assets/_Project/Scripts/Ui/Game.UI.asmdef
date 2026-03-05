@@ -1,0 +1,21 @@
+{
+    "name": "Game.UI",
+    "rootNamespace": "CultivationGame.UI",
+    "references": [
+        "Game.Core",
+        "Game.Data",
+        "Game.Systems",
+        "Game.Player",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
