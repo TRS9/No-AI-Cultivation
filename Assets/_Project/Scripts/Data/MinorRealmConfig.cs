@@ -7,7 +7,7 @@ namespace CultivationGame.Data
     public struct NoiseOctave
     {
         [Range(0.5f, 30f)] public float frequency;
-        [Range(0f, 1f)]    public float amplitude;
+        [Range(0f, 1f)] public float amplitude;
     }
 
     [System.Serializable]
@@ -82,6 +82,32 @@ namespace CultivationGame.Data
     }
 
     [System.Serializable]
+    public struct HeightmapSmoothing
+    {
+        [Header("Heightmap Smoothing")]
+        [Tooltip("Box-blur iterations on the final heightmap. Higher = smoother terrain.")]
+        [Range(0, 10)] public int smoothingIterations = 2;
+
+        [Tooltip("Extra smoothing iterations applied right after terracing to soften cliff edges.")]
+        [Range(0, 5)] public int postTerraceSmoothIterations = 1;
+
+        [Header("Slope Texturing")]
+        [Tooltip("Slope angle (degrees) where cliff/rock texture begins blending in.")]
+        [Range(15f, 60f)] public float slopeTextureThreshold = 30f;
+
+        [Tooltip("Degrees over which the blend transitions from base texture to cliff texture.")]
+        [Range(1f, 20f)] public float slopeBlendRange = 10f;
+
+        [Tooltip("TerrainLayer used on steep slopes. Assign TL_Rock or similar.")]
+        public TerrainLayer cliffTerrainLayer;
+
+        [Header("Edge Falloff")]
+        [Tooltip("Width of the edge falloff border as fraction of terrain (0-0.5). Larger = gentler boundaries.")]
+        [Range(0.05f, 0.5f)] public float edgeFalloffWidth = 0.25f;
+
+    }
+
+    [System.Serializable]
     public struct MultiBiomeConfig
     {
         [Tooltip("If true, this realm can become multi-biome (decided by seed-based random chance).")]
@@ -151,24 +177,18 @@ namespace CultivationGame.Data
         public int essenceCount = 5;
 
         [Header("Heightmap Smoothing")]
-        [Tooltip("Box-blur iterations on the final heightmap. Higher = smoother terrain.")]
         [Range(0, 10)] public int smoothingIterations = 2;
 
-        [Tooltip("Extra smoothing iterations applied right after terracing to soften cliff edges.")]
         [Range(0, 5)] public int postTerraceSmoothIterations = 1;
 
         [Header("Slope Texturing")]
-        [Tooltip("Slope angle (degrees) where cliff/rock texture begins blending in.")]
         [Range(15f, 60f)] public float slopeTextureThreshold = 30f;
 
-        [Tooltip("Degrees over which the blend transitions from base texture to cliff texture.")]
         [Range(1f, 20f)] public float slopeBlendRange = 10f;
 
-        [Tooltip("TerrainLayer used on steep slopes. Assign TL_Rock or similar.")]
         public TerrainLayer cliffTerrainLayer;
 
         [Header("Edge Falloff")]
-        [Tooltip("Width of the edge falloff border as fraction of terrain (0-0.5). Larger = gentler boundaries.")]
         [Range(0.05f, 0.5f)] public float edgeFalloffWidth = 0.25f;
 
         [Header("Atmosphere")]

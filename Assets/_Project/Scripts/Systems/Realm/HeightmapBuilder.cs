@@ -357,6 +357,47 @@ namespace CultivationGame.Systems
         }
 
         /// <summary>
+        /// Applies extra smoothing only to cells near the water level.
+        /// Cells far from water (outside lo..hi band) are left untouched,
+        /// keeping hilltops and distant cliffs sharp.
+        /// </summary>
+        public static void SmoothNearWaterLevel(float[,] heights, float waterLevel,
+                                                  float bandWidth, int iterations)
+        {
+            if (iterations <= 0 || bandWidth <= 0f) return;
+
+            int resZ = heights.GetLength(0);
+            int resX = heights.GetLength(1);
+            var buffer = new float[resZ, resX];
+
+            float lo = waterLevel - bandWidth;
+            float hi = waterLevel + bandWidth;
+
+            for (int iter = 0; iter < iterations; iter++)
+            {
+                System.Array.Copy(heights, buffer, heights.Length);
+
+                for (int z = 1; z < resZ - 1; z++)
+                for (int x = 1; x < resX - 1; x++)
+                {
+                    float h = buffer[z, x];
+                    if (h < lo || h > hi) continue; // far from water — leave untouched
+
+                    float sum = buffer[z - 1, x - 1] + buffer[z - 1, x] + buffer[z - 1, x + 1]
+                              + buffer[z,     x - 1] + buffer[z,     x] + buffer[z,     x + 1]
+                              + buffer[z + 1, x - 1] + buffer[z + 1, x] + buffer[z + 1, x + 1];
+                    float smoothed = sum / 9f;
+
+                    // Preserve lake beds — don't raise underwater cells
+                    if (h <= waterLevel)
+                        smoothed = Mathf.Min(smoothed, waterLevel);
+
+                    heights[z, x] = smoothed;
+                }
+            }
+        }
+
+        /// <summary>
         /// Computes terrain slope in degrees at each heightmap cell.
         /// </summary>
         public static float[,] ComputeSlopeMap(float[,] heights, int resolution,
