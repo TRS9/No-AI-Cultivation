@@ -37,8 +37,8 @@ MonoBehaviour:
     enabled: 1
     waterPrefab: {fileID: 802339559495243202, guid: 623ff708cff91794fb1a71aa999d1476, type: 3}
     waterLevel: 0.12
-    beachBandWidth: 0.08
-    beachFlattenStrength: 0.65
+    beachBandWidth: 0.1105
+    beachFlattenStrength: 0.796
     lakeCount: 5
     lakeRadius: 0.09
     lakeDepth: 0.2
@@ -97,6 +97,8 @@ MonoBehaviour:
     maxHeight: 1
   decorationCount: 600
   minDecorSpacing: 1.5
+  waterDecorationPrefabs: []
+  waterDecorationCount: 10
   poiCount: 3
   poiSpacing: 30
   poiRingCount: 3
@@ -104,6 +106,12 @@ MonoBehaviour:
   clusterSpread: 5
   essencePrefabs: []
   essenceCount: 5
+  smoothingIterations: 3
+  postTerraceSmoothIterations: 1
+  slopeTextureThreshold: 30
+  slopeBlendRange: 10
+  cliffTerrainLayer: {fileID: 8574412962073106934, guid: 735c383f20b1bd04e9c427d0aa612006, type: 2}
+  edgeFalloffWidth: 0.25
   fogColor: {r: 0.7, g: 0.75, b: 0.8, a: 1}
   fogDensity: 0
   ambientLight: {r: 1, g: 1, b: 1, a: 1}

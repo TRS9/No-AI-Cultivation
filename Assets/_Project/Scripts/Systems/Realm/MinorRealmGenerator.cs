@@ -566,12 +566,58 @@ namespace CultivationGame.Systems
                     var biomeConfig = FindConfig(biome);
                     if (biomeConfig == null) biomeConfig = config;
                     PlaceDecorationsForBiome(biomeConfig, biome, poiCenters, placed);
+                    PlaceWaterDecorations(biomeConfig, biome, placed);
                 }
             }
             else
             {
                 // Single biome
                 PlaceDecorationsForBiome(config, config.biome, poiCenters, placed);
+                PlaceWaterDecorations(config, config.biome, placed);
+            }
+        }
+
+        private void PlaceWaterDecorations(MinorRealmConfig config, BiomeType biome, List<Vector2> placed)
+        {
+            if (!config.water.enabled) return;
+            if (config.waterDecorationPrefabs == null || config.waterDecorationPrefabs.Length == 0) return;
+            if (config.waterDecorationCount <= 0) return;
+
+            float safeRadius  = _halfSize - 5f;
+            float waterHeight = config.water.waterLevel * config.maxHeight;
+            int   budget      = config.waterDecorationCount;
+            int   maxAttempts = budget * 15;
+            int   attempts    = 0;
+            int   spawned     = 0;
+
+            while (spawned < budget && attempts < maxAttempts)
+            {
+                attempts++;
+                Vector2 pos = Random.insideUnitCircle * safeRadius;
+
+                if (pos.magnitude < spawnClearRadius) continue;
+                if (HasNeighbour(placed, pos, config.minDecorSpacing)) continue;
+
+                if (_zoneMap != null)
+                {
+                    var dominant = _zoneMap.GetBiomeAt(pos.x, pos.y, _halfSize);
+                    if (dominant != biome) continue;
+                }
+
+                float groundY = SampleY(pos.x, pos.y);
+                if (groundY >= waterHeight) continue; // only underwater
+
+                var prefab = config.waterDecorationPrefabs[Random.Range(0, config.waterDecorationPrefabs.Length)];
+                if (prefab == null) continue;
+
+                var rot      = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                var instance = TryInstantiate(prefab, new Vector3(pos.x, groundY, pos.y), rot);
+
+                if (instance != null)
+                {
+                    placed.Add(pos);
+                    spawned++;
+                }
             }
         }
 
@@ -629,10 +675,12 @@ namespace CultivationGame.Systems
 
                     float groundY = SampleY(pos2D.x, pos2D.y);
 
+                    // Skip underwater positions — water decorations are placed separately
+                    float nHeight = groundY / biomeConfig.maxHeight;
+                    if (biomeConfig.water.enabled && nHeight < biomeConfig.water.waterLevel) continue;
+
                     // Skip steep slopes (terrace edges, cliff faces) to avoid floating decorations
                     if (SampleSlope(pos2D.x, pos2D.y) > 35f) continue;
-
-                    float nHeight = groundY / biomeConfig.maxHeight;
 
                     var prefab = PickDecorationForHeight(biomeConfig, nHeight);
                     if (prefab == null) continue;

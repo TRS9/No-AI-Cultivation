@@ -137,6 +137,12 @@ namespace CultivationGame.Data
         public int decorationCount = 60;
         [Min(1f)] public float minDecorSpacing = 2f;
 
+        [Header("Water Decorations")]
+        [Tooltip("Prefabs that spawn underwater (seaweed, coral, etc). Normal decorations are blocked from water.")]
+        public GameObject[] waterDecorationPrefabs;
+        [Tooltip("Number of water decorations to scatter across submerged terrain.")]
+        public int waterDecorationCount = 10;
+
         [Header("Points of Interest")]
         [Range(3, 8)] public int poiCount = 4;
         [Range(30f, 80f)] public float poiSpacing = 50f;

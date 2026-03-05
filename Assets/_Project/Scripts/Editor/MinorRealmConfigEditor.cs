@@ -252,6 +252,13 @@ namespace CultivationGame.Editor
                 Prop("clusterSpread", "Cluster Spread", "Radius within which cluster members scatter from the anchor.");
                 EditorGUI.indentLevel--;
 
+                GUILayout.Space(4);
+                SubHeader("Water Decorations");
+                EditorGUI.indentLevel++;
+                Prop("waterDecorationPrefabs", "Water Prefabs", "Prefabs that spawn underwater (seaweed, coral, etc). Normal decorations are blocked from water.");
+                Prop("waterDecorationCount",   "Count",         "Number of water decorations to scatter across submerged terrain.");
+                EditorGUI.indentLevel--;
+
                 EditorGUILayout.EndVertical();
             }
 
