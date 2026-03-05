@@ -146,10 +146,6 @@ namespace CultivationGame.Systems
             // Smooth after terracing to soften hard cliff edges while keeping shelf shapes
             HeightmapBuilder.SmoothHeightmap(heights, config.postTerraceSmoothIterations);
 
-            if (config.water.enabled && config.water.beachBandWidth > 0f)
-                HeightmapBuilder.ApplyBeachFlattening(heights, config.water.waterLevel,
-                    config.water.beachBandWidth, config.water.beachFlattenStrength);
-
             // Raise terrain at map edges so water stays interior — use configurable width
             if (config.water.enabled)
             {
@@ -172,6 +168,16 @@ namespace CultivationGame.Systems
                 HeightmapBuilder.CarveLakeBasins(heights, res, lakeCenters, radius,
                     config.water.waterLevel, depth);
             }
+
+            // Beach flattening AFTER lake carving so lake shores also get a gentle slope
+            if (config.water.enabled && config.water.beachBandWidth > 0f)
+                HeightmapBuilder.ApplyBeachFlattening(heights, config.water.waterLevel,
+                    config.water.beachBandWidth, config.water.beachFlattenStrength);
+
+            // Extra smoothing focused on the shore band — keeps cliffs crisp elsewhere
+            if (config.water.enabled)
+                HeightmapBuilder.SmoothNearWaterLevel(heights, config.water.waterLevel,
+                    config.water.beachBandWidth + 0.05f, 3);
 
             // Final smoothing pass — softens all remaining sharp transitions
             float wl = config.water.enabled ? config.water.waterLevel : -1f;
