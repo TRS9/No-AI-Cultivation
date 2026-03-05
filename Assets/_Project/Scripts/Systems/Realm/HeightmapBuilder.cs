@@ -6,12 +6,12 @@ namespace CultivationGame.Systems
 {
     public static class HeightmapBuilder
     {
-        // Default octaves used when none are configured
+        // Default octaves used when none are configured — gentler frequencies for natural terrain
         private static readonly NoiseOctave[] DefaultOctaves =
         {
-            new NoiseOctave { frequency = 2.5f,  amplitude = 0.55f },
-            new NoiseOctave { frequency = 6f,    amplitude = 0.30f },
-            new NoiseOctave { frequency = 13f,   amplitude = 0.15f },
+            new NoiseOctave { frequency = 1.8f,  amplitude = 0.60f },
+            new NoiseOctave { frequency = 4.0f,  amplitude = 0.25f },
+            new NoiseOctave { frequency = 8.5f,  amplitude = 0.15f },
         };
 
         /// <summary>
@@ -317,6 +317,75 @@ namespace CultivationGame.Systems
             }
 
             return result;
+        }
+
+        // -------------------------------------------------------------------------
+        // Smoothing
+        // -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Applies a 3x3 box-blur to the heightmap. Multiple iterations = stronger smoothing.
+        /// When waterLevel >= 0, cells at/below water are not raised above it (preserves lakes).
+        /// </summary>
+        public static void SmoothHeightmap(float[,] heights, int iterations, float waterLevel = -1f)
+        {
+            if (iterations <= 0) return;
+
+            int resZ = heights.GetLength(0);
+            int resX = heights.GetLength(1);
+            var buffer = new float[resZ, resX];
+
+            for (int iter = 0; iter < iterations; iter++)
+            {
+                System.Array.Copy(heights, buffer, heights.Length);
+
+                for (int z = 1; z < resZ - 1; z++)
+                for (int x = 1; x < resX - 1; x++)
+                {
+                    float sum = buffer[z - 1, x - 1] + buffer[z - 1, x] + buffer[z - 1, x + 1]
+                              + buffer[z,     x - 1] + buffer[z,     x] + buffer[z,     x + 1]
+                              + buffer[z + 1, x - 1] + buffer[z + 1, x] + buffer[z + 1, x + 1];
+                    float smoothed = sum / 9f;
+
+                    // Preserve lakes: don't raise underwater cells above water
+                    if (waterLevel >= 0f && buffer[z, x] <= waterLevel)
+                        smoothed = Mathf.Min(smoothed, waterLevel);
+
+                    heights[z, x] = smoothed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Computes terrain slope in degrees at each heightmap cell.
+        /// </summary>
+        public static float[,] ComputeSlopeMap(float[,] heights, int resolution,
+                                                 float maxHeight, float terrainSize)
+        {
+            var slopes = new float[resolution, resolution];
+            float cellSize = terrainSize / (resolution - 1);
+
+            for (int z = 1; z < resolution - 1; z++)
+            for (int x = 1; x < resolution - 1; x++)
+            {
+                float dhdx = (heights[z, x + 1] - heights[z, x - 1]) * maxHeight / (2f * cellSize);
+                float dhdz = (heights[z + 1, x] - heights[z - 1, x]) * maxHeight / (2f * cellSize);
+                slopes[z, x] = Mathf.Atan(Mathf.Sqrt(dhdx * dhdx + dhdz * dhdz)) * Mathf.Rad2Deg;
+            }
+
+            // Copy edges from neighbors
+            for (int x = 0; x < resolution; x++)
+            {
+                slopes[0, x] = slopes[1, x];
+                slopes[resolution - 1, x] = slopes[resolution - 2, x];
+            }
+            for (int z = 0; z < resolution; z++)
+            {
+                slopes[z, 0] = slopes[z, 1];
+                slopes[z, resolution - 1] = slopes[z, resolution - 2];
+            }
+
+            return slopes;
         }
     }
 }

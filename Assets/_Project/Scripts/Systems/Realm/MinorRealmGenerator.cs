@@ -143,15 +143,19 @@ namespace CultivationGame.Systems
                 HeightmapBuilder.ApplyTerracing(heights,
                     config.shapeProfile.terraceSteps, config.shapeProfile.terraceSharpness);
 
+            // Smooth after terracing to soften hard cliff edges while keeping shelf shapes
+            HeightmapBuilder.SmoothHeightmap(heights, config.postTerraceSmoothIterations);
+
             if (config.water.enabled && config.water.beachBandWidth > 0f)
                 HeightmapBuilder.ApplyBeachFlattening(heights, config.water.waterLevel,
                     config.water.beachBandWidth, config.water.beachFlattenStrength);
 
-            // Raise terrain at map edges FIRST so water stays interior
+            // Raise terrain at map edges so water stays interior — use configurable width
             if (config.water.enabled)
             {
+                float falloff = config.edgeFalloffWidth;
                 float raiseTarget = config.water.waterLevel + 0.15f;
-                HeightmapBuilder.ApplyEdgeFalloff(heights, res, 0.15f, raiseTarget);
+                HeightmapBuilder.ApplyEdgeFalloff(heights, res, falloff, raiseTarget);
             }
 
             // Carve lake basins AFTER edge falloff — Min() always wins over raised edges
@@ -169,12 +173,19 @@ namespace CultivationGame.Systems
                     config.water.waterLevel, depth);
             }
 
+            // Final smoothing pass — softens all remaining sharp transitions
+            float wl = config.water.enabled ? config.water.waterLevel : -1f;
+            HeightmapBuilder.SmoothHeightmap(heights, config.smoothingIterations, wl);
+
             terrainData.SetHeights(0, 0, heights);
 
+            // Compute slope map for texture blending
+            var slopeMap = HeightmapBuilder.ComputeSlopeMap(heights, res, config.maxHeight, terrainSize);
+
             if (_zoneMap != null)
-                ApplyMultiBiomeSplatmap(terrainData);
-            else if (config.terrainLayers != null && config.terrainLayers.Length > 0)
-                terrainData.terrainLayers = config.terrainLayers;
+                ApplyMultiBiomeSplatmap(terrainData, config, slopeMap);
+            else
+                ApplySplatmap(terrainData, config, slopeMap);
 
             var go = Terrain.CreateTerrainGameObject(terrainData);
             go.name = "Terrain";
@@ -187,12 +198,59 @@ namespace CultivationGame.Systems
             return go.GetComponent<Terrain>();
         }
 
-        private void ApplyMultiBiomeSplatmap(TerrainData terrainData)
+        /// <summary>
+        /// Single-biome splatmap: base terrain layer + cliff layer on steep slopes.
+        /// </summary>
+        private void ApplySplatmap(TerrainData terrainData, MinorRealmConfig config, float[,] slopeMap)
+        {
+            var layers = new List<TerrainLayer>();
+
+            if (config.terrainLayers != null && config.terrainLayers.Length > 0)
+                layers.Add(config.terrainLayers[0]);
+            else
+                return; // No layers to apply
+
+            int cliffIdx = -1;
+            if (config.cliffTerrainLayer != null)
+            {
+                cliffIdx = layers.Count;
+                layers.Add(config.cliffTerrainLayer);
+            }
+
+            terrainData.terrainLayers = layers.ToArray();
+
+            if (cliffIdx < 0) return; // No cliff layer — nothing to blend
+
+            int alphamapRes = terrainData.alphamapResolution;
+            int layerCount  = layers.Count;
+            var alphamaps    = new float[alphamapRes, alphamapRes, layerCount];
+            int hmRes        = slopeMap.GetLength(0);
+
+            for (int z = 0; z < alphamapRes; z++)
+            for (int x = 0; x < alphamapRes; x++)
+            {
+                // Map alphamap coords to heightmap coords
+                int hz = Mathf.Clamp(z * (hmRes - 1) / (alphamapRes - 1), 0, hmRes - 1);
+                int hx = Mathf.Clamp(x * (hmRes - 1) / (alphamapRes - 1), 0, hmRes - 1);
+                float slope = slopeMap[hz, hx];
+
+                float cliffBlend = ComputeCliffBlend(slope, config.slopeTextureThreshold, config.slopeBlendRange);
+                alphamaps[z, x, 0]        = 1f - cliffBlend;
+                alphamaps[z, x, cliffIdx] = cliffBlend;
+            }
+
+            terrainData.SetAlphamaps(0, 0, alphamaps);
+        }
+
+        /// <summary>
+        /// Multi-biome splatmap: Voronoi biome blending + cliff layer on steep slopes.
+        /// </summary>
+        private void ApplyMultiBiomeSplatmap(TerrainData terrainData, MinorRealmConfig config, float[,] slopeMap)
         {
             var allLayers = new List<TerrainLayer>();
             var biomeLayerIndex = new Dictionary<BiomeType, int>();
 
-            // Build layer list from all cell biomes (not just unique — ensures all are mapped)
+            // Build layer list from all cell biomes
             var cellBiomes = _zoneMap.CellBiomes;
             for (int c = 0; c < cellBiomes.Length; c++)
             {
@@ -210,12 +268,21 @@ namespace CultivationGame.Systems
 
             if (allLayers.Count == 0) return;
 
+            // Add cliff layer
+            int cliffIdx = -1;
+            if (config.cliffTerrainLayer != null)
+            {
+                cliffIdx = allLayers.Count;
+                allLayers.Add(config.cliffTerrainLayer);
+            }
+
             terrainData.terrainLayers = allLayers.ToArray();
 
             int alphamapRes = terrainData.alphamapResolution;
             int layerCount  = allLayers.Count;
             var alphamaps    = new float[alphamapRes, alphamapRes, layerCount];
             var cellWeights  = new float[_zoneMap.CellCount];
+            int hmRes        = slopeMap.GetLength(0);
 
             for (int z = 0; z < alphamapRes; z++)
             for (int x = 0; x < alphamapRes; x++)
@@ -226,10 +293,9 @@ namespace CultivationGame.Systems
                 float worldX = (nx - 0.5f) * terrainSize;
                 float worldZ = (nz - 0.5f) * terrainSize;
 
-                // Get per-cell Voronoi blend weights for smooth transitions
+                // Biome blend weights
                 _zoneMap.GetBlendWeightsAt(worldX, worldZ, _halfSize, cellWeights);
 
-                // Accumulate weights per terrain layer
                 for (int c = 0; c < _zoneMap.CellCount; c++)
                 {
                     if (cellWeights[c] <= 0f) continue;
@@ -238,7 +304,27 @@ namespace CultivationGame.Systems
                         alphamaps[z, x, layerIdx] += cellWeights[c];
                 }
 
-                // Normalize so weights sum to 1
+                // Blend cliff texture on steep slopes
+                if (cliffIdx >= 0)
+                {
+                    int hz = Mathf.Clamp(z * (hmRes - 1) / (alphamapRes - 1), 0, hmRes - 1);
+                    int hx = Mathf.Clamp(x * (hmRes - 1) / (alphamapRes - 1), 0, hmRes - 1);
+                    float slope = slopeMap[hz, hx];
+                    float cliffBlend = ComputeCliffBlend(slope, config.slopeTextureThreshold, config.slopeBlendRange);
+
+                    if (cliffBlend > 0f)
+                    {
+                        // Scale down existing biome weights proportionally
+                        for (int l = 0; l < layerCount; l++)
+                        {
+                            if (l != cliffIdx)
+                                alphamaps[z, x, l] *= (1f - cliffBlend);
+                        }
+                        alphamaps[z, x, cliffIdx] = cliffBlend;
+                    }
+                }
+
+                // Normalize weights to sum to 1
                 float total = 0f;
                 for (int l = 0; l < layerCount; l++)
                     total += alphamaps[z, x, l];
@@ -251,6 +337,13 @@ namespace CultivationGame.Systems
             }
 
             terrainData.SetAlphamaps(0, 0, alphamaps);
+        }
+
+        private static float ComputeCliffBlend(float slopeDegrees, float threshold, float blendRange)
+        {
+            if (slopeDegrees <= threshold) return 0f;
+            float t = Mathf.Clamp01((slopeDegrees - threshold) / Mathf.Max(blendRange, 0.01f));
+            return t * t * (3f - 2f * t); // smoothstep
         }
 
         // -------------------------------------------------------------------------
