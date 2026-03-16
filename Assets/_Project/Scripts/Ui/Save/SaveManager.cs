@@ -19,7 +19,7 @@ namespace CultivationGame.UI
 
         [Header("Data References")]
         public List<RealmDefinition> allRealms;
-        public List<EssenceData> allEssences;
+        public List<ItemData> allItems;
 
         public static SaveManager Instance { get; private set; }
 
@@ -130,11 +130,11 @@ namespace CultivationGame.UI
             }
 
             // Restore inventory
-            var loaded = new Dictionary<EssenceData, int>();
+            var loaded = new Dictionary<ItemData, int>();
             foreach (var entry in data.inventoryEntries)
             {
-                var essence = allEssences?.Find(e => e.name == entry.essenceId);
-                if (essence != null) loaded[essence] = entry.count;
+                var item = allItems?.Find(i => i.name == entry.essenceId);
+                if (item != null) loaded[item] = entry.count;
             }
             playerInventory.LoadInventory(loaded);
         }
