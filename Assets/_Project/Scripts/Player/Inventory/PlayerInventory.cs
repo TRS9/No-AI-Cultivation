@@ -9,19 +9,19 @@ namespace CultivationGame.Player
     {
         public PlayerStats playerStats;
 
-        private Dictionary<EssenceData, int> items = new Dictionary<EssenceData, int>();
+        private Dictionary<ItemData, int> items = new Dictionary<ItemData, int>();
 
-        public void AddItem(ScriptableObject item)
+        public void AddItem(ItemData item)
         {
-            if (item is not EssenceData essence || essence == null) return;
+            if (item == null) return;
 
-            if (items.ContainsKey(essence))
+            if (items.ContainsKey(item))
             {
-                items[essence]++;
+                items[item]++;
             }
             else
             {
-                items.Add(essence, 1);
+                items.Add(item, 1);
             }
 
             GameEvents.RaiseInventoryChanged();
@@ -45,14 +45,14 @@ namespace CultivationGame.Player
             GameEvents.RaiseInventoryChanged();
         }
 
-        public Dictionary<EssenceData, int> GetItems()
+        public Dictionary<ItemData, int> GetItems()
         {
             return items;
         }
 
-        public void LoadInventory(Dictionary<EssenceData, int> loaded)
+        public void LoadInventory(Dictionary<ItemData, int> loaded)
         {
-            items = new Dictionary<EssenceData, int>(loaded);
+            items = new Dictionary<ItemData, int>(loaded);
             GameEvents.RaiseInventoryChanged();
         }
     }

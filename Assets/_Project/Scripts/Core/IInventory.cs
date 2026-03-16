@@ -1,9 +1,9 @@
-using UnityEngine;
+using CultivationGame.Data;
 
 namespace CultivationGame.Core
 {
     public interface IInventory
     {
-        void AddItem(ScriptableObject item);
+        void AddItem(ItemData item);
     }
 }

@@ -14,7 +14,7 @@ namespace CultivationGame.UI
 
         private readonly List<InventorySlotDisplay> _activeSlots = new();
 
-        public void RefreshDisplay(Dictionary<EssenceData, int> items)
+        public void RefreshDisplay(Dictionary<ItemData, int> items)
         {
             int index = 0;
             foreach (var entry in items)
@@ -31,7 +31,10 @@ namespace CultivationGame.UI
                     slot = go.GetComponent<InventorySlotDisplay>();
                     _activeSlots.Add(slot);
                 }
-                slot.Setup(entry.Key, entry.Value, playerInventory.UseEssence);
+                slot.Setup(entry.Key, entry.Value, item =>
+                {
+                    if (item is EssenceData e) playerInventory.UseEssence(e);
+                });
                 index++;
             }
 

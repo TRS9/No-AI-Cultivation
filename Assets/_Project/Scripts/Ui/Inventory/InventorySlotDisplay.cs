@@ -19,10 +19,10 @@ namespace CultivationGame.UI
             if (button == null) button = gameObject.AddComponent<Button>();
         }
 
-        public void Setup(EssenceData data, int amount, Action<EssenceData> onUse)
+        public void Setup(ItemData data, int amount, Action<ItemData> onUse)
         {
             iconImage.sprite = data.icon;
-            iconImage.color = data.essenceColor;
+            iconImage.color = data is EssenceData essence ? essence.essenceColor : Color.white;
 
             if (amountText != null)
                 amountText.text = amount > 1 ? amount.ToString() : "";
