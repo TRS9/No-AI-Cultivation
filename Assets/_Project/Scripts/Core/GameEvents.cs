@@ -1,3 +1,5 @@
+using CultivationGame.Data;
+
 namespace CultivationGame.Core
 {
     public static class GameEvents
@@ -55,5 +57,21 @@ namespace CultivationGame.Core
         public static event MeditationBonusApplied OnMeditationBonusApplied;
         public static void RaiseMeditationBonusApplied(float multiplier)
             => OnMeditationBonusApplied?.Invoke(multiplier);
+
+        // --- Crafting ---
+        public delegate void CraftingStarted(RecipeData recipe);
+        public static event CraftingStarted OnCraftingStarted;
+        public static void RaiseCraftingStarted(RecipeData recipe)
+            => OnCraftingStarted?.Invoke(recipe);
+
+        public delegate void CraftingCompleted(RecipeData recipe);
+        public static event CraftingCompleted OnCraftingCompleted;
+        public static void RaiseCraftingCompleted(RecipeData recipe)
+            => OnCraftingCompleted?.Invoke(recipe);
+
+        public delegate void CraftingFailed(RecipeData recipe);
+        public static event CraftingFailed OnCraftingFailed;
+        public static void RaiseCraftingFailed(RecipeData recipe)
+            => OnCraftingFailed?.Invoke(recipe);
     }
 }

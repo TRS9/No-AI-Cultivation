@@ -117,4 +117,16 @@ namespace CultivationGame.Core
         Speed,
         Vision
     }
+
+    public enum MachineType
+    {
+        None,
+        Furnace,
+        Crusher,
+        Mixer,
+        Distiller,
+        Condenser,
+        PillPress,
+        Storage
+    }
 }
