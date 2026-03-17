@@ -27,6 +27,17 @@ namespace CultivationGame.Player
             GameEvents.RaiseInventoryChanged();
         }
 
+        public void UsePill(PillData pill)
+        {
+            if (!items.ContainsKey(pill) || items[pill] <= 0) return;
+
+            items[pill]--;
+            if (items[pill] <= 0) items.Remove(pill);
+
+            GameEvents.RaisePillConsumed(pill);
+            GameEvents.RaiseInventoryChanged();
+        }
+
         public void UseEssence(EssenceData essence)
         {
             if (!items.ContainsKey(essence) || items[essence] <= 0) return;
