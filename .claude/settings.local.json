@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo:*)",
+      "Bash(xargs grep -l \"LoadScene\\\\|SceneManager\\\\|DontDestroyOnLoad\")",
+      "Bash(xargs head -50)",
+      "Bash(grep -n \"8265772121604712140\" Assets/_Project/Scenes/*.unity)",
+      "Bash(while read f)",
+      "Bash(do if grep -q \"5238f4aa5e90cb347af4ecedcbae399d\" \"$f\")",
+      "Bash(then echo \"$f\")",
+      "Bash(fi)",
+      "Bash(done)"
+    ]
+  }
+}

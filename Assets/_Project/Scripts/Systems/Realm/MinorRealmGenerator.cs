@@ -62,8 +62,46 @@ namespace CultivationGame.Systems
             PlaceExitPortal();
             ApplyAtmosphere(config);
 
-            float centerHeight = _terrain.SampleHeight(Vector3.zero) + 1.5f;
-            SceneTransitionData.SetDestination(new Vector3(0f, centerHeight, 0f));
+            Vector3 spawnPos = FindSpawnPosition(config);
+            SceneTransitionData.SetDestination(spawnPos);
+        }
+
+        // -------------------------------------------------------------------------
+        // Spawn Position — find dry land above water
+        // -------------------------------------------------------------------------
+
+        private Vector3 FindSpawnPosition(MinorRealmConfig config)
+        {
+            float waterHeight = config.water.enabled ? config.water.waterLevel * config.maxHeight : -1f;
+            float searchRadius = _halfSize * 0.7f;
+            float maxSlope = 30f;
+
+            // Try center first
+            float centerY = SampleY(0f, 0f);
+            if (centerY > waterHeight && SampleSlope(0f, 0f) < maxSlope)
+                return new Vector3(0f, centerY + 1.5f, 0f);
+
+            // Spiral search outward
+            for (float r = 15f; r < searchRadius; r += 10f)
+            {
+                int steps = Mathf.Max(8, (int)(r * 0.5f));
+                for (int i = 0; i < steps; i++)
+                {
+                    float angle = (i / (float)steps) * Mathf.PI * 2f;
+                    float x = Mathf.Cos(angle) * r;
+                    float z = Mathf.Sin(angle) * r;
+
+                    float y = SampleY(x, z);
+                    if (y <= waterHeight) continue;
+                    if (SampleSlope(x, z) > maxSlope) continue;
+
+                    return new Vector3(x, y + 1.5f, z);
+                }
+            }
+
+            // Fallback — center clamped above water
+            float fallbackY = Mathf.Max(SampleY(0f, 0f), waterHeight) + 1.5f;
+            return new Vector3(0f, fallbackY, 0f);
         }
 
         // -------------------------------------------------------------------------
