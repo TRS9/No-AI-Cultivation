@@ -1,7 +1,6 @@
 using UnityEngine;
 using CultivationGame.Core;
 using CultivationGame.Data;
-using CultivationGame.Systems;
 using UnityEngine.InputSystem;
 
 namespace CultivationGame.Player
@@ -38,7 +37,7 @@ namespace CultivationGame.Player
             }
             if (isMeditating && currentRealm != null)
             {
-                float speedMult = PillBuffSystem.Instance != null ? PillBuffSystem.Instance.MeditationRateMultiplier : 1f;
+                float speedMult = CultivationBuffs.MeditationRateMultiplier;
                 AddQi(meditationQiRate * speedMult * Time.deltaTime);
             }
         }
@@ -91,7 +90,7 @@ namespace CultivationGame.Player
                 return;
             }
 
-            float pillBonus = PillBuffSystem.Instance != null ? PillBuffSystem.Instance.BreakthroughBonus : 0f;
+            float pillBonus = CultivationBuffs.BreakthroughBonus;
             float roll = Random.Range(0f, 1f);
             if (roll <= currentRealm.breakthroughSuccessRate + pillBonus)
                 PerformSuccess();

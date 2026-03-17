@@ -9,7 +9,9 @@
       "Bash(do if grep -q \"5238f4aa5e90cb347af4ecedcbae399d\" \"$f\")",
       "Bash(then echo \"$f\")",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs\")",
+      "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs.meta\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs.meta\")"
     ]
   }
 }

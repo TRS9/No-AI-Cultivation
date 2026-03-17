@@ -10,18 +10,14 @@ namespace CultivationGame.Systems
     {
         public static PillBuffSystem Instance { get; private set; }
 
-        /// <summary>Multiplier applied on top of base meditationQiRate. PlayerStats reads this each frame.</summary>
-        public float MeditationRateMultiplier { get; private set; } = 1f;
-
-        /// <summary>Additive bonus added to breakthroughSuccessRate. PlayerStats reads this on breakthrough.</summary>
-        public float BreakthroughBonus { get; private set; } = 0f;
-
         // Tolerance tracking: pill asset name → session use count
         private readonly Dictionary<string, int> _useCount = new();
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
+            CultivationBuffs.MeditationRateMultiplier = 1f;
+            CultivationBuffs.BreakthroughBonus = 0f;
         }
 
         private void OnEnable()  => GameDataEvents.OnPillConsumed += HandlePillConsumed;
@@ -55,17 +51,17 @@ namespace CultivationGame.Systems
         private IEnumerator ApplySpeedBuff(float multiplier, float duration, float effectiveness)
         {
             float bonus = (multiplier - 1f) * effectiveness;
-            MeditationRateMultiplier += bonus;
+            CultivationBuffs.MeditationRateMultiplier += bonus;
             yield return new WaitForSeconds(duration);
-            MeditationRateMultiplier -= bonus;
+            CultivationBuffs.MeditationRateMultiplier -= bonus;
         }
 
         private IEnumerator ApplyBreakthroughBuff(float bonus, float duration, float effectiveness)
         {
             float applied = bonus * effectiveness;
-            BreakthroughBonus += applied;
+            CultivationBuffs.BreakthroughBonus += applied;
             yield return new WaitForSeconds(duration);
-            BreakthroughBonus -= applied;
+            CultivationBuffs.BreakthroughBonus -= applied;
         }
     }
 }
