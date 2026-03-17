@@ -48,7 +48,7 @@ namespace CultivationGame.Systems
         private IEnumerator CraftCoroutine(RecipeData recipe, Action<bool> onComplete)
         {
             _isCrafting = true;
-            GameEvents.RaiseCraftingStarted(recipe);
+            GameDataEvents.RaiseCraftingStarted(recipe);
 
             if (recipe.craftingDuration > 0f)
                 yield return new WaitForSeconds(recipe.craftingDuration);
@@ -67,11 +67,11 @@ namespace CultivationGame.Systems
                     for (int i = 0; i < output.amount; i++)
                         playerInventory.AddItem(output.item);
 
-                GameEvents.RaiseCraftingCompleted(recipe);
+                GameDataEvents.RaiseCraftingCompleted(recipe);
             }
             else
             {
-                GameEvents.RaiseCraftingFailed(recipe);
+                GameDataEvents.RaiseCraftingFailed(recipe);
             }
 
             _isCrafting = false;
