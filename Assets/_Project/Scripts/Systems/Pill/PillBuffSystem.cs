@@ -24,8 +24,8 @@ namespace CultivationGame.Systems
             if (Instance == null) Instance = this;
         }
 
-        private void OnEnable()  => GameEvents.OnPillConsumed += HandlePillConsumed;
-        private void OnDisable() => GameEvents.OnPillConsumed -= HandlePillConsumed;
+        private void OnEnable()  => GameDataEvents.OnPillConsumed += HandlePillConsumed;
+        private void OnDisable() => GameDataEvents.OnPillConsumed -= HandlePillConsumed;
 
         private void HandlePillConsumed(PillData pill)
         {
@@ -49,7 +49,7 @@ namespace CultivationGame.Systems
             if (pill.breakthroughBonus > 0f && pill.buffDuration > 0f)
                 StartCoroutine(ApplyBreakthroughBuff(pill.breakthroughBonus, pill.buffDuration, effectiveness));
 
-            GameEvents.RaisePillEffectsApplied(pill, effectiveness);
+            GameDataEvents.RaisePillEffectsApplied(pill, effectiveness);
         }
 
         private IEnumerator ApplySpeedBuff(float multiplier, float duration, float effectiveness)
