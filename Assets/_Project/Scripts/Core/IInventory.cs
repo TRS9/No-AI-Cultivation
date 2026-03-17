@@ -1,9 +1,1 @@
-using CultivationGame.Data;
-
-namespace CultivationGame.Core
-{
-    public interface IInventory
-    {
-        void AddItem(ItemData item);
-    }
-}
+// Moved to CultivationGame.Data — see Assets/_Project/Scripts/Data/IInventory.cs
