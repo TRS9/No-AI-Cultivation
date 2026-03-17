@@ -73,5 +73,16 @@ namespace CultivationGame.Core
         public static event CraftingFailed OnCraftingFailed;
         public static void RaiseCraftingFailed(RecipeData recipe)
             => OnCraftingFailed?.Invoke(recipe);
+
+        // --- Pills ---
+        public delegate void PillConsumed(PillData pill);
+        public static event PillConsumed OnPillConsumed;
+        public static void RaisePillConsumed(PillData pill)
+            => OnPillConsumed?.Invoke(pill);
+
+        public delegate void PillEffectsApplied(PillData pill, float effectiveness);
+        public static event PillEffectsApplied OnPillEffectsApplied;
+        public static void RaisePillEffectsApplied(PillData pill, float effectiveness)
+            => OnPillEffectsApplied?.Invoke(pill, effectiveness);
     }
 }
