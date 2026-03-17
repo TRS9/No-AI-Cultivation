@@ -15743,7 +15743,8 @@ GameObject:
   - component: {fileID: 877630122}
   - component: {fileID: 877630121}
   - component: {fileID: 877630120}
-  m_Layer: 0
+  - component: {fileID: 877630124}
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15837,12 +15838,24 @@ Transform:
   m_GameObject: {fileID: 877630119}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 346.97537, y: 125.57317, z: 281.9238}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 346.97537, y: 127.76, z: 281.9238}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &877630124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877630119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbdca3ff36c406048b48bc14189cc60a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Systems::CultivationGame.Systems.CraftingStation
 --- !u!4 &879124812 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6528449348563534952, guid: c70ad64b2fd82d94d98aac09f13a4381, type: 3}
@@ -41028,9 +41041,73 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 920966780456328963, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 920966780456328963, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3022083459732553819, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3022083459732553819, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384594414151966548, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384594414151966548, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384594414151966548, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384594414151966548, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153510989503924475, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153510989503924475, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -17
+      objectReference: {fileID: 0}
     - target: {fileID: 6459267196624684393, guid: 0171e785c4085da438560323e657ad23, type: 3}
       propertyPath: m_Name
       value: CraftingUi
+      objectReference: {fileID: 0}
+    - target: {fileID: 6459267196624684393, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6736461462978253364, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7422705667927507958, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7428147426538430476, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7428147426538430476, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7428147426538430476, guid: 0171e785c4085da438560323e657ad23, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.39000005
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

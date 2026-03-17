@@ -17,8 +17,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   collectionEffect: {fileID: 0}
   itemType: 1
-  pillName: 
-  pillColor: {r: 1, g: 1, b: 1, a: 1}
+  pillName: Basic Pill
+  pillColor: {r: 1, g: 0, b: 0, a: 1}
   grade: 0
   pillTier: 1
   qiBoost: 0

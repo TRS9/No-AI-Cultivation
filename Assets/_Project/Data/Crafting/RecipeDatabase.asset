@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Data::CultivationGame.Data.RecipeDatabase
   allRecipes:
   - {fileID: 11400000, guid: 61f5032f560871c4588e730b4e7b49c0, type: 2}
+  - {fileID: 11400000, guid: f85dea212ce501144b5f5f5388cb5ae2, type: 2}

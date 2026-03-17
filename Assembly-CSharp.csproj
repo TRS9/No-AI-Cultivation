@@ -49,11 +49,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.3.8f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\SoStylized\Environment\Trees\Scripts\MS_StylizedTreeCollision.cs" />
-    <Compile Include="Assets\SoStylized\Demo\Scripts\MS_CameraMovement.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\SoStylized\Demo\Readme.txt" />
+    <Compile Include="Assets\_Project\Scripts\Object\CraftingStation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -1344,6 +1340,7 @@
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj" />
     <ProjectReference Include="Game.Core.csproj" />
+    <ProjectReference Include="Game.Editor.csproj" />
     <ProjectReference Include="Game.Data.csproj" />
     <ProjectReference Include="Game.UI.csproj" />
     <ProjectReference Include="Game.Player.csproj" />

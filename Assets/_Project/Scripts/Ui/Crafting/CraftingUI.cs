@@ -35,14 +35,19 @@ namespace CultivationGame.UI
 
         private void Awake()
         {
+            GameEvents.OnCraftingStationInteracted += Open;
             GameEvents.OnInventoryChanged  += OnInventoryChanged;
             GameDataEvents.OnCraftingStarted   += OnCraftingStarted;
             GameDataEvents.OnCraftingCompleted += OnCraftingDone;
             GameDataEvents.OnCraftingFailed    += OnCraftingDone;
+
+            if (craftingPanel != null)
+                craftingPanel.SetActive(false);
         }
 
         private void OnDestroy()
         {
+            GameEvents.OnCraftingStationInteracted -= Open;
             GameEvents.OnInventoryChanged  -= OnInventoryChanged;
             GameDataEvents.OnCraftingStarted   -= OnCraftingStarted;
             GameDataEvents.OnCraftingCompleted -= OnCraftingDone;
