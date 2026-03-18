@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 249dc837571f2914c87bd740b5bb575c, type: 3}
+  m_Name: EssenceTest
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.RecipeData
+  recipeName: 
+  description: 
+  inputs:
+  - item: {fileID: 11400000, guid: 558be4ec4d7bf1c4282d6f255adfb60c, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: 8e20201c989e6114fb810ec78fa1e69f, type: 2}
+    amount: 1
+  outputs:
+  - item: {fileID: 11400000, guid: 2a797f48754822a43b3ef93f00d025f7, type: 2}
+    amount: 5
+  craftingDuration: 0
+  requiredMachine: 0
+  requiredRealm: {fileID: 0}
+  successRate: 1
+  qiCost: 0
