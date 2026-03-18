@@ -61,5 +61,22 @@ namespace CultivationGame.Core
         public static event CraftingStationInteracted OnCraftingStationInteracted;
         public static void RaiseCraftingStationInteracted()
             => OnCraftingStationInteracted?.Invoke();
+
+        // --- Interact Prompt ---
+        public delegate void InteractPromptChanged(bool visible);
+        public static event InteractPromptChanged OnInteractPromptChanged;
+        public static void RaiseInteractPromptChanged(bool visible)
+            => OnInteractPromptChanged?.Invoke(visible);
+
+        // --- Game State ---
+        public delegate void PauseStateChanged(bool isPaused);
+        public static event PauseStateChanged OnPauseStateChanged;
+        public static void RaisePauseStateChanged(bool isPaused)
+            => OnPauseStateChanged?.Invoke(isPaused);
+
+        public delegate void PanelStateChanged(string panelId, bool isOpen);
+        public static event PanelStateChanged OnPanelStateChanged;
+        public static void RaisePanelStateChanged(string panelId, bool isOpen)
+            => OnPanelStateChanged?.Invoke(panelId, isOpen);
     }
 }

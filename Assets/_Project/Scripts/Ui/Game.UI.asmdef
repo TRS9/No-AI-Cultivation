@@ -6,8 +6,8 @@
         "Game.Data",
         "Game.Systems",
         "Game.Player",
-        "Unity.TextMeshPro",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Properties"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

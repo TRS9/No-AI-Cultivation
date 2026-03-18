@@ -10,7 +10,7 @@ namespace CultivationGame.Player
         public LayerMask interactableLayer;
         public InputActionReference interactAction;
 
-        public GameObject interactPromptUI;
+        private bool _promptVisible;
 
         private void OnEnable()
         {
@@ -25,20 +25,12 @@ namespace CultivationGame.Player
         private void Update()
         {
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
+            bool visible = hitColliders.Length > 0;
 
-            if (hitColliders.Length > 0)
+            if (visible != _promptVisible)
             {
-                if (interactPromptUI != null)
-                {
-                    interactPromptUI.SetActive(true);
-                }
-            }
-            else
-            {
-                if (interactPromptUI != null)
-                {
-                    interactPromptUI.SetActive(false);
-                }
+                _promptVisible = visible;
+                GameEvents.RaiseInteractPromptChanged(visible);
             }
         }
 

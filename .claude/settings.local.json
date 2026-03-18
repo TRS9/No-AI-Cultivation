@@ -11,7 +11,10 @@
       "Bash(fi)",
       "Bash(done)",
       "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs\")",
-      "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs.meta\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs.meta\")"
+      "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs.meta\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs.meta\")",
+      "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Scripts/Ui' -type f -name *.cs)",
+      "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets' -type f -name *.uss -o -name *theme* -o -name *Theme*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

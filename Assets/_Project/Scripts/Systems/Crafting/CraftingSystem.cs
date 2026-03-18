@@ -51,7 +51,16 @@ namespace CultivationGame.Systems
             GameDataEvents.RaiseCraftingStarted(recipe);
 
             if (recipe.craftingDuration > 0f)
-                yield return new WaitForSeconds(recipe.craftingDuration);
+            {
+                float elapsed = 0f;
+                while (elapsed < recipe.craftingDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    float progress = Mathf.Clamp01(elapsed / recipe.craftingDuration);
+                    GameDataEvents.RaiseCraftingProgressChanged(recipe, progress);
+                    yield return null;
+                }
+            }
 
             if (recipe.qiCost > 0)
                 GameEvents.RaiseAddQi(-recipe.qiCost);

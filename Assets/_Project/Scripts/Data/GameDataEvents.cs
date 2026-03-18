@@ -18,6 +18,12 @@ namespace CultivationGame.Data
         public static void RaiseCraftingFailed(RecipeData recipe)
             => OnCraftingFailed?.Invoke(recipe);
 
+        // --- Crafting Progress ---
+        public delegate void CraftingProgressChanged(RecipeData recipe, float normalizedProgress);
+        public static event CraftingProgressChanged OnCraftingProgressChanged;
+        public static void RaiseCraftingProgressChanged(RecipeData recipe, float progress)
+            => OnCraftingProgressChanged?.Invoke(recipe, progress);
+
         // --- Pills ---
         public delegate void PillConsumed(PillData pill);
         public static event PillConsumed OnPillConsumed;

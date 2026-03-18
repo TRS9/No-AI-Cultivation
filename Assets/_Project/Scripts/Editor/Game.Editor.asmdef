@@ -7,8 +7,7 @@
         "Game.Systems",
         "Game.Player",
         "Game.UI",
-        "Unity.InputSystem",
-        "Unity.TextMeshPro"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
