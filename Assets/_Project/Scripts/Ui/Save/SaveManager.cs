@@ -46,7 +46,7 @@ namespace CultivationGame.UI
             };
 
             foreach (var kvp in playerInventory.GetItems())
-                data.inventoryEntries.Add(new InventorySaveEntry { essenceId = kvp.Key.name, count = kvp.Value });
+                data.inventoryEntries.Add(new InventorySaveEntry { essenceId = kvp.Key.ItemId, count = kvp.Value });
 
             // World state
             data.collectedEssenceIds = new List<string>(WorldState.CollectedIds);
@@ -133,7 +133,7 @@ namespace CultivationGame.UI
             var loaded = new Dictionary<ItemData, int>();
             foreach (var entry in data.inventoryEntries)
             {
-                var item = allItems?.Find(i => i.name == entry.essenceId);
+                var item = allItems?.Find(i => i.ItemId == entry.essenceId);
                 if (item != null) loaded[item] = entry.count;
             }
             playerInventory.LoadInventory(loaded);
