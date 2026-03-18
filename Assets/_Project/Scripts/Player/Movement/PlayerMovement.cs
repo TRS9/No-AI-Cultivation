@@ -15,6 +15,8 @@ namespace CultivationGame.Player
         public float rotationSpeed = 600f;
         public LayerMask groundLayer;
         public float maxDistanceRay = 1.1f;
+        [Tooltip("Radius of the sphere used for ground detection — handles slopes and uneven terrain")]
+        public float groundCheckRadius = 0.3f;
 
         [Header("Stamina System")]
         public float maxStamina = 100f;
@@ -32,6 +34,16 @@ namespace CultivationGame.Player
         private float _airborneTime;
         private const float LandingResetThreshold = 0.6f;
 
+        // Cached per-physics-frame ground state — used by Update and input callbacks
+        // so IsGrounded() isn't re-evaluated on different threads/timings.
+        private bool _isGrounded;
+
+        // Coyote time: allow jumping within this window after walking off a ledge
+        private float _lastGroundedTime;
+        private const float CoyoteTime = 0.15f;
+
+        private Camera _camera;
+
         [Header("Animation")]
         public Animator animator;
 
@@ -47,6 +59,7 @@ namespace CultivationGame.Player
             currentStamina = maxStamina;
             GameEvents.RaiseStaminaChanged(currentStamina, maxStamina);
             rb.interpolation = RigidbodyInterpolation.Interpolate;
+            _camera = Camera.main;
         }
 
         private void OnEnable()
@@ -70,9 +83,11 @@ namespace CultivationGame.Player
 
         private void FixedUpdate()
         {
-            bool isGrounded = IsGrounded();
+            _isGrounded = IsGrounded();
+            if (_isGrounded) _lastGroundedTime = Time.time;
+
             ComputeMoveVector();
-            HandleStaminaAndSpeed(isGrounded);
+            HandleStaminaAndSpeed(_isGrounded);
             ApplyMovement();
             ApplyRotation();
         }
@@ -88,11 +103,10 @@ namespace CultivationGame.Player
         {
             if (_moveDirection.sqrMagnitude > 0.01f)
             {
-                var cam = Camera.main;
-                if (cam == null) return;
+                if (_camera == null) return;
 
-                Vector3 forward = cam.transform.forward;
-                Vector3 right   = cam.transform.right;
+                Vector3 forward = _camera.transform.forward;
+                Vector3 right   = _camera.transform.right;
 
                 forward.y = 0;
                 right.y   = 0;
@@ -125,20 +139,22 @@ namespace CultivationGame.Player
 
         private void HandleStaminaAndSpeed(bool isGrounded)
         {
+            bool justLanded = isGrounded && !_wasGrounded;
+
             if (!isGrounded)
             {
                 _airborneTime += Time.fixedDeltaTime;
             }
-            else if (!_wasGrounded && _airborneTime >= LandingResetThreshold)
+            else if (justLanded && _airborneTime >= LandingResetThreshold)
             {
                 // Dampen speed on landing instead of freezing — smooth transition back to walk
                 _currentSpeed = Mathf.Min(_currentSpeed, moveSpeed * 0.3f);
             }
 
-            if (isGrounded)
-                _airborneTime = 0f;
-
+            // Update state before reset so landing animation triggers can read _airborneTime
+            // on the same frame the landing is detected (justLanded above has already consumed it).
             _wasGrounded = isGrounded;
+            if (isGrounded) _airborneTime = 0f;
 
             bool isMoving    = _moveDirection.sqrMagnitude > 0.01f;
             bool isSprinting = sprint.action.IsPressed() && currentStamina > 0 && isMoving && isGrounded;
@@ -174,9 +190,11 @@ namespace CultivationGame.Player
 
         private void HandleJump(InputAction.CallbackContext context)
         {
-            if (IsGrounded())
+            bool canJump = _isGrounded || (Time.time - _lastGroundedTime <= CoyoteTime);
+            if (canJump)
             {
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                _lastGroundedTime = 0f; // consume the coyote window so it can't be used twice
 
                 if (animator != null)
                     animator.SetTrigger("Jump");
@@ -187,16 +205,20 @@ namespace CultivationGame.Player
         {
             if (animator == null) return;
 
-            Vector3 horizontalVelocity  = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-            float   currentSpeedMagnitude = horizontalVelocity.magnitude;
-
-            animator.SetFloat("Speed", currentSpeedMagnitude);
-            animator.SetBool("IsGrounded", IsGrounded());
+            Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+            animator.SetFloat("Speed", horizontalVelocity.magnitude);
+            animator.SetBool("IsGrounded", _isGrounded); // cached value — not a fresh raycast
         }
 
         public bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, Vector3.down, out _, maxDistanceRay, groundLayer);
+            // Sphere cast from feet rather than a single ray from pivot —
+            // handles slopes, steps, and uneven terrain correctly.
+            return Physics.CheckSphere(
+                transform.position + Vector3.down * (maxDistanceRay - groundCheckRadius),
+                groundCheckRadius,
+                groundLayer
+            );
         }
 
         private void HandleMeditationBlock(bool isMeditating)

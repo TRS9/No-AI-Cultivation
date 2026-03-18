@@ -116,10 +116,12 @@ namespace CultivationGame.Editor
             if (spiritEssence != null)
             {
                 var so = new SerializedObject(spiritEssence);
-                so.FindProperty("essenceData").objectReferenceValue = selectedEssence;
+                var essenceProp = so.FindProperty("essenceData");
+                var idProp      = so.FindProperty("uniqueId");
+                if (essenceProp != null) essenceProp.objectReferenceValue = selectedEssence;
                 // Always assign a fresh GUID — instances would otherwise inherit the prefab's
                 // shared uniqueId, causing all copies to be marked collected when one is picked up.
-                so.FindProperty("uniqueId").stringValue = System.Guid.NewGuid().ToString();
+                if (idProp != null) idProp.stringValue = System.Guid.NewGuid().ToString();
                 so.ApplyModifiedProperties();
             }
 

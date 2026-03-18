@@ -34,6 +34,7 @@ namespace CultivationGame.UI
                 slot.Setup(entry.Key, entry.Value, item =>
                 {
                     if (item is EssenceData e) playerInventory.UseEssence(e);
+                    else if (item is PillData p) playerInventory.UsePill(p);
                 });
                 index++;
             }
