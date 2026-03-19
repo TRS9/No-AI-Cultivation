@@ -15,7 +15,7 @@ namespace CultivationGame.UI
 
         private float _staminaPercent = 100f;
         private float _qiProgress;
-        private string _qiLabel = "Qi: 0/0";
+        private string _qiLabel = "Qi\n0/0";
         private bool _breakthroughReady;
         private string _realmName = "";
         private string _subStage = "";
@@ -163,7 +163,7 @@ namespace CultivationGame.UI
         {
             _staminaPercent = 100f;
             _qiProgress = 0f;
-            _qiLabel = "Qi: 0/0";
+            _qiLabel = "Qi\n0/0";
             _breakthroughReady = false;
             _realmName = "";
             _subStage = "";
@@ -179,7 +179,7 @@ namespace CultivationGame.UI
         private void HandleQi(double currentQi, double maxQi)
         {
             QiProgress = maxQi > 0 ? (float)(currentQi / maxQi) : 0f;
-            QiLabel = $"Qi: {currentQi:F0}/{maxQi:F0}";
+            QiLabel = $"Qi\n{currentQi:F0}/{maxQi:F0}";
         }
 
         private void HandleQiMax()
@@ -197,7 +197,7 @@ namespace CultivationGame.UI
             RealmName = realmName;
             SubStage = subStage;
             QiProgress = 0f;
-            QiLabel = "Qi: 0/0";
+            QiLabel = "Qi\n0/0";
         }
 
         private void HandleMeditationBonus(float multiplier)

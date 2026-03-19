@@ -3,26 +3,45 @@
 
     <!-- HUD (always visible, top-left) -->
     <ui:VisualElement name="HUD" style="position: absolute; top: 0; left: 0; padding: 35px;">
-        <ui:ProgressBar value="100" title="" name="StaminaBar" style="height: 30px; width: 266px; margin-bottom: 12px;"/>
-        <LiquidCircle name="QiCircle" style="height: 120px; width: 120px; margin-left: 30px; border-width: 2px; border-color: rgba(180, 140, 50, 0.45);">
-            <ui:Label text="Qi: 0/0" name="QiLabel" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(216, 210, 190); font-size: 14px;"/>
+        <!-- Stamina Row: Label + Bar -->
+        <ui:VisualElement class="stamina-row" style="margin-bottom: 12px;">
+            <ui:Label text="Stamina" class="stamina-label"/>
+            <ui:ProgressBar value="100" title="" name="StaminaBar" style="height: 18px; width: 220px;"/>
+        </ui:VisualElement>
+        <!-- Qi Orb -->
+        <LiquidCircle name="QiCircle" style="height: 90px; width: 90px; margin-left: 30px; border-width: 2px; border-color: rgba(180, 140, 50, 0.45);">
+            <ui:Label text="Qi&#10;0/0" name="QiLabel" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(212, 168, 74); font-size: 12px; letter-spacing: 0.5px;"/>
         </LiquidCircle>
-        <ui:Label text="" name="RealmLabel" style="margin-top: 8px; margin-left: 30px; color: rgb(176, 196, 152); font-size: 14px; -unity-font-style: bold;"/>
-        <ui:Button text="Breakthrough" name="BreakthroughBtn" selectable="false" focusable="false" class="breakthrough-btn" style="margin-top: 12px;"/>
+        <!-- Realm: Name + Sub-Stage -->
+        <ui:VisualElement style="margin-top: 8px; margin-left: 30px;">
+            <ui:Label text="" name="RealmNameLabel" class="realm-name"/>
+            <ui:Label text="" name="SubStageLabel" class="realm-sub"/>
+        </ui:VisualElement>
+        <!-- Breakthrough -->
+        <ui:Button text="⬡ Breakthrough" name="BreakthroughBtn" selectable="false" focusable="false" class="breakthrough-btn" style="margin-top: 12px;"/>
+        <!-- Divider -->
+        <ui:VisualElement class="hud-divider" style="width: 220px;"/>
     </ui:VisualElement>
 
     <!-- Meditation Bonus Popup -->
     <ui:Label text="" name="MeditationBonusLabel" class="meditation-bonus"/>
 
     <!-- Interact Prompt (bottom center) -->
-    <ui:Label text="Press E to interact" name="InteractPrompt" class="interact-prompt" style="display: none;"/>
+    <ui:Label text="Press E to Interact" name="InteractPrompt" class="interact-prompt" style="display: none;"/>
 
     <!-- Inventory Panel (center overlay) -->
     <ui:VisualElement name="InventoryPanel" class="panel inventory-panel" style="display: none;">
         <!-- Header -->
         <ui:VisualElement class="panel-header">
-            <ui:Label text="Alchemie-Archiv" class="panel-title inventory-title"/>
+            <ui:Label text="ALCHEMIE-ARCHIV" class="panel-title inventory-title"/>
             <ui:Button text="✕" name="CloseInventoryBtn" class="close-btn"/>
+        </ui:VisualElement>
+        <!-- Category Tabs -->
+        <ui:VisualElement class="archive-tabs">
+            <ui:Button text="[ALL]" name="TabAll" class="archive-tab archive-tab--active"/>
+            <ui:Button text="[ESSENCES]" name="TabEssences" class="archive-tab"/>
+            <ui:Button text="[PILLS]" name="TabPills" class="archive-tab"/>
+            <ui:Button text="[MATERIALS]" name="TabMaterials" class="archive-tab"/>
         </ui:VisualElement>
         <!-- Content: Grid + Detail -->
         <ui:VisualElement class="inventory-content">
@@ -31,17 +50,16 @@
             <!-- Right: Item Detail Parchment -->
             <ui:VisualElement name="ItemDetailPanel" class="item-detail-panel" style="display: none;">
                 <ui:Label text="" name="DetailItemName" class="detail-title"/>
-                <ui:VisualElement class="detail-divider"/>
                 <ui:VisualElement class="detail-field">
-                    <ui:Label text="Type:" class="detail-label"/>
+                    <ui:Label text="TYPE:" class="detail-label"/>
                     <ui:Label text="" name="DetailItemType" class="detail-value"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="DetailGradeRow" class="detail-field">
-                    <ui:Label text="Grade:" class="detail-label"/>
+                    <ui:Label text="GRADE:" class="detail-label"/>
                     <ui:Label text="" name="DetailItemGrade" class="detail-value"/>
                 </ui:VisualElement>
                 <ui:VisualElement class="detail-field">
-                    <ui:Label text="Qi:" class="detail-label"/>
+                    <ui:Label text="QI:" class="detail-label"/>
                     <ui:Label text="" name="DetailItemQi" class="detail-value"/>
                 </ui:VisualElement>
                 <ui:Label text="" name="DetailItemDesc" class="detail-description"/>
@@ -59,7 +77,7 @@
         </ui:VisualElement>
         <!-- Right: Recipe Detail -->
         <ui:VisualElement name="CraftingRight" style="flex-grow: 1;">
-            <ui:Button text="X" name="CloseCraftingBtn" class="close-btn" style="position: absolute; top: 0; right: 0;"/>
+            <ui:Button text="✕" name="CloseCraftingBtn" class="close-btn" style="position: absolute; top: 0; right: 0;"/>
             <ui:Label text="" name="RecipeName" style="font-size: 20px; -unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 8px;"/>
             <ui:Label text="" name="RecipeDesc" style="color: rgb(176, 196, 152); margin-bottom: 12px;"/>
             <ui:Label text="Inputs:" style="-unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 4px;"/>
@@ -73,11 +91,13 @@
 
     <!-- Pause Menu (center overlay) -->
     <ui:VisualElement name="PausePanel" class="panel pause-panel" style="display: none;">
-        <ui:Label text="Paused" class="panel-title" style="margin-bottom: 24px; -unity-text-align: upper-center;"/>
-        <ui:Button text="Resume" name="ResumeBtn" class="menu-btn"/>
-        <ui:Button text="Save" name="SaveBtn" class="menu-btn"/>
-        <ui:Button text="Load" name="LoadBtn" class="menu-btn"/>
-        <ui:Button text="New Game" name="NewGameBtn" class="menu-btn"/>
-        <ui:Button text="Quit" name="QuitBtn" class="menu-btn"/>
+        <ui:VisualElement class="panel-header" style="justify-content: center;">
+            <ui:Label text="PAUSED" class="panel-title pause-title"/>
+        </ui:VisualElement>
+        <ui:Button text="RESUME" name="ResumeBtn" class="menu-btn"/>
+        <ui:Button text="SAVE" name="SaveBtn" class="menu-btn"/>
+        <ui:Button text="LOAD" name="LoadBtn" class="menu-btn"/>
+        <ui:Button text="NEW GAME" name="NewGameBtn" class="menu-btn"/>
+        <ui:Button text="QUIT" name="QuitBtn" class="menu-btn"/>
     </ui:VisualElement>
 </ui:UXML>

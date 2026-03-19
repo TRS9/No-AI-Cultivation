@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -25,6 +26,14 @@ namespace CultivationGame.UI
 
         private int _selectedIndex = -1;
         private InventorySlotData _selectedItem;
+        private ItemType? _activeFilter;
+        private List<InventorySlotData> _filteredItems = new();
+
+        // Tab buttons
+        private Button _tabAll;
+        private Button _tabEssences;
+        private Button _tabPills;
+        private Button _tabMaterials;
 
         public void InitializeUI(VisualElement root)
         {
@@ -43,6 +52,17 @@ namespace CultivationGame.UI
                 ?.RegisterCallback<ClickEvent>(e => RequestClose());
 
             _detailUseBtn?.RegisterCallback<ClickEvent>(e => UseSelectedItem());
+
+            // Tab buttons
+            _tabAll = root.Q<Button>("TabAll");
+            _tabEssences = root.Q<Button>("TabEssences");
+            _tabPills = root.Q<Button>("TabPills");
+            _tabMaterials = root.Q<Button>("TabMaterials");
+
+            _tabAll?.RegisterCallback<ClickEvent>(e => SetFilter(null));
+            _tabEssences?.RegisterCallback<ClickEvent>(e => SetFilter(ItemType.Essence));
+            _tabPills?.RegisterCallback<ClickEvent>(e => SetFilter(ItemType.Pill));
+            _tabMaterials?.RegisterCallback<ClickEvent>(e => SetFilter(ItemType.RawMaterial));
 
             if (inventoryData != null)
             {
@@ -72,6 +92,8 @@ namespace CultivationGame.UI
             if (isOpen)
             {
                 _selectedIndex = -1;
+                _activeFilter = null;
+                UpdateTabVisuals();
                 HideDetail();
                 inventoryData?.RebuildItems();
                 if (_panel != null) _panel.style.display = DisplayStyle.Flex;
@@ -92,9 +114,41 @@ namespace CultivationGame.UI
             switch (e.PropertyName)
             {
                 case nameof(InventoryDataSource.Items):
-                    RebuildGrid();
+                    ApplyFilterAndRebuild();
                     break;
             }
+        }
+
+        private void SetFilter(ItemType? filter)
+        {
+            _activeFilter = filter;
+            _selectedIndex = -1;
+            HideDetail();
+            UpdateTabVisuals();
+            ApplyFilterAndRebuild();
+        }
+
+        private void UpdateTabVisuals()
+        {
+            _tabAll?.EnableInClassList("archive-tab--active", _activeFilter == null);
+            _tabEssences?.EnableInClassList("archive-tab--active", _activeFilter == ItemType.Essence);
+            _tabPills?.EnableInClassList("archive-tab--active", _activeFilter == ItemType.Pill);
+            _tabMaterials?.EnableInClassList("archive-tab--active", _activeFilter == ItemType.RawMaterial);
+        }
+
+        private void ApplyFilterAndRebuild()
+        {
+            _filteredItems.Clear();
+
+            if (inventoryData?.Items == null) return;
+
+            foreach (var item in inventoryData.Items)
+            {
+                if (_activeFilter == null || item.ItemType == _activeFilter)
+                    _filteredItems.Add(item);
+            }
+
+            RebuildGrid();
         }
 
         private void RebuildGrid()
@@ -103,9 +157,9 @@ namespace CultivationGame.UI
 
             _grid.contentContainer.Clear();
 
-            for (int i = 0; i < inventoryData.Items.Count; i++)
+            for (int i = 0; i < _filteredItems.Count; i++)
             {
-                var data = inventoryData.Items[i];
+                var data = _filteredItems[i];
                 int index = i;
 
                 var slot = new VisualElement();
@@ -143,15 +197,14 @@ namespace CultivationGame.UI
 
         private void SelectSlot(int index)
         {
-            if (index < 0 || index >= inventoryData.Items.Count) return;
+            if (index < 0 || index >= _filteredItems.Count) return;
 
             _selectedIndex = index;
-            _selectedItem = inventoryData.Items[index];
+            _selectedItem = _filteredItems[index];
 
             // Update selection visuals
-            var slots = _grid.contentContainer.Children();
             int i = 0;
-            foreach (var slot in slots)
+            foreach (var slot in _grid.contentContainer.Children())
             {
                 slot.EnableInClassList("shelf-slot--selected", i == index);
                 i++;
@@ -183,8 +236,20 @@ namespace CultivationGame.UI
             bool isPill = data.Item is PillData;
             if (_detailGradeRow != null)
                 _detailGradeRow.style.display = isPill ? DisplayStyle.Flex : DisplayStyle.None;
-            if (isPill && _detailGrade != null)
-                _detailGrade.text = ((PillData)data.Item).grade.ToString();
+
+            if (isPill)
+            {
+                var pillData = (PillData)data.Item;
+                if (_detailGrade != null)
+                    _detailGrade.text = pillData.grade.ToString();
+                if (_detailUseBtn != null)
+                    _detailUseBtn.text = $"Use (Grade: {pillData.grade})";
+            }
+            else
+            {
+                if (_detailUseBtn != null)
+                    _detailUseBtn.text = "Use";
+            }
 
             // Use button: only for Essence/Pill
             bool usable = data.ItemType == ItemType.Essence || data.ItemType == ItemType.Pill;

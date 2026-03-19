@@ -11,7 +11,8 @@ namespace CultivationGame.UI
         [SerializeField] private HUDDataSource hudData;
 
         private LiquidCircle _qiCircle;
-        private Label _realmLabel;
+        private Label _realmNameLabel;
+        private Label _subStageLabel;
         private Button _breakthroughBtn;
         private Label _meditationBonusLabel;
         private Label _interactPrompt;
@@ -21,7 +22,8 @@ namespace CultivationGame.UI
         {
             var hud = root.Q<VisualElement>("HUD");
             _qiCircle = root.Q<LiquidCircle>("QiCircle");
-            _realmLabel = root.Q<Label>("RealmLabel");
+            _realmNameLabel = root.Q<Label>("RealmNameLabel");
+            _subStageLabel = root.Q<Label>("SubStageLabel");
             _breakthroughBtn = root.Q<Button>("BreakthroughBtn");
             _meditationBonusLabel = root.Q<Label>("MeditationBonusLabel");
             _interactPrompt = root.Q<Label>("InteractPrompt");
@@ -78,9 +80,12 @@ namespace CultivationGame.UI
                         _breakthroughBtn.EnableInClassList("breakthrough-btn--ready", hudData.BreakthroughReady);
                     break;
                 case nameof(HUDDataSource.RealmName):
+                    if (_realmNameLabel != null)
+                        _realmNameLabel.text = hudData.RealmName;
+                    break;
                 case nameof(HUDDataSource.SubStage):
-                    if (_realmLabel != null)
-                        _realmLabel.text = $"{hudData.RealmName} {hudData.SubStage}".Trim();
+                    if (_subStageLabel != null)
+                        _subStageLabel.text = hudData.SubStage;
                     break;
                 case nameof(HUDDataSource.InteractPromptVisible):
                     if (_interactPrompt != null)
