@@ -34,7 +34,7 @@ namespace CultivationGame.Player
             items[pill]--;
             if (items[pill] <= 0) items.Remove(pill);
 
-            GameEvents.RaisePillConsumed(pill);
+            GameDataEvents.RaisePillConsumed(pill);
             GameEvents.RaiseInventoryChanged();
         }
 

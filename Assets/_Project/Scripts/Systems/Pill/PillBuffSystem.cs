@@ -8,24 +8,11 @@ namespace CultivationGame.Systems
 {
     public class PillBuffSystem : MonoBehaviour
     {
-        public static PillBuffSystem Instance { get; private set; }
-
-        /// <summary>Multiplier applied on top of base meditationQiRate. PlayerStats reads this each frame.</summary>
-        public float MeditationRateMultiplier { get; private set; } = 1f;
-
-        /// <summary>Additive bonus added to breakthroughSuccessRate. PlayerStats reads this on breakthrough.</summary>
-        public float BreakthroughBonus { get; private set; } = 0f;
-
         // Tolerance tracking: pill asset name → session use count
         private readonly Dictionary<string, int> _useCount = new();
 
-        private void Awake()
-        {
-            if (Instance == null) Instance = this;
-        }
-
-        private void OnEnable()  => GameEvents.OnPillConsumed += HandlePillConsumed;
-        private void OnDisable() => GameEvents.OnPillConsumed -= HandlePillConsumed;
+        private void OnEnable()  => GameDataEvents.OnPillConsumed += HandlePillConsumed;
+        private void OnDisable() => GameDataEvents.OnPillConsumed -= HandlePillConsumed;
 
         private void HandlePillConsumed(PillData pill)
         {
@@ -38,34 +25,32 @@ namespace CultivationGame.Systems
 
             _useCount[key] = used + 1;
 
-            // Immediate Qi boost
             if (pill.qiBoost > 0)
                 GameEvents.RaiseAddQi(pill.qiBoost * effectiveness);
 
-            // Temporal buffs
             if (pill.cultivationSpeedMultiplier > 1f && pill.buffDuration > 0f)
                 StartCoroutine(ApplySpeedBuff(pill.cultivationSpeedMultiplier, pill.buffDuration, effectiveness));
 
             if (pill.breakthroughBonus > 0f && pill.buffDuration > 0f)
                 StartCoroutine(ApplyBreakthroughBuff(pill.breakthroughBonus, pill.buffDuration, effectiveness));
 
-            GameEvents.RaisePillEffectsApplied(pill, effectiveness);
+            GameDataEvents.RaisePillEffectsApplied(pill, effectiveness);
         }
 
         private IEnumerator ApplySpeedBuff(float multiplier, float duration, float effectiveness)
         {
             float bonus = (multiplier - 1f) * effectiveness;
-            MeditationRateMultiplier += bonus;
+            CultivationBuffs.MeditationRateMultiplier += bonus;
             yield return new WaitForSeconds(duration);
-            MeditationRateMultiplier -= bonus;
+            CultivationBuffs.MeditationRateMultiplier -= bonus;
         }
 
         private IEnumerator ApplyBreakthroughBuff(float bonus, float duration, float effectiveness)
         {
             float applied = bonus * effectiveness;
-            BreakthroughBonus += applied;
+            CultivationBuffs.BreakthroughBonus += applied;
             yield return new WaitForSeconds(duration);
-            BreakthroughBonus -= applied;
+            CultivationBuffs.BreakthroughBonus -= applied;
         }
     }
 }

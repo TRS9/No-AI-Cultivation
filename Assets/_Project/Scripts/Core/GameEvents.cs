@@ -1,5 +1,3 @@
-using CultivationGame.Data;
-
 namespace CultivationGame.Core
 {
     public static class GameEvents
@@ -58,31 +56,27 @@ namespace CultivationGame.Core
         public static void RaiseMeditationBonusApplied(float multiplier)
             => OnMeditationBonusApplied?.Invoke(multiplier);
 
-        // --- Crafting ---
-        public delegate void CraftingStarted(RecipeData recipe);
-        public static event CraftingStarted OnCraftingStarted;
-        public static void RaiseCraftingStarted(RecipeData recipe)
-            => OnCraftingStarted?.Invoke(recipe);
+        // --- Crafting Station ---
+        public delegate void CraftingStationInteracted();
+        public static event CraftingStationInteracted OnCraftingStationInteracted;
+        public static void RaiseCraftingStationInteracted()
+            => OnCraftingStationInteracted?.Invoke();
 
-        public delegate void CraftingCompleted(RecipeData recipe);
-        public static event CraftingCompleted OnCraftingCompleted;
-        public static void RaiseCraftingCompleted(RecipeData recipe)
-            => OnCraftingCompleted?.Invoke(recipe);
+        // --- Interact Prompt ---
+        public delegate void InteractPromptChanged(bool visible);
+        public static event InteractPromptChanged OnInteractPromptChanged;
+        public static void RaiseInteractPromptChanged(bool visible)
+            => OnInteractPromptChanged?.Invoke(visible);
 
-        public delegate void CraftingFailed(RecipeData recipe);
-        public static event CraftingFailed OnCraftingFailed;
-        public static void RaiseCraftingFailed(RecipeData recipe)
-            => OnCraftingFailed?.Invoke(recipe);
+        // --- Game State ---
+        public delegate void PauseStateChanged(bool isPaused);
+        public static event PauseStateChanged OnPauseStateChanged;
+        public static void RaisePauseStateChanged(bool isPaused)
+            => OnPauseStateChanged?.Invoke(isPaused);
 
-        // --- Pills ---
-        public delegate void PillConsumed(PillData pill);
-        public static event PillConsumed OnPillConsumed;
-        public static void RaisePillConsumed(PillData pill)
-            => OnPillConsumed?.Invoke(pill);
-
-        public delegate void PillEffectsApplied(PillData pill, float effectiveness);
-        public static event PillEffectsApplied OnPillEffectsApplied;
-        public static void RaisePillEffectsApplied(PillData pill, float effectiveness)
-            => OnPillEffectsApplied?.Invoke(pill, effectiveness);
+        public delegate void PanelStateChanged(string panelId, bool isOpen);
+        public static event PanelStateChanged OnPanelStateChanged;
+        public static void RaisePanelStateChanged(string panelId, bool isOpen)
+            => OnPanelStateChanged?.Invoke(panelId, isOpen);
     }
 }
