@@ -2,37 +2,80 @@
 :root {
 }
 
-/* ===== Stamina Bar ===== */
+/* ===== HUD: Stamina ===== */
+.stamina-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.stamina-label {
+    font-size: 11px;
+    color: rgb(212, 168, 74);
+    letter-spacing: 1px;
+    margin-right: 10px;
+    -unity-font-style: bold;
+}
+
 #StaminaBar .unity-progress-bar__progress {
-    background-color: rgb(3, 255, 0);
+    background-color: rgb(58, 122, 48);
     border-radius: 16px;
 }
 
 #StaminaBar .unity-progress-bar__background {
-    background-color: rgba(0, 0, 0, 0.58);
+    background-color: rgba(15, 30, 15, 0.6);
     border-radius: 16px;
 }
 
 /* ===== Liquid Circle ===== */
+.liquid-circle {
+    background-color: rgba(10, 26, 13, 0.6);
+}
+
 .liquid-circle__fill {
     transition-property: height;
     transition-duration: 0.4s;
     transition-timing-function: ease-out;
+    background-color: rgb(56, 140, 46);
 }
 
-/* ===== Breakthrough Button ===== */
-.breakthrough-btn {
-    background-color: rgb(0, 200, 255);
-    color: white;
+/* ===== HUD: Realm Labels ===== */
+.realm-name {
     font-size: 18px;
     -unity-font-style: bold;
-    border-radius: 8px;
-    padding: 10px 20px;
-    align-self: center;
+    color: rgb(212, 168, 74);
+    letter-spacing: 3px;
+}
+
+.realm-sub {
+    font-size: 13px;
+    color: rgba(160, 180, 120, 0.7);
+    letter-spacing: 1px;
+}
+
+/* ===== HUD: Divider ===== */
+.hud-divider {
+    height: 1px;
+    background-color: rgba(140, 110, 40, 0.35);
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+/* ===== Breakthrough Button (outline style) ===== */
+.breakthrough-btn {
+    background-color: transparent;
+    color: rgb(212, 168, 74);
+    font-size: 14px;
+    -unity-font-style: bold;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(180, 140, 50, 0.5);
+    padding: 8px 18px;
+    align-self: flex-start;
+    letter-spacing: 1px;
     opacity: 0;
     visibility: hidden;
     scale: 0.8;
-    transition-property: opacity, scale, visibility;
+    transition-property: opacity, scale, visibility, background-color, border-color;
     transition-duration: 0.3s;
     transition-timing-function: ease-out-back;
 }
@@ -45,8 +88,8 @@
 
 .breakthrough-btn--ready:hover {
     scale: 1.05;
-    background-color: white;
-    color: rgb(0, 200, 255);
+    background-color: rgba(160, 120, 40, 0.15);
+    border-color: rgba(200, 160, 60, 0.7);
 }
 
 /* ===== Meditation Bonus ===== */
@@ -57,7 +100,7 @@
     translate: -50% -50%;
     font-size: 24px;
     -unity-font-style: bold;
-    color: rgb(0, 255, 200);
+    color: rgb(120, 200, 100);
     opacity: 0;
     transition-property: opacity;
     transition-duration: 0.8s;
@@ -70,12 +113,17 @@
     bottom: 80px;
     left: 50%;
     translate: -50% 0;
-    font-size: 18px;
+    font-size: 14px;
     -unity-font-style: bold;
-    color: rgb(255, 255, 255);
-    background-color: rgba(0, 0, 0, 0.6);
+    color: rgb(160, 192, 144);
+    background-color: rgba(0, 0, 0, 0.4);
     padding: 8px 20px;
-    border-radius: 8px;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(120, 140, 80, 0.3);
+    letter-spacing: 1px;
+    transition-property: opacity;
+    transition-duration: 0.15s;
 }
 
 /* ===== Panels (shared) ===== */
@@ -86,17 +134,28 @@
     translate: -50% -50%;
     width: 600px;
     height: 400px;
-    background-color: rgba(15, 15, 25, 0.92);
-    border-radius: 12px;
-    padding: 20px;
-    border-width: 1px;
-    border-color: rgba(100, 100, 150, 0.4);
+    background-color: rgba(9, 21, 11, 0.95);
+    border-radius: 6px;
+    padding: 24px;
+    border-width: 2px;
+    border-color: rgba(160, 120, 40, 0.4);
+}
+
+.panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(140, 110, 40, 0.3);
 }
 
 .panel-title {
-    font-size: 22px;
+    font-size: 19px;
     -unity-font-style: bold;
-    color: rgb(220, 220, 255);
+    color: rgb(212, 168, 74);
+    letter-spacing: 4px;
 }
 
 .close-btn {
@@ -104,108 +163,257 @@
     height: 30px;
     font-size: 16px;
     -unity-font-style: bold;
-    background-color: rgba(255, 60, 60, 0.6);
-    color: white;
-    border-radius: 4px;
-    border-width: 0;
+    background-color: transparent;
+    color: rgba(200, 90, 70, 0.9);
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(160, 70, 40, 0.5);
+    transition-property: background-color, border-color, color;
+    transition-duration: 0.15s;
 }
 
 .close-btn:hover {
-    background-color: rgba(255, 60, 60, 0.9);
+    background-color: rgba(180, 60, 40, 0.15);
+    border-color: rgba(200, 80, 50, 0.7);
+    color: rgba(220, 100, 80, 1);
 }
 
-/* ===== Inventory ===== */
-.inventory-slot {
+/* ===== Inventory Panel ===== */
+.inventory-panel {
+    width: 800px;
+    height: 480px;
+}
+
+.inventory-title {
+    letter-spacing: 4px;
+}
+
+/* Archive Category Tabs */
+.archive-tabs {
     flex-direction: row;
-    align-items: center;
-    padding: 6px 10px;
-    border-bottom-width: 1px;
-    border-bottom-color: rgba(100, 100, 150, 0.2);
+    margin-bottom: 10px;
 }
 
-.inventory-slot:hover {
-    background-color: rgba(100, 100, 200, 0.15);
-}
-
-.inventory-slot__icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 12px;
-}
-
-.inventory-slot__name {
-    flex-grow: 1;
-    color: rgb(220, 220, 220);
-    font-size: 14px;
-}
-
-.inventory-slot__quantity {
-    color: rgb(180, 180, 180);
+.archive-tab {
+    padding: 6px 14px;
     font-size: 13px;
-    margin-right: 12px;
+    background-color: rgb(18, 42, 22);
+    border-width: 1px;
+    border-color: rgba(140, 110, 40, 0.35);
+    color: rgb(212, 168, 74);
+    border-radius: 3px;
+    letter-spacing: 1px;
+    margin-right: 8px;
+    transition-property: background-color, border-color, color;
+    transition-duration: 0.15s;
 }
 
-.inventory-slot__use-btn {
-    padding: 4px 12px;
-    font-size: 12px;
-    background-color: rgba(0, 200, 255, 0.5);
-    color: white;
+.archive-tab:hover {
+    background-color: rgba(140, 110, 40, 0.15);
+}
+
+.archive-tab--active {
+    background-color: rgba(180, 140, 50, 0.25);
+    border-color: rgba(200, 160, 60, 0.5);
+    color: rgb(255, 216, 128);
+}
+
+/* Content area: Grid left, Detail right */
+.inventory-content {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+/* Shelf Grid */
+.inventory-grid {
+    flex-grow: 1;
+}
+
+.inventory-grid .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+/* Individual shelf slot */
+.shelf-slot {
+    width: 100px;
+    height: 100px;
+    margin: 6px;
+    background-color: rgba(10, 30, 15, 0.6);
+    border-width: 1px;
+    border-color: rgba(70, 90, 50, 0.3);
     border-radius: 4px;
-    border-width: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
 }
 
-.inventory-slot__use-btn:hover {
-    background-color: rgba(0, 200, 255, 0.8);
+.shelf-slot:hover {
+    background-color: rgba(40, 80, 30, 0.25);
+    border-color: rgba(140, 110, 40, 0.4);
+}
+
+.shelf-slot--selected {
+    border-color: rgb(212, 168, 74);
+}
+
+.shelf-slot__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+}
+
+.shelf-slot__qty {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: rgba(20, 50, 20, 0.8);
+    border-width: 1px;
+    border-color: rgba(140, 110, 40, 0.35);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 11px;
+    color: rgb(212, 168, 74);
+    -unity-font-style: bold;
+}
+
+.shelf-slot__platform {
+    position: absolute;
+    bottom: 6px;
+    left: 10%;
+    width: 80%;
+    height: 4px;
+    background-color: rgb(26, 58, 34);
+    border-width: 1px;
+    border-color: rgba(100, 120, 60, 0.4);
+    border-radius: 2px;
+}
+
+/* Item Detail Parchment Panel */
+.item-detail-panel {
+    width: 240px;
+    margin-left: 16px;
+    padding: 16px;
+    background-color: rgb(226, 209, 166);
+    border-width: 1px;
+    border-color: rgb(192, 176, 128);
+    border-radius: 4px;
+}
+
+.detail-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    -unity-text-align: upper-center;
+    color: rgb(106, 90, 58);
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(100, 80, 40, 0.3);
+}
+
+.detail-divider {
+    height: 1px;
+    background-color: rgba(100, 80, 40, 0.3);
+    margin-bottom: 8px;
+}
+
+.detail-field {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.detail-label {
+    width: 80px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: rgb(138, 122, 90);
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    flex-grow: 1;
+    font-size: 12px;
+    color: rgb(74, 58, 26);
+}
+
+.detail-description {
+    font-size: 12px;
+    color: rgb(74, 58, 26);
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.detail-use-btn {
+    margin-top: 12px;
+    padding: 8px;
+    background-color: rgb(192, 176, 128);
+    border-width: 1px;
+    border-color: rgb(154, 138, 106);
+    border-radius: 3px;
+    color: rgb(74, 58, 26);
+    font-size: 13px;
+    -unity-font-style: bold;
+    transition-property: background-color;
+    transition-duration: 0.15s;
+}
+
+.detail-use-btn:hover {
+    background-color: rgb(208, 192, 144);
 }
 
 /* ===== Crafting ===== */
 .recipe-slot {
     padding: 6px 10px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(100, 100, 150, 0.2);
-    color: rgb(220, 220, 220);
+    border-bottom-color: rgba(140, 110, 40, 0.35);
+    color: rgb(216, 210, 190);
     font-size: 14px;
 }
 
 .recipe-slot:hover {
-    background-color: rgba(100, 100, 200, 0.15);
+    background-color: rgba(140, 110, 40, 0.15);
 }
 
 .recipe-slot--selected {
-    background-color: rgba(0, 200, 255, 0.2);
+    background-color: rgba(180, 140, 50, 0.25);
 }
 
 .recipe-slot--disabled {
-    color: rgba(150, 150, 150, 0.5);
+    color: rgba(120, 130, 110, 0.5);
 }
 
 .craft-btn {
     padding: 8px 24px;
     font-size: 16px;
     -unity-font-style: bold;
-    background-color: rgb(0, 200, 255);
-    color: white;
+    background-color: rgb(212, 168, 74);
+    color: rgb(18, 42, 22);
     border-radius: 6px;
     border-width: 0;
     align-self: flex-start;
+    transition-property: background-color;
+    transition-duration: 0.15s;
 }
 
 .craft-btn:hover {
-    background-color: rgb(50, 220, 255);
+    background-color: rgb(240, 200, 100);
 }
 
 .craft-btn:disabled {
-    background-color: rgba(100, 100, 100, 0.4);
-    color: rgba(180, 180, 180, 0.5);
+    background-color: rgba(60, 60, 50, 0.4);
+    color: rgba(120, 130, 110, 0.5);
 }
 
 #CraftProgress .unity-progress-bar__progress {
-    background-color: rgb(0, 200, 255);
+    background-color: rgb(58, 122, 48);
     border-radius: 4px;
 }
 
 #CraftProgress .unity-progress-bar__background {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(15, 30, 15, 0.5);
     border-radius: 4px;
 }
 
@@ -216,19 +424,29 @@
     align-items: stretch;
 }
 
+.pause-title {
+    letter-spacing: 5px;
+    -unity-text-align: upper-center;
+}
+
 .menu-btn {
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 12px 18px;
+    font-size: 14px;
     -unity-font-style: bold;
-    background-color: rgba(60, 60, 80, 0.8);
-    color: rgb(220, 220, 255);
-    border-radius: 6px;
+    background-color: rgba(10, 20, 10, 0.7);
+    color: rgb(184, 200, 168);
+    border-radius: 3px;
     border-width: 1px;
-    border-color: rgba(100, 100, 150, 0.3);
+    border-color: rgba(100, 120, 60, 0.3);
     margin-bottom: 8px;
+    letter-spacing: 1.5px;
+    -unity-text-align: middle-left;
+    transition-property: background-color, border-color, color;
+    transition-duration: 0.15s;
 }
 
 .menu-btn:hover {
-    background-color: rgba(0, 200, 255, 0.3);
-    border-color: rgba(0, 200, 255, 0.5);
+    background-color: rgba(40, 70, 30, 0.3);
+    border-color: rgba(140, 110, 40, 0.5);
+    color: rgb(212, 168, 74);
 }
