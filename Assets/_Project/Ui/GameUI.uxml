@@ -4,10 +4,10 @@
     <!-- HUD (always visible, top-left) -->
     <ui:VisualElement name="HUD" style="position: absolute; top: 0; left: 0; padding: 35px;">
         <ui:ProgressBar value="100" title="" name="StaminaBar" style="height: 30px; width: 266px; margin-bottom: 12px;"/>
-        <LiquidCircle name="QiCircle" style="height: 120px; width: 120px; margin-left: 30px;">
-            <ui:Label text="Qi: 0/0" name="QiLabel" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 14px;"/>
+        <LiquidCircle name="QiCircle" style="height: 120px; width: 120px; margin-left: 30px; border-width: 2px; border-color: rgba(180, 140, 50, 0.45);">
+            <ui:Label text="Qi: 0/0" name="QiLabel" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(216, 210, 190); font-size: 14px;"/>
         </LiquidCircle>
-        <ui:Label text="" name="RealmLabel" style="margin-top: 8px; margin-left: 30px; color: rgb(200, 200, 200); font-size: 14px; -unity-font-style: bold;"/>
+        <ui:Label text="" name="RealmLabel" style="margin-top: 8px; margin-left: 30px; color: rgb(176, 196, 152); font-size: 14px; -unity-font-style: bold;"/>
         <ui:Button text="Breakthrough" name="BreakthroughBtn" selectable="false" focusable="false" class="breakthrough-btn" style="margin-top: 12px;"/>
     </ui:VisualElement>
 
@@ -36,12 +36,12 @@
         <!-- Right: Recipe Detail -->
         <ui:VisualElement name="CraftingRight" style="flex-grow: 1;">
             <ui:Button text="X" name="CloseCraftingBtn" class="close-btn" style="position: absolute; top: 0; right: 0;"/>
-            <ui:Label text="" name="RecipeName" style="font-size: 20px; -unity-font-style: bold; color: rgb(255, 255, 255); margin-bottom: 8px;"/>
-            <ui:Label text="" name="RecipeDesc" style="color: rgb(180, 180, 180); margin-bottom: 12px;"/>
-            <ui:Label text="Inputs:" style="-unity-font-style: bold; color: rgb(200, 200, 200); margin-bottom: 4px;"/>
-            <ui:Label text="" name="RecipeInputs" style="color: rgb(180, 180, 180); margin-bottom: 12px; white-space: normal;"/>
-            <ui:Label text="Outputs:" style="-unity-font-style: bold; color: rgb(200, 200, 200); margin-bottom: 4px;"/>
-            <ui:Label text="" name="RecipeOutputs" style="color: rgb(180, 180, 180); margin-bottom: 16px; white-space: normal;"/>
+            <ui:Label text="" name="RecipeName" style="font-size: 20px; -unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 8px;"/>
+            <ui:Label text="" name="RecipeDesc" style="color: rgb(176, 196, 152); margin-bottom: 12px;"/>
+            <ui:Label text="Inputs:" style="-unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 4px;"/>
+            <ui:Label text="" name="RecipeInputs" style="color: rgb(176, 196, 152); margin-bottom: 12px; white-space: normal;"/>
+            <ui:Label text="Outputs:" style="-unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 4px;"/>
+            <ui:Label text="" name="RecipeOutputs" style="color: rgb(176, 196, 152); margin-bottom: 16px; white-space: normal;"/>
             <ui:Button text="Craft" name="CraftBtn" class="craft-btn"/>
             <ui:ProgressBar value="0" title="" name="CraftProgress" style="height: 20px; margin-top: 8px; display: none;"/>
         </ui:VisualElement>

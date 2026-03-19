@@ -20,8 +20,8 @@ public partial class LiquidCircle : VisualElement
         }
     }
 
-    [UxmlAttribute] public Color emptyColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
-    [UxmlAttribute] public Color fillColor = Color.cyan;
+    [UxmlAttribute] public Color emptyColor = new Color(0.04f, 0.1f, 0.05f, 0.6f);
+    [UxmlAttribute] public Color fillColor = new Color(0.22f, 0.55f, 0.18f, 1f);
 
     public LiquidCircle()
     {
