@@ -18,12 +18,36 @@
     <ui:Label text="Press E to interact" name="InteractPrompt" class="interact-prompt" style="display: none;"/>
 
     <!-- Inventory Panel (center overlay) -->
-    <ui:VisualElement name="InventoryPanel" class="panel" style="display: none;">
-        <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <ui:Label text="Inventory" class="panel-title"/>
-            <ui:Button text="X" name="CloseInventoryBtn" class="close-btn"/>
+    <ui:VisualElement name="InventoryPanel" class="panel inventory-panel" style="display: none;">
+        <!-- Header -->
+        <ui:VisualElement class="panel-header">
+            <ui:Label text="Alchemie-Archiv" class="panel-title inventory-title"/>
+            <ui:Button text="✕" name="CloseInventoryBtn" class="close-btn"/>
         </ui:VisualElement>
-        <ui:ListView name="InventoryList" fixed-item-height="64" style="flex-grow: 1;"/>
+        <!-- Content: Grid + Detail -->
+        <ui:VisualElement class="inventory-content">
+            <!-- Left: Shelf Grid -->
+            <ui:ScrollView name="InventoryGrid" class="inventory-grid"/>
+            <!-- Right: Item Detail Parchment -->
+            <ui:VisualElement name="ItemDetailPanel" class="item-detail-panel" style="display: none;">
+                <ui:Label text="" name="DetailItemName" class="detail-title"/>
+                <ui:VisualElement class="detail-divider"/>
+                <ui:VisualElement class="detail-field">
+                    <ui:Label text="Type:" class="detail-label"/>
+                    <ui:Label text="" name="DetailItemType" class="detail-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="DetailGradeRow" class="detail-field">
+                    <ui:Label text="Grade:" class="detail-label"/>
+                    <ui:Label text="" name="DetailItemGrade" class="detail-value"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="detail-field">
+                    <ui:Label text="Qi:" class="detail-label"/>
+                    <ui:Label text="" name="DetailItemQi" class="detail-value"/>
+                </ui:VisualElement>
+                <ui:Label text="" name="DetailItemDesc" class="detail-description"/>
+                <ui:Button text="Use" name="DetailUseBtn" class="detail-use-btn"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 
     <!-- Crafting Panel (center overlay) -->

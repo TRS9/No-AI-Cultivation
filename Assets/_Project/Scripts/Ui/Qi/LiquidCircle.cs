@@ -20,31 +20,25 @@ public partial class LiquidCircle : VisualElement
         }
     }
 
-    [UxmlAttribute] public Color emptyColor = new Color(0.04f, 0.1f, 0.05f, 0.6f);
-    [UxmlAttribute] public Color fillColor = new Color(0.22f, 0.55f, 0.18f, 1f);
-
     public LiquidCircle()
     {
-        // 1. The Container (Acts as the circular mask)
-        style.overflow = Overflow.Hidden;
+        AddToClassList("liquid-circle");
 
-        // This makes it a perfect circle as long as width == height in the UI Builder
+        // Structural: circular mask
+        style.overflow = Overflow.Hidden;
         style.borderTopLeftRadius = Length.Percent(50);
         style.borderTopRightRadius = Length.Percent(50);
         style.borderBottomLeftRadius = Length.Percent(50);
         style.borderBottomRightRadius = Length.Percent(50);
-        style.backgroundColor = emptyColor;
 
-        // 2. The Fill (The "liquid" that rises from the bottom)
+        // The Fill (liquid that rises from the bottom)
         fillElement = new VisualElement();
         fillElement.AddToClassList("liquid-circle__fill");
         fillElement.style.position = Position.Absolute;
-        fillElement.style.bottom = 0; // Anchor to the bottom
+        fillElement.style.bottom = 0;
         fillElement.style.left = 0;
         fillElement.style.right = 0;
-        fillElement.style.backgroundColor = fillColor;
 
-        // Add the fill into the circular container
         Add(fillElement);
         UpdateFill();
     }
@@ -53,7 +47,6 @@ public partial class LiquidCircle : VisualElement
     {
         if (fillElement != null)
         {
-            // Adjust the height based on the progress percentage
             fillElement.style.height = Length.Percent(_progress * 100f);
         }
     }
