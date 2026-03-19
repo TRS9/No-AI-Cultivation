@@ -23,7 +23,7 @@ namespace CultivationGame.Systems
 
         public bool CanCraft(RecipeData recipe)
         {
-            if (recipe == null || _isCrafting) return false;
+            if (recipe == null || _isCrafting || playerInventory == null) return false;
             if (playerStats != null && playerStats.currentQi < recipe.qiCost) return false;
             if (recipe.requiredRealm != null && playerStats != null &&
                 playerStats.currentRealm != null &&

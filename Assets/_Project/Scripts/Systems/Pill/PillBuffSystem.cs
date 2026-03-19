@@ -34,11 +34,9 @@ namespace CultivationGame.Systems
 
             _useCount[key] = used + 1;
 
-            // Immediate Qi boost
             if (pill.qiBoost > 0)
                 GameEvents.RaiseAddQi(pill.qiBoost * effectiveness);
 
-            // Temporal buffs
             if (pill.cultivationSpeedMultiplier > 1f && pill.buffDuration > 0f)
                 StartCoroutine(ApplySpeedBuff(pill.cultivationSpeedMultiplier, pill.buffDuration, effectiveness));
 

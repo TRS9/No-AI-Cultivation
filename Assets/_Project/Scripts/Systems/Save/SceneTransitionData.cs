@@ -25,10 +25,16 @@ namespace CultivationGame.Systems
         [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetOnLoad()
         {
-            HasPendingReturn = false;
+            HasPendingReturn      = false;
             HasPendingDestination = false;
-            ReturnScene = null;
-            IsMinorRealm = false;
+            IsMinorRealm          = false;
+            ReturnScene           = null;
+            ReturnPosition        = Vector3.zero;
+            ReturnRotationY       = 0f;
+            DestinationPosition   = Vector3.zero;
+            DestinationRotationY  = 0f;
+            RealmBiome            = default;
+            RealmSeed             = 0;
         }
 
         public static void SetRealm(BiomeType biome, int seed)

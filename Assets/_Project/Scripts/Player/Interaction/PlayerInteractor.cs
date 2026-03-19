@@ -10,6 +10,7 @@ namespace CultivationGame.Player
         public LayerMask interactableLayer;
         public InputActionReference interactAction;
 
+        private Collider[] _nearbyColliders = System.Array.Empty<Collider>();
         private bool _promptVisible;
 
         private void OnEnable()
@@ -24,6 +25,8 @@ namespace CultivationGame.Player
 
         private void Update()
         {
+            _nearbyColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
+            bool visible = _nearbyColliders.Length > 0;
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
             bool visible = hitColliders.Length > 0;
 
@@ -36,17 +39,10 @@ namespace CultivationGame.Player
 
         private void AttemptInteraction(InputAction.CallbackContext context)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
-
-            foreach (Collider hit in hitColliders)
+            foreach (Collider hit in _nearbyColliders)
             {
-                IInteractable interactableObject = hit.GetComponent<IInteractable>();
-
-                if (interactableObject != null)
-                {
-                    interactableObject.Interact(this.gameObject);
-                    break;
-                }
+                var interactable = hit.GetComponent<IInteractable>();
+                if (interactable != null) { interactable.Interact(gameObject); break; }
             }
         }
     }
