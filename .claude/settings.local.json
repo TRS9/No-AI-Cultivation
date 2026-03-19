@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo:*)",
+      "Bash(xargs grep -l \"LoadScene\\\\|SceneManager\\\\|DontDestroyOnLoad\")",
+      "Bash(xargs head -50)",
+      "Bash(grep -n \"8265772121604712140\" Assets/_Project/Scenes/*.unity)",
+      "Bash(while read f)",
+      "Bash(do if grep -q \"5238f4aa5e90cb347af4ecedcbae399d\" \"$f\")",
+      "Bash(then echo \"$f\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs\")",
+      "Bash(mv \"Assets/_Project/Scripts/Core/IInventory.cs.meta\" \"Assets/_Project/Scripts/Data/DataTemplates/IInventory.cs.meta\")",
+      "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Scripts/Ui' -type f -name *.cs)",
+      "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets' -type f -name *.uss -o -name *theme* -o -name *Theme*)",
+      "Bash(xargs grep:*)"
+    ]
+  }
+}

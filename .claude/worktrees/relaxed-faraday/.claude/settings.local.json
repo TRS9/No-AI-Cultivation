@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add \"Assets/_Project/Scripts/Data/MinorRealmConfig.cs\" \"Assets/_Project/Scripts/Editor/MinorRealmConfigEditor.cs\" \"Assets/_Project/Scripts/Systems/Realm/MinorRealmGenerator.cs\" \"Assets/_Project/Data/Minor Worlds/BarrenWastes.asset\" \"Assets/_Project/Data/Minor Worlds/CelestialPeak.asset\" \"Assets/_Project/Data/Minor Worlds/Plains.asset\" \"Assets/_Project/Data/Minor Worlds/SpiritForrest.asset\" \"Assets/_Project/Data/Minor Worlds/StoneMountain.asset\")",
+      "Bash(git commit:*)",
+      "Bash(git push origin master)"
+    ]
+  }
+}

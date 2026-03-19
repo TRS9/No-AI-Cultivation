@@ -27,6 +27,8 @@ namespace CultivationGame.Player
         {
             _nearbyColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
             bool visible = _nearbyColliders.Length > 0;
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
+            bool visible = hitColliders.Length > 0;
 
             if (visible != _promptVisible)
             {

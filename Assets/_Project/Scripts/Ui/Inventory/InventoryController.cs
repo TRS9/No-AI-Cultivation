@@ -21,7 +21,7 @@ namespace CultivationGame.UI
             _list = root.Q<ListView>("InventoryList");
 
             _panel?.Q<Button>("CloseInventoryBtn")
-                ?.RegisterCallback<ClickEvent>(e => GameStateManager.Instance?.ClosePanel("Inventory"));
+                ?.RegisterCallback<ClickEvent>(e => RequestClose());
 
             SetupListView();
 
@@ -61,12 +61,22 @@ namespace CultivationGame.UI
             }
         }
 
+        private void RequestClose()
+        {
+            GameStateManager.Instance?.ClosePanel("Inventory");
+        }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(InventoryDataSource.Items) && _list != null)
+            switch (e.PropertyName)
             {
-                _list.itemsSource = inventoryData.Items;
-                _list.Rebuild();
+                case nameof(InventoryDataSource.Items):
+                    if (_list != null)
+                    {
+                        _list.itemsSource = inventoryData.Items;
+                        _list.Rebuild();
+                    }
+                    break;
             }
         }
 

@@ -3,7 +3,8 @@
     "rootNamespace": "CultivationGame.Systems",
     "references": [
         "Game.Core",
-        "Game.Data"
+        "Game.Data",
+        "Game.Player"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

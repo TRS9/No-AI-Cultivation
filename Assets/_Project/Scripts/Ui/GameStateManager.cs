@@ -80,6 +80,7 @@ namespace CultivationGame.UI
 
         public void OpenPanel(string panelId)
         {
+            // Close other exclusive panels
             var toClose = new List<string>(_openPanels);
             foreach (var id in toClose)
                 ClosePanel(id);
@@ -113,14 +114,14 @@ namespace CultivationGame.UI
 
         private void SetCursorFree()
         {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
 
         private void SetCursorLocked()
         {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            UnityEngine.Cursor.visible = false;
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         }
 
         private void SetPlayerInputEnabled(bool enabled)

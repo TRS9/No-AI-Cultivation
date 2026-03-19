@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.ComponentModel; // Hinzugefügt für INotifyPropertyChanged
 using System.Text;
 using UnityEngine;
 using Unity.Properties;
@@ -19,8 +19,10 @@ namespace CultivationGame.UI
     }
 
     [CreateAssetMenu(menuName = "Cultivation/UI/Crafting Data Source")]
+    // Geändert: INotifyPropertyChanged
     public class CraftingDataSource : ScriptableObject, INotifyPropertyChanged
     {
+        // Geändert: Standard PropertyChangedEventHandler
         public event PropertyChangedEventHandler PropertyChanged;
 
         private string _selectedRecipeName = "";
@@ -35,52 +37,87 @@ namespace CultivationGame.UI
         public string SelectedRecipeName
         {
             get => _selectedRecipeName;
-            private set { if (_selectedRecipeName == value) return; _selectedRecipeName = value; Notify(nameof(SelectedRecipeName)); }
+            private set
+            {
+                if (_selectedRecipeName == value) return;
+                _selectedRecipeName = value;
+                Notify(nameof(SelectedRecipeName));
+            }
         }
 
         [CreateProperty]
         public string SelectedRecipeDescription
         {
             get => _selectedRecipeDescription;
-            private set { if (_selectedRecipeDescription == value) return; _selectedRecipeDescription = value; Notify(nameof(SelectedRecipeDescription)); }
+            private set
+            {
+                if (_selectedRecipeDescription == value) return;
+                _selectedRecipeDescription = value;
+                Notify(nameof(SelectedRecipeDescription));
+            }
         }
 
         [CreateProperty]
         public string InputsText
         {
             get => _inputsText;
-            private set { if (_inputsText == value) return; _inputsText = value; Notify(nameof(InputsText)); }
+            private set
+            {
+                if (_inputsText == value) return;
+                _inputsText = value;
+                Notify(nameof(InputsText));
+            }
         }
 
         [CreateProperty]
         public string OutputsText
         {
             get => _outputsText;
-            private set { if (_outputsText == value) return; _outputsText = value; Notify(nameof(OutputsText)); }
+            private set
+            {
+                if (_outputsText == value) return;
+                _outputsText = value;
+                Notify(nameof(OutputsText));
+            }
         }
 
-        [CreateProperty]
+        [CreateProperty] // Hinzugefügt für Binding im UI Builder (z.B. Button Enable/Disable)
         public bool CanCraft
         {
             get => _canCraft;
-            private set { if (_canCraft == value) return; _canCraft = value; Notify(nameof(CanCraft)); }
+            private set
+            {
+                if (_canCraft == value) return;
+                _canCraft = value;
+                Notify(nameof(CanCraft));
+            }
         }
 
-        [CreateProperty]
+        [CreateProperty] // Hinzugefügt für Binding
         public bool IsCrafting
         {
             get => _isCrafting;
-            private set { if (_isCrafting == value) return; _isCrafting = value; Notify(nameof(IsCrafting)); }
+            private set
+            {
+                if (_isCrafting == value) return;
+                _isCrafting = value;
+                Notify(nameof(IsCrafting));
+            }
         }
 
         [CreateProperty]
         public float CraftProgress
         {
             get => _craftProgress;
-            private set { if (Mathf.Approximately(_craftProgress, value)) return; _craftProgress = value; Notify(nameof(CraftProgress)); }
+            private set
+            {
+                if (Mathf.Approximately(_craftProgress, value)) return;
+                _craftProgress = value;
+                Notify(nameof(CraftProgress));
+            }
         }
 
-        [CreateProperty]
+        [CreateProperty] // Hinzugefügt für Binding der ListView
         public List<RecipeSlotData> Recipes { get; private set; } = new();
 
         public RecipeData SelectedRecipe { get; private set; }
@@ -88,6 +125,7 @@ namespace CultivationGame.UI
         [NonSerialized] public RecipeDatabase RecipeDatabase;
         public MachineType FilterMachine = MachineType.None;
 
+        // Geändert: Nutzt jetzt PropertyChangedEventArgs
         private void Notify(string name)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -133,7 +171,12 @@ namespace CultivationGame.UI
             foreach (var recipe in recipes)
             {
                 bool canCraft = CraftingSystem.Instance != null && CraftingSystem.Instance.CanCraft(recipe);
-                Recipes.Add(new RecipeSlotData { Recipe = recipe, Name = recipe.recipeName, CanCraft = canCraft });
+                Recipes.Add(new RecipeSlotData
+                {
+                    Recipe = recipe,
+                    Name = recipe.recipeName,
+                    CanCraft = canCraft
+                });
             }
 
             Notify(nameof(Recipes));
@@ -159,12 +202,6 @@ namespace CultivationGame.UI
             OutputsText = sb.ToString();
 
             CanCraft = !IsCrafting && CraftingSystem.Instance != null && CraftingSystem.Instance.CanCraft(recipe);
-        }
-
-        public void TryCraftSelected()
-        {
-            if (SelectedRecipe == null || IsCrafting) return;
-            CraftingSystem.Instance?.TryCraft(SelectedRecipe);
         }
 
         private void RefreshCraftableState()
@@ -196,6 +233,14 @@ namespace CultivationGame.UI
         }
 
         private void HandleCraftingProgress(RecipeData recipe, float normalizedProgress)
-            => CraftProgress = normalizedProgress * 100f;
+        {
+            CraftProgress = normalizedProgress * 100f;
+        }
+
+        public void TryCraftSelected()
+        {
+            if (SelectedRecipe == null || IsCrafting) return;
+            CraftingSystem.Instance?.TryCraft(SelectedRecipe);
+        }
     }
 }

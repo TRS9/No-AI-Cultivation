@@ -56,7 +56,7 @@ namespace CultivationGame.Core
         public static void RaiseMeditationBonusApplied(float multiplier)
             => OnMeditationBonusApplied?.Invoke(multiplier);
 
-        // --- Crafting Station ---
+        // --- Crafting UI ---
         public delegate void CraftingStationInteracted();
         public static event CraftingStationInteracted OnCraftingStationInteracted;
         public static void RaiseCraftingStationInteracted()

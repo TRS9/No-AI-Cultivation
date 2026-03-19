@@ -8,8 +8,17 @@ namespace CultivationGame.Systems
 {
     public class PillBuffSystem : MonoBehaviour
     {
+        public static PillBuffSystem Instance { get; private set; }
+
         // Tolerance tracking: pill asset name → session use count
         private readonly Dictionary<string, int> _useCount = new();
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+            CultivationBuffs.MeditationRateMultiplier = 1f;
+            CultivationBuffs.BreakthroughBonus = 0f;
+        }
 
         private void OnEnable()  => GameDataEvents.OnPillConsumed += HandlePillConsumed;
         private void OnDisable() => GameDataEvents.OnPillConsumed -= HandlePillConsumed;

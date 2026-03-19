@@ -24,9 +24,9 @@ namespace CultivationGame.UI
             _craftBtn = root.Q<Button>("CraftBtn");
             _craftProgress = root.Q<ProgressBar>("CraftProgress");
 
-            _craftBtn?.RegisterCallback<ClickEvent>(e => craftingData?.TryCraftSelected());
+            _craftBtn?.RegisterCallback<ClickEvent>(OnCraftClicked);
             _panel?.Q<Button>("CloseCraftingBtn")
-                ?.RegisterCallback<ClickEvent>(e => GameStateManager.Instance?.ClosePanel("Crafting"));
+                ?.RegisterCallback<ClickEvent>(e => RequestClose());
 
             SetupRecipeList();
 
@@ -36,6 +36,7 @@ namespace CultivationGame.UI
                 craftingData.ResetState();
                 craftingData.Subscribe();
 
+                // Declarative bindings via UI Toolkit data binding
                 var craftingRight = root.Q<VisualElement>("CraftingRight");
                 craftingRight.dataSource = craftingData;
 
@@ -69,6 +70,7 @@ namespace CultivationGame.UI
                     bindingMode = BindingMode.ToTarget
                 });
 
+                // Manual bindings for properties that need logic
                 craftingData.PropertyChanged += OnPropertyChanged;
             }
 
@@ -87,7 +89,10 @@ namespace CultivationGame.UI
             GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
         }
 
-        private void OnStationInteracted() => GameStateManager.Instance?.OpenPanel("Crafting");
+        private void OnStationInteracted()
+        {
+            GameStateManager.Instance?.OpenPanel("Crafting");
+        }
 
         private void OnPanelStateChanged(string panelId, bool isOpen)
         {
@@ -104,6 +109,13 @@ namespace CultivationGame.UI
             }
         }
 
+        private void OnCraftClicked(ClickEvent evt) => craftingData?.TryCraftSelected();
+
+        private void RequestClose()
+        {
+            GameStateManager.Instance?.ClosePanel("Crafting");
+        }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -111,13 +123,11 @@ namespace CultivationGame.UI
                 case nameof(CraftingDataSource.CanCraft):
                     if (_craftBtn != null) _craftBtn.SetEnabled(craftingData.CanCraft);
                     break;
-
                 case nameof(CraftingDataSource.IsCrafting):
                     if (_craftProgress != null)
                         _craftProgress.style.display = craftingData.IsCrafting
                             ? DisplayStyle.Flex : DisplayStyle.None;
                     break;
-
                 case nameof(CraftingDataSource.Recipes):
                     if (_recipeList != null)
                     {
@@ -143,7 +153,8 @@ namespace CultivationGame.UI
             {
                 if (index >= craftingData.Recipes.Count) return;
                 var data = craftingData.Recipes[index];
-                if (element is Label label) label.text = data.Name;
+                var label = element as Label;
+                if (label != null) label.text = data.Name;
                 element.EnableInClassList("recipe-slot--disabled", !data.CanCraft);
             };
 

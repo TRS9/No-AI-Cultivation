@@ -4,9 +4,11 @@ using UnityEngine.UIElements;
 [UxmlElement]
 public partial class LiquidCircle : VisualElement
 {
-    private VisualElement _fill;
-    private float _progress = 0f;
+    private VisualElement fillElement;
 
+    private float _progress = 0.5f;
+
+    // Data-binding ready
     [UxmlAttribute]
     public float progress
     {
@@ -23,28 +25,36 @@ public partial class LiquidCircle : VisualElement
 
     public LiquidCircle()
     {
+        // 1. The Container (Acts as the circular mask)
         style.overflow = Overflow.Hidden;
+
+        // This makes it a perfect circle as long as width == height in the UI Builder
         style.borderTopLeftRadius = Length.Percent(50);
         style.borderTopRightRadius = Length.Percent(50);
         style.borderBottomLeftRadius = Length.Percent(50);
         style.borderBottomRightRadius = Length.Percent(50);
         style.backgroundColor = emptyColor;
 
-        _fill = new VisualElement();
-        _fill.AddToClassList("liquid-circle__fill");
-        _fill.style.position = Position.Absolute;
-        _fill.style.bottom = 0;
-        _fill.style.left = 0;
-        _fill.style.right = 0;
-        _fill.style.backgroundColor = fillColor;
+        // 2. The Fill (The "liquid" that rises from the bottom)
+        fillElement = new VisualElement();
+        fillElement.AddToClassList("liquid-circle__fill");
+        fillElement.style.position = Position.Absolute;
+        fillElement.style.bottom = 0; // Anchor to the bottom
+        fillElement.style.left = 0;
+        fillElement.style.right = 0;
+        fillElement.style.backgroundColor = fillColor;
 
-        Add(_fill);
+        // Add the fill into the circular container
+        Add(fillElement);
         UpdateFill();
     }
 
     private void UpdateFill()
     {
-        if (_fill != null)
-            _fill.style.height = Length.Percent(_progress * 100f);
+        if (fillElement != null)
+        {
+            // Adjust the height based on the progress percentage
+            fillElement.style.height = Length.Percent(_progress * 100f);
+        }
     }
 }

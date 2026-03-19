@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.ComponentModel; // Hinzugefügt für INotifyPropertyChanged
 using UnityEngine;
 using Unity.Properties;
 using CultivationGame.Core;
@@ -20,15 +20,18 @@ namespace CultivationGame.UI
     }
 
     [CreateAssetMenu(menuName = "Cultivation/UI/Inventory Data Source")]
+    // Geändert: INotifyPropertyChanged statt INotifyBindablePropertyChanged
     public class InventoryDataSource : ScriptableObject, INotifyPropertyChanged
     {
+        // Geändert: Standard PropertyChangedEventHandler
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [CreateProperty]
+        [CreateProperty] // Hinzugefügt: Damit UI Builder die Liste binden kann
         public List<InventorySlotData> Items { get; private set; } = new();
 
         [NonSerialized] public PlayerInventory PlayerInventory;
 
+        // Geändert: Nutzt jetzt PropertyChangedEventArgs
         private void Notify(string name)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -45,7 +48,7 @@ namespace CultivationGame.UI
         public void ResetState()
         {
             Items.Clear();
-            Notify(nameof(Items));
+            Notify(nameof(Items)); // Wichtig: UI benachrichtigen, dass die Liste leer ist
         }
 
         public void RebuildItems()
