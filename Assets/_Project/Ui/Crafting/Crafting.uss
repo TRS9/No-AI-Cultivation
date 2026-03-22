@@ -1,0 +1,54 @@
+/* ===== Recipe Slot ===== */
+.recipe-slot {
+    padding: 6px 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(140, 110, 40, 0.35);
+    color: rgb(216, 210, 190);
+    font-size: 14px;
+}
+
+.recipe-slot:hover {
+    background-color: rgba(140, 110, 40, 0.15);
+}
+
+.recipe-slot--selected {
+    background-color: rgba(180, 140, 50, 0.25);
+}
+
+.recipe-slot--disabled {
+    color: rgba(120, 130, 110, 0.5);
+}
+
+/* ===== Craft Button ===== */
+.craft-btn {
+    padding: 8px 24px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    background-color: rgb(212, 168, 74);
+    color: rgb(18, 42, 22);
+    border-radius: 6px;
+    border-width: 0;
+    align-self: flex-start;
+    transition-property: background-color;
+    transition-duration: 0.15s;
+}
+
+.craft-btn:hover {
+    background-color: rgb(240, 200, 100);
+}
+
+.craft-btn:disabled {
+    background-color: rgba(60, 60, 50, 0.4);
+    color: rgba(120, 130, 110, 0.5);
+}
+
+/* ===== Craft Progress Bar ===== */
+#CraftProgress .unity-progress-bar__progress {
+    background-color: rgb(58, 122, 48);
+    border-radius: 4px;
+}
+
+#CraftProgress .unity-progress-bar__background {
+    background-color: rgba(15, 30, 15, 0.5);
+    border-radius: 4px;
+}

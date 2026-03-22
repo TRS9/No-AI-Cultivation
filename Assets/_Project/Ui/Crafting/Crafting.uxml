@@ -1,0 +1,21 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../Global.uss"/>
+    <Style src="Crafting.uss"/>
+    <ui:VisualElement name="CraftingPanel" class="panel" style="display: none; flex-direction: row;">
+        <ui:VisualElement name="CraftingLeft" style="width: 200px; margin-right: 16px;">
+            <ui:Label text="Recipes" class="panel-title" style="margin-bottom: 8px;"/>
+            <ui:ListView name="RecipeList" fixed-item-height="36" style="flex-grow: 1;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="CraftingRight" style="flex-grow: 1;">
+            <ui:Button text="✕" name="CloseCraftingBtn" class="close-btn" style="position: absolute; top: 0; right: 0;"/>
+            <ui:Label text="" name="RecipeName" style="font-size: 20px; -unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 8px;"/>
+            <ui:Label text="" name="RecipeDesc" style="color: rgb(176, 196, 152); margin-bottom: 12px;"/>
+            <ui:Label text="Inputs:" style="-unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 4px;"/>
+            <ui:Label text="" name="RecipeInputs" style="color: rgb(176, 196, 152); margin-bottom: 12px; white-space: normal;"/>
+            <ui:Label text="Outputs:" style="-unity-font-style: bold; color: rgb(212, 168, 74); margin-bottom: 4px;"/>
+            <ui:Label text="" name="RecipeOutputs" style="color: rgb(176, 196, 152); margin-bottom: 16px; white-space: normal;"/>
+            <ui:Button text="Craft" name="CraftBtn" class="craft-btn"/>
+            <ui:ProgressBar value="0" title="" name="CraftProgress" style="height: 20px; margin-top: 8px; display: none;"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

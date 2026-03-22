@@ -1,0 +1,123 @@
+/* ===== HUD: Stamina ===== */
+.stamina-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.stamina-label {
+    font-size: 11px;
+    color: rgb(212, 168, 74);
+    letter-spacing: 1px;
+    margin-right: 10px;
+    -unity-font-style: bold;
+}
+
+#StaminaBar .unity-progress-bar__progress {
+    background-color: rgb(58, 122, 48);
+    border-radius: 16px;
+}
+
+#StaminaBar .unity-progress-bar__background {
+    background-color: rgba(15, 30, 15, 0.6);
+    border-radius: 16px;
+}
+
+/* ===== Liquid Circle ===== */
+.liquid-circle {
+    background-color: rgba(10, 26, 13, 0.6);
+}
+
+.liquid-circle__fill {
+    transition-property: height;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out;
+    background-color: rgb(56, 140, 46);
+}
+
+/* ===== HUD: Realm Labels ===== */
+.realm-name {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(212, 168, 74);
+    letter-spacing: 3px;
+}
+
+.realm-sub {
+    font-size: 13px;
+    color: rgba(160, 180, 120, 0.7);
+    letter-spacing: 1px;
+}
+
+/* ===== HUD: Divider ===== */
+.hud-divider {
+    height: 1px;
+    background-color: rgba(140, 110, 40, 0.35);
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+/* ===== Breakthrough Button (outline style) ===== */
+.breakthrough-btn {
+    background-color: transparent;
+    color: rgb(212, 168, 74);
+    font-size: 14px;
+    -unity-font-style: bold;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(180, 140, 50, 0.5);
+    padding: 8px 18px;
+    align-self: flex-start;
+    letter-spacing: 1px;
+    opacity: 0;
+    visibility: hidden;
+    scale: 0.8;
+    transition-property: opacity, scale, visibility, background-color, border-color;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out-back;
+}
+
+.breakthrough-btn--ready {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+}
+
+.breakthrough-btn--ready:hover {
+    scale: 1.05;
+    background-color: rgba(160, 120, 40, 0.15);
+    border-color: rgba(200, 160, 60, 0.7);
+}
+
+/* ===== Meditation Bonus ===== */
+.meditation-bonus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: rgb(120, 200, 100);
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.8s;
+    transition-timing-function: ease-in;
+}
+
+/* ===== Interact Prompt ===== */
+.interact-prompt {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    translate: -50% 0;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(160, 192, 144);
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 8px 20px;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgba(120, 140, 80, 0.3);
+    letter-spacing: 1px;
+    transition-property: opacity;
+    transition-duration: 0.15s;
+}

@@ -2955,6 +2955,53 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c70ad64b2fd82d94d98aac09f13a4381, type: 3}
+--- !u!1 &181316186
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 181316188}
+  - component: {fileID: 181316187}
+  m_Layer: 0
+  m_Name: GameStateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &181316187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181316186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6de0c9b1e14bf754fa4510fcb8b1689d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.GameStateManager
+  pauseAction: {fileID: -5375860538494901755, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  toggleInventoryAction: {fileID: 6116832331319506505, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  playerMapName: Player
+--- !u!4 &181316188
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181316186}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 342.1961, y: 122.0257, z: 269.98795}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &182003543
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20709,6 +20756,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   maxDistanceRay: 1.1
+  groundCheckRadius: 0.3
   maxStamina: 1000
   staminaDrainRate: 20
   staminaRegenRate: 15
@@ -20805,12 +20853,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f600150abb6424f48848fd78165acd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
-  inventoryPanel: {fileID: 0}
-  inventoryDisplay: {fileID: 0}
-  playerInventory: {fileID: 1152538032}
-  toggleAction: {fileID: 6116832331319506505, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  playerMapName: Player
-  isVisible: 0
 --- !u!114 &1152538034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36826,6 +36868,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1982406397}
   - component: {fileID: 1982406396}
+  - component: {fileID: 1982406402}
+  - component: {fileID: 1982406401}
+  - component: {fileID: 1982406400}
+  - component: {fileID: 1982406399}
+  - component: {fileID: 1982406398}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -36847,7 +36894,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: f33291c701f230a4b96898e8eaacc94f, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 914737caff1f25e4c885365367e8dd19, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: e009bec7fd38b964f8bfa8648a51ee2f, type: 3}
   m_SortingOrder: 0
   m_Position: 0
   m_WorldSpaceSizeMode: 1
@@ -36871,6 +36918,71 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1982406398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8c35c17745b55b49b5adcc8c4dc008e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.PauseMenuController
+--- !u!114 &1982406399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0048b54101b86b349847a629741374bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.CraftingController
+  craftingData: {fileID: 11400000, guid: ff7239dbba3138640aeb031b0970508f, type: 2}
+  recipeDatabase: {fileID: 11400000, guid: 86d98502ff9c2534fbdc6a5cd85b1d19, type: 2}
+--- !u!114 &1982406400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad3664d8f0eb00469e7daeb5bcb3235, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.InventoryController
+  inventoryData: {fileID: 11400000, guid: 83af5328e2bce794a80a2eb2314ff78b, type: 2}
+  playerInventory: {fileID: 1152538032}
+--- !u!114 &1982406401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55d765c29181420479553c236d0c5e2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.HUDController
+  hudData: {fileID: 11400000, guid: dcca9c1dece8d344880b636015d44cbf, type: 2}
+--- !u!114 &1982406402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 273b7e585be29b344a8531f1aade1148, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.UIManager
 --- !u!1001 &1983599148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40403,3 +40515,4 @@ SceneRoots:
   - {fileID: 1132072046}
   - {fileID: 877630123}
   - {fileID: 1982406397}
+  - {fileID: 181316188}
