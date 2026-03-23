@@ -84,7 +84,6 @@ namespace CultivationGame.Player
 
         private IEnumerator TransitionToSpiritSense()
         {
-            // Capture current action camera state
             Vector3 startPos = _mainCamera.transform.position;
             Quaternion startRot = _mainCamera.transform.rotation;
             float currentYaw = _mainCamera.transform.eulerAngles.y;
@@ -92,61 +91,47 @@ namespace CultivationGame.Player
             // Disable Cinemachine so we can manually drive the main camera
             cinemachineBrain.enabled = false;
 
-            // Initialize spirit sense target
-            spiritSenseCamera.Initialize(playerTransform.position, currentYaw);
+            // Initialize spirit sense — it will drive _mainCamera.transform from now on
+            spiritSenseCamera.Initialize(_mainCamera.transform, playerTransform.position, currentYaw);
             var (endPos, endRot) = spiritSenseCamera.GetCurrentState();
 
             // Animate the main camera from action pose to spirit sense pose
             yield return AnimateCamera(_mainCamera.transform, startPos, startRot, endPos, endRot);
 
-            // Switch: disable main camera, enable spirit sense camera
-            _mainCamera.enabled = false;
+            // Spirit sense takes over driving the main camera
             spiritSenseCamera.SetEnabled(true);
-            SetCameraTag(_mainCamera.gameObject, false);
-            SetCameraTag(spiritSenseCamera.gameObject, true);
-            GameEvents.RaiseActiveCameraChanged(spiritSenseCamera.GetCamera());
 
             // Input: disable Player map, re-enable Meditate, enable BuildMode
             _playerMap?.Disable();
             _meditateAction?.Enable();
             _buildModeMap?.Enable();
 
-            // Free cursor for build mode
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
 
         private IEnumerator TransitionToAction()
         {
-            // Capture spirit sense camera state
             var (startPos, startRot) = spiritSenseCamera.GetCurrentState();
 
-            // Disable spirit sense camera
+            // Spirit sense stops driving the camera
             spiritSenseCamera.SetEnabled(false);
-            SetCameraTag(spiritSenseCamera.gameObject, false);
-
-            // Enable main camera for rendering during transition
-            _mainCamera.enabled = true;
-            SetCameraTag(_mainCamera.gameObject, true);
 
             // Compute a reasonable end position behind the player
-            // (Cinemachine will smooth from here when re-enabled)
             Vector3 endPos = ComputeActionCameraPosition();
             Quaternion endRot = Quaternion.LookRotation(
                 playerTransform.position + Vector3.up * 1.5f - endPos);
 
-            // Animate from spirit sense position back toward action position
+            // Animate back toward action position
             yield return AnimateCamera(_mainCamera.transform, startPos, startRot, endPos, endRot);
 
             // Re-enable Cinemachine — it blends smoothly from current transform
             cinemachineBrain.enabled = true;
-            GameEvents.RaiseActiveCameraChanged(_mainCamera);
 
             // Input: disable BuildMode, enable full Player map
             _buildModeMap?.Disable();
             _playerMap?.Enable();
 
-            // Lock cursor for action mode
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
@@ -169,16 +154,9 @@ namespace CultivationGame.Player
 
         private Vector3 ComputeActionCameraPosition()
         {
-            // Place camera behind and above the player at a reasonable default distance
             Vector3 playerPos = playerTransform.position;
             Vector3 back = -playerTransform.forward;
             return playerPos + back * 5f + Vector3.up * 2f;
-        }
-
-        private void SetCameraTag(GameObject go, bool isMain)
-        {
-            if (go == null) return;
-            go.tag = isMain ? "MainCamera" : "Untagged";
         }
     }
 }

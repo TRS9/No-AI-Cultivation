@@ -66,14 +66,12 @@ namespace CultivationGame.Player
         {
             jump.action.performed += HandleJump;
             GameEvents.OnMeditationToggled += HandleMeditationBlock;
-            GameEvents.OnActiveCameraChanged += HandleCameraChanged;
         }
 
         private void OnDisable()
         {
             jump.action.performed -= HandleJump;
             GameEvents.OnMeditationToggled -= HandleMeditationBlock;
-            GameEvents.OnActiveCameraChanged -= HandleCameraChanged;
         }
 
         private void Update()
@@ -221,11 +219,6 @@ namespace CultivationGame.Player
                 groundCheckRadius,
                 groundLayer
             );
-        }
-
-        private void HandleCameraChanged(UnityEngine.Camera newCamera)
-        {
-            _camera = newCamera;
         }
 
         private void HandleMeditationBlock(bool isMeditating)
