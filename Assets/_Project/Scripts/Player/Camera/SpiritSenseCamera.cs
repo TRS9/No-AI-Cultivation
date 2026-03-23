@@ -32,17 +32,12 @@ namespace CultivationGame.Player
         private float _yaw;
         private float _pitch;
         private float _currentZoom;
-        private Camera _camera;
+        private Transform _target;
         private bool _isActive;
-
-        private void Awake()
-        {
-            _camera = GetComponent<Camera>();
-        }
 
         private void LateUpdate()
         {
-            if (!_isActive) return;
+            if (!_isActive || _target == null) return;
 
             HandlePan();
             HandleOrbit();
@@ -56,8 +51,8 @@ namespace CultivationGame.Player
             Vector2 input = panAction.action.ReadValue<Vector2>();
             if (input.sqrMagnitude < 0.01f) return;
 
-            Vector3 flatForward = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
-            Vector3 flatRight = new Vector3(transform.right.x, 0f, transform.right.z).normalized;
+            Vector3 flatForward = new Vector3(_target.forward.x, 0f, _target.forward.z).normalized;
+            Vector3 flatRight = new Vector3(_target.right.x, 0f, _target.right.z).normalized;
             Vector3 panDelta = (flatForward * input.y + flatRight * input.x) * panSpeed * Time.deltaTime;
             _focalPoint += panDelta;
         }
@@ -87,12 +82,13 @@ namespace CultivationGame.Player
         {
             Quaternion rotation = Quaternion.Euler(_pitch, _yaw, 0f);
             Vector3 offset = rotation * new Vector3(0f, 0f, -_currentZoom);
-            transform.position = _focalPoint + offset;
-            transform.LookAt(_focalPoint);
+            _target.position = _focalPoint + offset;
+            _target.LookAt(_focalPoint);
         }
 
-        public void Initialize(Vector3 playerPosition, float playerYaw)
+        public void Initialize(Transform target, Vector3 playerPosition, float playerYaw)
         {
+            _target = target;
             _focalPoint = playerPosition;
             _yaw = playerYaw;
             _pitch = initialPitch;
@@ -103,20 +99,17 @@ namespace CultivationGame.Player
         public void SetEnabled(bool enabled)
         {
             _isActive = enabled;
-            if (_camera != null)
-                _camera.enabled = enabled;
         }
 
         public (Vector3 position, Quaternion rotation) GetCurrentState()
         {
-            return (transform.position, transform.rotation);
+            if (_target == null) return (transform.position, transform.rotation);
+            return (_target.position, _target.rotation);
         }
 
         public void SetElevation(float y)
         {
             _focalPoint.y = y;
         }
-
-        public Camera GetCamera() => _camera;
     }
 }
