@@ -1,28 +1,33 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Cinemachine;
 using CultivationGame.Core;
 
 namespace CultivationGame.Player
 {
     public class CameraSystem : MonoBehaviour
     {
-        [Header("Cameras")]
-        [SerializeField] private ActionCamera actionCamera;
+        [Header("Cinemachine (Action Mode)")]
+        [SerializeField] private CinemachineBrain cinemachineBrain;
+        [SerializeField] private CinemachineCamera cinemachineVCam;
+
+        [Header("Spirit Sense (Build Mode)")]
         [SerializeField] private SpiritSenseCamera spiritSenseCamera;
 
         [Header("Player")]
         [SerializeField] private Transform playerTransform;
-        [SerializeField] private PlayerStats playerStats;
 
         [Header("Transition")]
         [SerializeField] private float transitionDuration = 1.0f;
         [SerializeField] private AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
-        [Header("Input Maps")]
+        [Header("Input")]
+        [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private string playerMapName = "Player";
         [SerializeField] private string buildModeMapName = "BuildMode";
 
+        private Camera _mainCamera;
         private bool _isTransitioning;
         private bool _inSpiritSense;
         private InputActionMap _playerMap;
@@ -31,25 +36,20 @@ namespace CultivationGame.Player
 
         private void Awake()
         {
-            // Resolve input action maps from the action camera's look action (same asset)
-            var inputAsset = actionCamera.lookAction?.action?.actionMap?.asset;
-            if (inputAsset != null)
+            if (cinemachineBrain != null)
+                _mainCamera = cinemachineBrain.GetComponent<Camera>();
+
+            if (inputActions != null)
             {
-                _playerMap = inputAsset.FindActionMap(playerMapName);
-                _buildModeMap = inputAsset.FindActionMap(buildModeMapName);
+                _playerMap = inputActions.FindActionMap(playerMapName);
+                _buildModeMap = inputActions.FindActionMap(buildModeMapName);
                 _meditateAction = _playerMap?.FindAction("Meditate");
             }
         }
 
         private void Start()
         {
-            // Action camera starts active, spirit sense starts disabled
-            actionCamera.SetEnabled(true);
             spiritSenseCamera.SetEnabled(false);
-
-            SetCameraTag(actionCamera.GetCamera(), true);
-            SetCameraTag(spiritSenseCamera.GetCamera(), false);
-
             _buildModeMap?.Disable();
         }
 
@@ -73,88 +73,112 @@ namespace CultivationGame.Player
         {
             _isTransitioning = true;
 
-            // Disable input on both cameras during transition
-            actionCamera.SetEnabled(false);
-            spiritSenseCamera.SetEnabled(false);
-
-            // Keep a camera rendering during transition — use the outgoing one's transform
-            Camera transitionCam = toSpiritSense
-                ? actionCamera.GetCamera()
-                : spiritSenseCamera.GetCamera();
-            transitionCam.enabled = true;
-
-            // Compute start and end states
-            var (startPos, startRot) = toSpiritSense
-                ? actionCamera.GetCurrentState()
-                : spiritSenseCamera.GetCurrentState();
-
             if (toSpiritSense)
-            {
-                spiritSenseCamera.Initialize(playerTransform.position, actionCamera.Yaw);
-            }
-
-            var (endPos, endRot) = toSpiritSense
-                ? spiritSenseCamera.GetCurrentState()
-                : actionCamera.GetCurrentState();
-
-            // Animated interpolation
-            float elapsed = 0f;
-            while (elapsed < transitionDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = transitionCurve.Evaluate(Mathf.Clamp01(elapsed / transitionDuration));
-                transitionCam.transform.position = Vector3.Lerp(startPos, endPos, t);
-                transitionCam.transform.rotation = Quaternion.Slerp(startRot, endRot, t);
-                yield return null;
-            }
-
-            // Snap to final
-            transitionCam.transform.position = endPos;
-            transitionCam.transform.rotation = endRot;
-
-            // Switch cameras
-            if (toSpiritSense)
-            {
-                actionCamera.SetEnabled(false);
-                spiritSenseCamera.SetEnabled(true);
-                SetCameraTag(actionCamera.GetCamera(), false);
-                SetCameraTag(spiritSenseCamera.GetCamera(), true);
-                GameEvents.RaiseActiveCameraChanged(spiritSenseCamera.GetCamera());
-
-                // Input: disable Player map, re-enable Meditate, enable BuildMode
-                _playerMap?.Disable();
-                _meditateAction?.Enable();
-                _buildModeMap?.Enable();
-
-                // Free cursor for build mode
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
+                yield return TransitionToSpiritSense();
             else
-            {
-                spiritSenseCamera.SetEnabled(false);
-                actionCamera.SetEnabled(true);
-                SetCameraTag(spiritSenseCamera.GetCamera(), false);
-                SetCameraTag(actionCamera.GetCamera(), true);
-                GameEvents.RaiseActiveCameraChanged(actionCamera.GetCamera());
-
-                // Input: disable BuildMode, enable full Player map
-                _buildModeMap?.Disable();
-                _playerMap?.Enable();
-
-                // Lock cursor for action mode
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+                yield return TransitionToAction();
 
             _inSpiritSense = toSpiritSense;
             _isTransitioning = false;
         }
 
-        private void SetCameraTag(Camera cam, bool isMain)
+        private IEnumerator TransitionToSpiritSense()
         {
-            if (cam == null) return;
-            cam.gameObject.tag = isMain ? "MainCamera" : "Untagged";
+            // Capture current action camera state
+            Vector3 startPos = _mainCamera.transform.position;
+            Quaternion startRot = _mainCamera.transform.rotation;
+            float currentYaw = _mainCamera.transform.eulerAngles.y;
+
+            // Disable Cinemachine so we can manually drive the main camera
+            cinemachineBrain.enabled = false;
+
+            // Initialize spirit sense target
+            spiritSenseCamera.Initialize(playerTransform.position, currentYaw);
+            var (endPos, endRot) = spiritSenseCamera.GetCurrentState();
+
+            // Animate the main camera from action pose to spirit sense pose
+            yield return AnimateCamera(_mainCamera.transform, startPos, startRot, endPos, endRot);
+
+            // Switch: disable main camera, enable spirit sense camera
+            _mainCamera.enabled = false;
+            spiritSenseCamera.SetEnabled(true);
+            SetCameraTag(_mainCamera.gameObject, false);
+            SetCameraTag(spiritSenseCamera.gameObject, true);
+            GameEvents.RaiseActiveCameraChanged(spiritSenseCamera.GetCamera());
+
+            // Input: disable Player map, re-enable Meditate, enable BuildMode
+            _playerMap?.Disable();
+            _meditateAction?.Enable();
+            _buildModeMap?.Enable();
+
+            // Free cursor for build mode
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        private IEnumerator TransitionToAction()
+        {
+            // Capture spirit sense camera state
+            var (startPos, startRot) = spiritSenseCamera.GetCurrentState();
+
+            // Disable spirit sense camera
+            spiritSenseCamera.SetEnabled(false);
+            SetCameraTag(spiritSenseCamera.gameObject, false);
+
+            // Enable main camera for rendering during transition
+            _mainCamera.enabled = true;
+            SetCameraTag(_mainCamera.gameObject, true);
+
+            // Compute a reasonable end position behind the player
+            // (Cinemachine will smooth from here when re-enabled)
+            Vector3 endPos = ComputeActionCameraPosition();
+            Quaternion endRot = Quaternion.LookRotation(
+                playerTransform.position + Vector3.up * 1.5f - endPos);
+
+            // Animate from spirit sense position back toward action position
+            yield return AnimateCamera(_mainCamera.transform, startPos, startRot, endPos, endRot);
+
+            // Re-enable Cinemachine — it blends smoothly from current transform
+            cinemachineBrain.enabled = true;
+            GameEvents.RaiseActiveCameraChanged(_mainCamera);
+
+            // Input: disable BuildMode, enable full Player map
+            _buildModeMap?.Disable();
+            _playerMap?.Enable();
+
+            // Lock cursor for action mode
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        private IEnumerator AnimateCamera(Transform cam, Vector3 startPos, Quaternion startRot,
+            Vector3 endPos, Quaternion endRot)
+        {
+            float elapsed = 0f;
+            while (elapsed < transitionDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = transitionCurve.Evaluate(Mathf.Clamp01(elapsed / transitionDuration));
+                cam.position = Vector3.Lerp(startPos, endPos, t);
+                cam.rotation = Quaternion.Slerp(startRot, endRot, t);
+                yield return null;
+            }
+            cam.position = endPos;
+            cam.rotation = endRot;
+        }
+
+        private Vector3 ComputeActionCameraPosition()
+        {
+            // Place camera behind and above the player at a reasonable default distance
+            Vector3 playerPos = playerTransform.position;
+            Vector3 back = -playerTransform.forward;
+            return playerPos + back * 5f + Vector3.up * 2f;
+        }
+
+        private void SetCameraTag(GameObject go, bool isMain)
+        {
+            if (go == null) return;
+            go.tag = isMain ? "MainCamera" : "Untagged";
         }
     }
 }
