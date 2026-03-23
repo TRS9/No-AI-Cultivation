@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace CultivationGame.Core
 {
     public static class GameEvents
@@ -67,6 +69,18 @@ namespace CultivationGame.Core
         public static event InteractPromptChanged OnInteractPromptChanged;
         public static void RaiseInteractPromptChanged(bool visible)
             => OnInteractPromptChanged?.Invoke(visible);
+
+        // --- Camera ---
+        public delegate void ActiveCameraChanged(Camera activeCamera);
+        public static event ActiveCameraChanged OnActiveCameraChanged;
+        public static void RaiseActiveCameraChanged(Camera cam)
+            => OnActiveCameraChanged?.Invoke(cam);
+
+        // --- Build Elevation ---
+        public delegate void BuildLayerChanged(int layer, float worldY);
+        public static event BuildLayerChanged OnBuildLayerChanged;
+        public static void RaiseBuildLayerChanged(int layer, float worldY)
+            => OnBuildLayerChanged?.Invoke(layer, worldY);
 
         // --- Game State ---
         public delegate void PauseStateChanged(bool isPaused);
