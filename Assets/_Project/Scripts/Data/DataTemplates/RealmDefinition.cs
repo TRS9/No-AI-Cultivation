@@ -1,5 +1,4 @@
 using UnityEngine;
-using CultivationGame.Core;
 
 namespace CultivationGame.Data
 {
@@ -9,7 +8,6 @@ namespace CultivationGame.Data
         [Header("Identity")]
         public string realmName;
         public int realmIndex;
-        public RealmSubStage subStage;
         [TextArea] public string description;
 
         [Header("Qi Requirements")]
@@ -19,8 +17,5 @@ namespace CultivationGame.Data
 
         [Header("Progression")]
         public RealmDefinition nextRealm;
-
-        [Header("Combat")]
-        public float baseCombatPower;
     }
 }
