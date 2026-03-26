@@ -10,6 +10,8 @@ namespace CultivationGame.Data
         public int realmIndex;
         [TextArea] public string description;
 
+        public string subStage;
+
         [Header("Qi Requirements")]
         public double qiCapacity = 100;
         public double baseQiRate = 1;

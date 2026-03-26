@@ -1078,7 +1078,7 @@
                     "name": "OrbitActivate",
                     "type": "Button",
                     "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
