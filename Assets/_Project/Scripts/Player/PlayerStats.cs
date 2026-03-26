@@ -44,13 +44,11 @@ namespace CultivationGame.Player
 
         private void OnEnable()
         {
-            GameEvents.OnAttemptBreakthrough += AttemptBreakthrough;
             GameEvents.OnAddQi += AddQi;
         }
 
         private void OnDisable()
         {
-            GameEvents.OnAttemptBreakthrough -= AttemptBreakthrough;
             GameEvents.OnAddQi -= AddQi;
         }
 
@@ -64,56 +62,12 @@ namespace CultivationGame.Player
         {
             if (currentRealm == null) return;
             currentQi = currentQi + amount;
-            // currentQi = System.Math.Min(currentQi + amount, currentRealm.qiCapacity);
             GameEvents.RaiseQiChanged(currentQi, MaxQi);
 
             if (currentQi >= currentRealm.qiCapacity)
             {
-                if (currentRealm.qiCapacity * 1.2 <= currentQi)
-                {
-                    AttemptBreakthrough();
-                }
-                else
-                {
-                    GameEvents.RaiseQiMax();
-                }
+                GameEvents.RaiseQiMax();
             }
-        }
-
-        public void AttemptBreakthrough()
-        {
-            if (currentRealm == null || currentRealm.nextRealm == null) return;
-
-            if (currentQi < currentRealm.qiCapacity)
-            {
-                Debug.Log("Nicht genug Qi für einen Durchbruch!");
-                return;
-            }
-
-            float pillBonus = CultivationBuffs.BreakthroughBonus;
-            float roll = Random.Range(0f, 1f);
-            if (roll <= currentRealm.breakthroughSuccessRate + pillBonus)
-                PerformSuccess();
-            else
-                PerformFailure();
-
-            GameEvents.RaiseAfterRealmBreakthrough();
-        }
-
-        private void PerformSuccess()
-        {
-            currentRealm = currentRealm.nextRealm;
-            currentQi = 0;
-            Debug.Log($"Durchbruch geschafft! Neuer Rang: {currentRealm.realmName}");
-            GameEvents.RaiseQiChanged(currentQi, MaxQi);
-            GameEvents.RaiseRealmChanged(RealmName, SubStage);
-        }
-
-        private void PerformFailure()
-        {
-            currentQi *= 0.9;
-            Debug.Log("Durchbruch fehlgeschlagen! Qi-Stabilität verloren.");
-            GameEvents.RaiseQiChanged(currentQi, MaxQi);
         }
     }
 }

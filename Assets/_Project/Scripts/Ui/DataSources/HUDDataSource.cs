@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel; // <-- DAS ist der neue Standard
 using UnityEngine;
 using Unity.Properties;
@@ -6,6 +7,34 @@ using CultivationGame.Core;
 
 namespace CultivationGame.UI
 {
+    /// <summary>
+    /// Represents an active buff displayed on the HUD.
+    /// </summary>
+    public class ActiveBuff
+    {
+        private static int _nextId;
+
+        public int Id { get; } = _nextId++;
+        public string BuffName;
+        public string PillName;
+        public float Duration;
+        public float StartTime;
+
+        public string Key => $"Buff_{Id}";
+
+        public float RemainingTime => Mathf.Max(0f, Duration - (Time.time - StartTime));
+        public string FormattedTime
+        {
+            get
+            {
+                float remaining = RemainingTime;
+                int minutes = Mathf.FloorToInt(remaining / 60f);
+                int seconds = Mathf.FloorToInt(remaining % 60f);
+                return $"{minutes}:{seconds:D2}";
+            }
+        }
+    }
+
     [CreateAssetMenu(menuName = "Cultivation/UI/HUD Data Source")]
     // 1. Interface austauschen
     public class HUDDataSource : ScriptableObject, INotifyPropertyChanged
@@ -22,6 +51,15 @@ namespace CultivationGame.UI
         private bool _interactPromptVisible;
         private string _meditationBonusText = "";
         private bool _meditationBonusVisible;
+        private float _healthPercent = 100f;
+        private string _healthLabel = "HP 0/0";
+
+        // Active buff tracking
+        private readonly List<ActiveBuff> _activeBuffs = new();
+        public IReadOnlyList<ActiveBuff> ActiveBuffs => _activeBuffs;
+
+        public event Action<ActiveBuff> OnBuffAdded;
+        public event Action<ActiveBuff> OnBuffRemoved;
 
         [CreateProperty]
         public float StaminaPercent
@@ -131,6 +169,30 @@ namespace CultivationGame.UI
             }
         }
 
+        [CreateProperty]
+        public float HealthPercent
+        {
+            get => _healthPercent;
+            private set
+            {
+                if (Mathf.Approximately(_healthPercent, value)) return;
+                _healthPercent = value;
+                Notify(nameof(HealthPercent));
+            }
+        }
+
+        [CreateProperty]
+        public string HealthLabel
+        {
+            get => _healthLabel;
+            private set
+            {
+                if (_healthLabel == value) return;
+                _healthLabel = value;
+                Notify(nameof(HealthLabel));
+            }
+        }
+
         // 3. Notify Methode anpassen
         private void Notify(string name)
         {
@@ -146,6 +208,10 @@ namespace CultivationGame.UI
             GameEvents.OnRealmChanged += HandleRealmChanged;
             GameEvents.OnMeditationBonusApplied += HandleMeditationBonus;
             GameEvents.OnInteractPromptChanged += HandleInteractPrompt;
+            GameEvents.OnPlayerHealthChanged += HandleHealth;
+            GameEvents.OnPlayerDied += HandlePlayerDied;
+            GameEvents.OnBuffStarted += HandleBuffStarted;
+            GameEvents.OnBuffExpired += HandleBuffExpired;
         }
 
         public void Unsubscribe()
@@ -157,6 +223,10 @@ namespace CultivationGame.UI
             GameEvents.OnRealmChanged -= HandleRealmChanged;
             GameEvents.OnMeditationBonusApplied -= HandleMeditationBonus;
             GameEvents.OnInteractPromptChanged -= HandleInteractPrompt;
+            GameEvents.OnPlayerHealthChanged -= HandleHealth;
+            GameEvents.OnPlayerDied -= HandlePlayerDied;
+            GameEvents.OnBuffStarted -= HandleBuffStarted;
+            GameEvents.OnBuffExpired -= HandleBuffExpired;
         }
 
         public void ResetState()
@@ -169,6 +239,9 @@ namespace CultivationGame.UI
             _subStage = "";
             _interactPromptVisible = false;
             _meditationBonusVisible = false;
+            _healthPercent = 100f;
+            _healthLabel = "HP 0/0";
+            _activeBuffs.Clear();
         }
 
         private void HandleStamina(float current, float max)
@@ -214,6 +287,41 @@ namespace CultivationGame.UI
         private void HandleInteractPrompt(bool visible)
         {
             InteractPromptVisible = visible;
+        }
+
+        private void HandleHealth(float current, float max)
+        {
+            HealthPercent = max > 0f ? (current / max) * 100f : 0f;
+            HealthLabel = $"HP {current:F0}/{max:F0}";
+        }
+
+        private void HandlePlayerDied()
+        {
+            HealthPercent = 0f;
+            HealthLabel = "HP 0/0";
+        }
+
+        private void HandleBuffStarted(string buffName, string pillName, float duration)
+        {
+            var buff = new ActiveBuff
+            {
+                BuffName = buffName,
+                PillName = pillName,
+                Duration = duration,
+                StartTime = Time.time
+            };
+            _activeBuffs.Add(buff);
+            OnBuffAdded?.Invoke(buff);
+        }
+
+        private void HandleBuffExpired(string buffName, string pillName)
+        {
+            int idx = _activeBuffs.FindIndex(b => b.BuffName == buffName && b.PillName == pillName);
+            if (idx < 0) return;
+
+            var removed = _activeBuffs[idx];
+            _activeBuffs.RemoveAt(idx);
+            OnBuffRemoved?.Invoke(removed);
         }
     }
 }

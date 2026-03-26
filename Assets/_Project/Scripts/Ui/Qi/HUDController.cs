@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,7 +17,16 @@ namespace CultivationGame.UI
         private Button _breakthroughBtn;
         private Label _meditationBonusLabel;
         private Label _interactPrompt;
+        private ProgressBar _healthBar;
+        private Label _healthLabel;
+        private VisualElement _buffContainer;
         private IVisualElementScheduledItem _meditationFadeSchedule;
+        private IVisualElementScheduledItem _breakthroughBlinkSchedule;
+        private bool _blinkState;
+
+        // Track buff UI elements by key
+        private readonly Dictionary<string, VisualElement> _buffElements = new();
+        private IVisualElementScheduledItem _buffTimerSchedule;
 
         public void InitializeUI(VisualElement root)
         {
@@ -27,6 +37,9 @@ namespace CultivationGame.UI
             _breakthroughBtn = root.Q<Button>("BreakthroughBtn");
             _meditationBonusLabel = root.Q<Label>("MeditationBonusLabel");
             _interactPrompt = root.Q<Label>("InteractPrompt");
+            _healthBar = root.Q<ProgressBar>("HealthBar");
+            _healthLabel = root.Q<Label>("HealthLabel");
+            _buffContainer = root.Q<VisualElement>("BuffContainer");
 
             _breakthroughBtn?.RegisterCallback<ClickEvent>(OnBreakthroughClicked);
 
@@ -45,6 +58,12 @@ namespace CultivationGame.UI
                     bindingMode = BindingMode.ToTarget
                 });
 
+                _healthBar?.SetBinding("value", new DataBinding
+                {
+                    dataSourcePath = new PropertyPath(nameof(HUDDataSource.HealthPercent)),
+                    bindingMode = BindingMode.ToTarget
+                });
+
                 var qiLabel = root.Q<Label>("QiLabel");
                 qiLabel?.SetBinding("text", new DataBinding
                 {
@@ -52,9 +71,19 @@ namespace CultivationGame.UI
                     bindingMode = BindingMode.ToTarget
                 });
 
+                _healthLabel?.SetBinding("text", new DataBinding
+                {
+                    dataSourcePath = new PropertyPath(nameof(HUDDataSource.HealthLabel)),
+                    bindingMode = BindingMode.ToTarget
+                });
+
                 // Manual bindings for properties that need logic
                 hudData.PropertyChanged += OnPropertyChanged;
+                hudData.OnBuffAdded += HandleBuffAdded;
+                hudData.OnBuffRemoved += HandleBuffRemoved;
             }
+
+            StartBuffTimerUpdates(root);
         }
 
         private void OnDisable()
@@ -63,10 +92,14 @@ namespace CultivationGame.UI
             {
                 hudData.Unsubscribe();
                 hudData.PropertyChanged -= OnPropertyChanged;
+                hudData.OnBuffAdded -= HandleBuffAdded;
+                hudData.OnBuffRemoved -= HandleBuffRemoved;
             }
+            _breakthroughBlinkSchedule?.Pause();
+            _buffTimerSchedule?.Pause();
         }
 
-        private void OnBreakthroughClicked(ClickEvent evt) => GameEvents.RaiseAttemptBreakthrough();
+        private void OnBreakthroughClicked(ClickEvent evt) => GameEvents.RaiseBreakthroughConfirmRequested();
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -77,7 +110,10 @@ namespace CultivationGame.UI
                     break;
                 case nameof(HUDDataSource.BreakthroughReady):
                     if (_breakthroughBtn != null)
+                    {
                         _breakthroughBtn.EnableInClassList("breakthrough-btn--ready", hudData.BreakthroughReady);
+                        UpdateBreakthroughBlink(hudData.BreakthroughReady);
+                    }
                     break;
                 case nameof(HUDDataSource.RealmName):
                     if (_realmNameLabel != null)
@@ -114,6 +150,70 @@ namespace CultivationGame.UI
             });
             fadeOut.ExecuteLater(500);
             _meditationFadeSchedule = fadeOut;
+        }
+
+        // --- Breakthrough Blink ---
+        private void UpdateBreakthroughBlink(bool ready)
+        {
+            _breakthroughBlinkSchedule?.Pause();
+            if (!ready || _breakthroughBtn == null)
+            {
+                _breakthroughBtn?.RemoveFromClassList("breakthrough-blink-on");
+                return;
+            }
+
+            _blinkState = false;
+            _breakthroughBlinkSchedule = _breakthroughBtn.schedule.Execute(() =>
+            {
+                _blinkState = !_blinkState;
+                _breakthroughBtn.EnableInClassList("breakthrough-blink-on", _blinkState);
+            }).Every(600);
+        }
+
+        // --- Buff Icons ---
+        private void HandleBuffAdded(ActiveBuff buff)
+        {
+            if (_buffContainer == null) return;
+
+            var icon = new VisualElement();
+            icon.AddToClassList("buff-icon");
+
+            var nameLabel = new Label(buff.PillName);
+            nameLabel.AddToClassList("buff-icon__name");
+            icon.Add(nameLabel);
+
+            var timerLabel = new Label(buff.FormattedTime);
+            timerLabel.AddToClassList("buff-icon__timer");
+            icon.Add(timerLabel);
+
+            _buffContainer.Add(icon);
+            _buffElements[buff.Key] = icon;
+        }
+
+        private void HandleBuffRemoved(ActiveBuff buff)
+        {
+            if (_buffElements.TryGetValue(buff.Key, out var icon))
+            {
+                icon.RemoveFromHierarchy();
+                _buffElements.Remove(buff.Key);
+            }
+        }
+
+        private void StartBuffTimerUpdates(VisualElement root)
+        {
+            _buffTimerSchedule = root.schedule.Execute(() =>
+            {
+                if (hudData == null) return;
+                foreach (var buff in hudData.ActiveBuffs)
+                {
+                    if (_buffElements.TryGetValue(buff.Key, out var icon))
+                    {
+                        var timerLabel = icon.Q<Label>(className: "buff-icon__timer");
+                        if (timerLabel != null)
+                            timerLabel.text = buff.FormattedTime;
+                    }
+                }
+            }).Every(500);
         }
     }
 }

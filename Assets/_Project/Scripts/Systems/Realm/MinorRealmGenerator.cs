@@ -59,6 +59,8 @@ namespace CultivationGame.Systems
             var poiCenters = GeneratePOIs(config);
             GenerateDecorations(config, poiCenters);
 
+            SpawnResources(config);
+
             PlaceExitPortal();
             ApplyAtmosphere(config);
 
@@ -729,6 +731,67 @@ namespace CultivationGame.Systems
                     if (instance != null)
                     {
                         placed.Add(pos2D);
+                        spawned++;
+                    }
+                }
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // Ore Veins — weighted, slope-checked, spacing-enforced resource spawning
+        // -------------------------------------------------------------------------
+
+        private void SpawnResources(MinorRealmConfig config)
+        {
+            if (config.availableResources == null || config.availableResources.Length == 0) return;
+
+            float safeRadius = _halfSize * 0.8f;
+            float waterHeight = config.water.enabled ? config.water.waterLevel * config.maxHeight : -1f;
+            var   placed      = new List<Vector2>();
+
+            foreach (var entry in config.availableResources)
+            {
+                if (entry.oreVeinData == null || entry.oreVeinData.prefab == null) continue;
+
+                int count       = Random.Range(entry.minCount, entry.maxCount + 1);
+                int maxAttempts = count * 20;
+                int attempts    = 0;
+                int spawned     = 0;
+
+                while (spawned < count && attempts < maxAttempts)
+                {
+                    attempts++;
+                    Vector2 candidate = Random.insideUnitCircle * safeRadius;
+
+                    if (candidate.magnitude < spawnClearRadius) continue;
+                    if (HasNeighbour(placed, candidate, config.minVeinSpacing)) continue;
+
+                    float groundY = SampleY(candidate.x, candidate.y);
+
+                    // Skip underwater positions
+                    if (groundY <= waterHeight) continue;
+
+                    // Slope check — reject steep terrain
+                    if (SampleSlope(candidate.x, candidate.y) > config.maxVeinSlopeDegrees) continue;
+
+                    // Physics overlap check — avoid spawning inside other objects
+                    Vector3 worldPos = new Vector3(candidate.x, groundY + 0.5f, candidate.y);
+                    if (Physics.CheckSphere(worldPos, 1f))
+                        continue;
+
+                    var instance = TryInstantiate(entry.oreVeinData.prefab, worldPos, Quaternion.identity,
+                                                  setTerrainLayer: false);
+
+                    if (instance != null)
+                    {
+                        var oreVein = instance.GetComponent<OreVein>();
+                        if (oreVein != null)
+                            oreVein.Initialize(entry.oreVeinData);
+
+                        if (_interactableLayer != -1)
+                            SetLayerRecursive(instance, _interactableLayer, -1);
+
+                        placed.Add(candidate);
                         spawned++;
                     }
                 }

@@ -91,3 +91,4 @@ MonoBehaviour:
   fogColor: {r: 1, g: 0.9576455, b: 0.5330188, a: 1}
   fogDensity: 0
   ambientLight: {r: 1, g: 1, b: 1, a: 1}
+  availableResources: []

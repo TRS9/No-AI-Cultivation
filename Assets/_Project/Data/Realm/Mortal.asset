@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RealmDefinition
   realmName: Mortal
   realmIndex: 0
-  subStage: 0
   description: 
   qiCapacity: 100
   baseQiRate: 1
   breakthroughSuccessRate: 1
+  spiritSenseRange: 30
   nextRealm: {fileID: 11400000, guid: 2f0c98ad0c7f77c46bf37c9320f0c3ea, type: 2}
-  baseCombatPower: 0

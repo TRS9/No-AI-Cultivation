@@ -18,10 +18,20 @@ namespace CultivationGame.Core
         public static void RaiseQiMax()
             => OnQiMax?.Invoke();
 
+        public delegate void BreakthroughConfirmRequested();
+        public static event BreakthroughConfirmRequested OnBreakthroughConfirmRequested;
+        public static void RaiseBreakthroughConfirmRequested()
+            => OnBreakthroughConfirmRequested?.Invoke();
+
         public delegate void AttemptBreakthrough();
         public static event AttemptBreakthrough OnAttemptBreakthrough;
         public static void RaiseAttemptBreakthrough()
             => OnAttemptBreakthrough?.Invoke();
+
+        public delegate void RealmBreakthrough(bool success, string realmName);
+        public static event RealmBreakthrough OnRealmBreakthrough;
+        public static void RaiseRealmBreakthrough(bool success, string realmName)
+            => OnRealmBreakthrough?.Invoke(success, realmName);
 
         public delegate void AfterRealmBreakthrough();
         public static event AfterRealmBreakthrough OnAfterRealmBreakthrough;
@@ -68,11 +78,49 @@ namespace CultivationGame.Core
         public static void RaiseInteractPromptChanged(bool visible)
             => OnInteractPromptChanged?.Invoke(visible);
 
+        // --- Build Mode ---
+        public delegate void BuildModeToggled(bool isBuildMode);
+        public static event BuildModeToggled OnBuildModeToggled;
+        public static void RaiseBuildModeToggled(bool isBuildMode)
+            => OnBuildModeToggled?.Invoke(isBuildMode);
+
         // --- Build Elevation ---
         public delegate void BuildLayerChanged(int layer, float worldY);
         public static event BuildLayerChanged OnBuildLayerChanged;
         public static void RaiseBuildLayerChanged(int layer, float worldY)
             => OnBuildLayerChanged?.Invoke(layer, worldY);
+
+        // --- Combat (Phase 8) ---
+        public delegate void PlayerHealthChanged(float currentHealth, float maxHealth);
+        public static event PlayerHealthChanged OnPlayerHealthChanged;
+        public static void RaisePlayerHealthChanged(float current, float max)
+            => OnPlayerHealthChanged?.Invoke(current, max);
+
+        public delegate void PlayerDied();
+        public static event PlayerDied OnPlayerDied;
+        public static void RaisePlayerDied()
+            => OnPlayerDied?.Invoke();
+
+        public delegate void PlayerAttack();
+        public static event PlayerAttack OnPlayerAttack;
+        public static void RaisePlayerAttack()
+            => OnPlayerAttack?.Invoke();
+
+        public delegate void PlayerDodge();
+        public static event PlayerDodge OnPlayerDodge;
+        public static void RaisePlayerDodge()
+            => OnPlayerDodge?.Invoke();
+
+        // --- Buff Tracking (HUD) ---
+        public delegate void BuffStarted(string buffName, string pillName, float duration);
+        public static event BuffStarted OnBuffStarted;
+        public static void RaiseBuffStarted(string buffName, string pillName, float duration)
+            => OnBuffStarted?.Invoke(buffName, pillName, duration);
+
+        public delegate void BuffExpired(string buffName, string pillName);
+        public static event BuffExpired OnBuffExpired;
+        public static void RaiseBuffExpired(string buffName, string pillName)
+            => OnBuffExpired?.Invoke(buffName, pillName);
 
         // --- Game State ---
         public delegate void PauseStateChanged(bool isPaused);
@@ -84,5 +132,11 @@ namespace CultivationGame.Core
         public static event PanelStateChanged OnPanelStateChanged;
         public static void RaisePanelStateChanged(string panelId, bool isOpen)
             => OnPanelStateChanged?.Invoke(panelId, isOpen);
+
+        // --- Dialogue (Phase 7) ---
+        public delegate void DialogueStateChanged(bool isActive);
+        public static event DialogueStateChanged OnDialogueStateChanged;
+        public static void RaiseDialogueStateChanged(bool isActive)
+            => OnDialogueStateChanged?.Invoke(isActive);
     }
 }

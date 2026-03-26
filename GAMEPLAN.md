@@ -14,14 +14,24 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 |--------|--------|-------------------|
 | Player Movement + Stamina | Fertig | Fliegen später hinzufügen |
 | Minor Realm Generierung | Fertig | Biome-Configs für Materialien anpassen |
-| Essence Collection | Fertig | Wird zu allgemeinem Item-Pickup erweitert |
-| Inventar (EssenceData-basiert) | Fertig | Muss auf generisches Item-System umgebaut werden |
-| Cultivation / Breakthrough | Fertig | Pillen-Integration hinzufügen |
-| Save/Load | Fertig | Muss um Factory-Daten erweitert werden |
+| Essence Collection | Fertig | ~~Wird zu allgemeinem Item-Pickup erweitert~~ ✅ Erledigt |
+| Inventar (EssenceData-basiert) | ✅ Umgebaut | ~~Muss auf generisches Item-System umgebaut werden~~ ✅ Nutzt jetzt ItemData |
+| Cultivation / Breakthrough | Fertig | ~~Pillen-Integration hinzufügen~~ ✅ PillBuffSystem implementiert |
+| Save/Load | ✅ Erweitert | ~~Muss um Factory-Daten erweitert werden~~ ✅ Building, Pipe, Machine, OreVein SaveEntries |
 | Scene Management / Portale | Fertig | Prison Realm = Universe, Grotto = Workshop |
-| UI (Qi, Stamina, Inventory) | Fertig | Factory-UI hinzufügen |
-| GameEvents System | Fertig | Neue Events für Factory hinzufügen |
+| UI (Qi, Stamina, Inventory) | Fertig | Factory-UI hinzufügen (Build Menu fertig) |
+| GameEvents System | ✅ Erweitert | ~~Neue Events für Factory hinzufügen~~ ✅ GameDataEvents.cs mit allen Factory-Events |
 | Terrain Generation | Fertig | Bleibt für Minor Realms |
+| **Generisches Item-System** | ✅ **Fertig** | ItemData, RawMaterialData, PillData, EssenceData |
+| **Rezept/Crafting-System** | ✅ **Fertig** | RecipeData, RecipeDatabase, CraftingSystem |
+| **Pill-System** | ✅ **Fertig** | PillData, PillBuffSystem, CultivationBuffs |
+| **Building/Placement** | ✅ **Fertig** | BuildGrid, PlacementController, BuildMenu |
+| **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory, IMachineConnectable |
+| **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe (IMachineConnectable), StorageContainer |
+| **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
+| **Maschinen-UI** | ✅ **Fertig** | MachineUIController (Rezept, Slots, Progress) |
+| **Machine-Removal** | ✅ **Fertig** | PlacementController.OnRemove |
+| **Qi-Netzwerk** | ✅ **Fertig** | QiNetwork, QiConduit (Satisfactory-Strom) |
 
 ---
 
@@ -44,11 +54,11 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 - **Tief (5+ Stufen):** Mehrere Zwischenprodukte, Nebenprodukte, Abfall. Satisfactory-Level.
 - **Empfehlung:** Start mit 3 Stufen, auf 5 erweitern wenn das Grundsystem steht.
 
-### DE-4: Qi-Maschinen-Interaktion
-- **Qi als Treibstoff:** Maschinen verbrauchen Qi des Spielers → Tension zwischen Cultivation und Produktion.
-- **Spirit Stones als Treibstoff:** Separate Ressource → Weniger Conflict, mehr Farming.
-- **Beides:** Frühes Spiel = eigenes Qi, später = Spirit Stones als Automatisierung.
-- **Empfehlung:** Beides. Natürliche Progression von manuell zu automatisiert.
+### DE-4: Qi-Maschinen-Interaktion ✅ ENTSCHIEDEN
+- **Qi-Netzwerk (wie Satisfactory-Strom):** Alles läuft über Qi. Spieler meditiert → füllt Qi-Pool → QiConduits (Leitungen) verteilen Qi → Maschinen in Reichweite sind "powered".
+- Kein `FuelType`, keine Spirit Stones als Treibstoff, keine Multiple-Fuel-Logik.
+- `MachineData.qiConsumptionRate` = Qi/Sekunde während Produktion.
+- Natürliche Progression: höherer Realm = mehr Qi-Kapazität = mehr Maschinen betreibbar.
 
 ### DE-5: Combat-Tiefe
 - **Minimal (empfohlen für V1):** Einfaches Action-Combat. Angriff, Ausweichen, 2-3 Techniken.
@@ -71,7 +81,7 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 
 ---
 
-### PHASE 0: Refactoring — Generisches Item-System
+### PHASE 0: Refactoring — Generisches Item-System ✅ IMPLEMENTIERT
 **Priorität: HÖCHSTE — ohne das geht nichts weiter**
 **Geschätzter Umfang: Das erste was gebaut werden muss**
 
@@ -120,7 +130,7 @@ ItemData (ScriptableObject) — Ersetzt/erweitert EssenceData
 
 ---
 
-### PHASE 1: Rezept- und Crafting-System
+### PHASE 1: Rezept- und Crafting-System ✅ IMPLEMENTIERT
 **Priorität: HOCH — Kern der Factory-Mechanik**
 
 #### Schritt 1.1: RecipeData ScriptableObject
@@ -156,7 +166,7 @@ RecipeData (ScriptableObject)
 
 ---
 
-### PHASE 2: Pill-System und Cultivation-Integration
+### PHASE 2: Pill-System und Cultivation-Integration ✅ IMPLEMENTIERT
 **Priorität: HOCH — verbindet Factory mit bestehendem Cultivation**
 
 #### Schritt 2.1: PillData (erbt von ItemData)
@@ -194,7 +204,7 @@ Tier 5: Realm-Breaking Pill       — Das Endziel. Erfordert massive Ressourcen.
 
 ---
 
-### PHASE 3: Building & Placement System
+### PHASE 3: Building & Placement System ✅ IMPLEMENTIERT
 **Priorität: HOCH — ohne Maschinen keine Factory**
 
 #### Schritt 3.1: MachineData ScriptableObject
@@ -211,7 +221,7 @@ MachineData (ScriptableObject)
 ├── processingSpeed (float) — Multiplikator
 ├── inputSlots (int)
 ├── outputSlots (int)
-└── fuelType (enum: None, Qi, SpiritStone, Both)
+└── qiConsumptionRate (float) — Qi/s während Produktion (gespeist über QiConduits)
 ```
 
 #### Schritt 3.2: Grid-System
@@ -242,7 +252,7 @@ MachineData (ScriptableObject)
 
 ---
 
-### PHASE 4: Maschinen-Logik und Produktion
+### PHASE 4: Maschinen-Logik und Produktion ✅ IMPLEMENTIERT
 **Priorität: HOCH — das Herz der Factory**
 
 #### Schritt 4.1: BaseMachine Komponente
@@ -284,15 +294,15 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - Rezept-Dropdown oder Rezept-Browser
 
 **Dateien:**
-- `Systems/Factory/BaseMachine.cs`
-- `Systems/Factory/MachineInteraction.cs`
-- `Systems/Factory/FurnaceMachine.cs` (etc. für Spezialfälle)
-- `Ui/Factory/MachineUI.cs`
-- `Ui/Factory/ItemSlotUI.cs`
+- `Systems/Factory/BaseMachine.cs` ✅
+- `Systems/Factory/MachineInventory.cs` ✅
+- `Systems/Factory/Splitter.cs` ✅ (neu — verteilt Items 1→2, Round-Robin)
+- `Systems/Factory/Merger.cs` ✅ (neu — kombiniert Streams 2→1)
+- `Ui/Factory/MachineUIController.cs` ✅
 
 ---
 
-### PHASE 5: Transport und Logistik
+### PHASE 5: Transport und Logistik ✅ IMPLEMENTIERT
 **Priorität: MITTEL — kommt nachdem einzelne Maschinen funktionieren**
 
 #### Schritt 5.1: Manueller Transport (schon implizit da)
@@ -315,6 +325,13 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - Merger: 2 Inputs → 1 Output (kombiniert Ströme)
 - Nötig für komplexe Produktionsketten
 
+#### Schritt 5.5: Qi-Netzwerk (Satisfactory-Strom) ✅ IMPLEMENTIERT
+- **QiConduit**: Platzierbare Qi-Leitung mit connectionRadius (Conduit↔Conduit) und machineRadius (Conduit→Maschine)
+- **QiNetwork**: Singleton, BFS-Connectivity vom Qi-Source-Punkt, aggregierter Qi-Verbrauch pro Frame
+- Maschinen brauchen Qi-Verbindung → `IsPowered` muss true sein
+- `MachineData.qiConsumptionRate` = Qi/s während Produktion
+- Kein `successRate` mehr — Produktion gelingt immer (Factory = Präzision)
+
 **Dateien:**
 - `Systems/Factory/SpiritPipe.cs`
 - `Systems/Factory/StorageContainer.cs`
@@ -323,7 +340,7 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 
 ---
 
-### PHASE 6: Ressourcen und Minor Realm Anpassung
+### PHASE 6: Ressourcen und Minor Realm Anpassung ⚠️ TEILWEISE IMPLEMENTIERT
 **Priorität: MITTEL — Content für die Factory**
 
 #### Schritt 6.1: Neue Ressourcen-Typen definieren
@@ -481,21 +498,21 @@ Realm 5 (Dao)           → Alle Maschinen, Realm-Breaking Pill Rezept
 ## EMPFOHLENE REIHENFOLGE (Step-by-Step)
 
 ```
-SCHRITT  1: [Phase 0] Generisches Item-System          ← JETZT ANFANGEN
-SCHRITT  2: [Phase 1] Rezept/Crafting-System
-SCHRITT  3: [Phase 2] Pill-System + Cultivation-Hook
-SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content)
-SCHRITT  5: [Phase 3] Grid + Placement-System
-SCHRITT  6: [Phase 4] Erste Maschine (Furnace)
-SCHRITT  7: [Phase 4] Maschinen-UI
-SCHRITT  8: [Phase 4] Weitere Maschinen
-SCHRITT  9: [Phase 5] Spirit Pipes + Storage
-SCHRITT 10: [Phase 7] NPC-Basis + Dialogue
-SCHRITT 11: [Phase 7] Quest-System
-SCHRITT 12: [Phase 8] Combat (Minimal)
-SCHRITT 13: [Phase 6] Minor Realm Ressourcen-Anpassung
-SCHRITT 14: [Phase 9] Story-Quests + Freischalt-Kette
-SCHRITT 15: [Phase 9] Balancing + Win-Condition
+SCHRITT  1: [Phase 0] Generisches Item-System          ✅ FERTIG
+SCHRITT  2: [Phase 1] Rezept/Crafting-System            ✅ FERTIG
+SCHRITT  3: [Phase 2] Pill-System + Cultivation-Hook    ✅ FERTIG
+SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content) ✅ FERTIG (OreVeins)
+SCHRITT  5: [Phase 3] Grid + Placement-System           ✅ FERTIG
+SCHRITT  6: [Phase 4] Erste Maschine (Furnace)          ✅ FERTIG (BaseMachine)
+SCHRITT  7: [Phase 4] Maschinen-UI                      ✅ FERTIG
+SCHRITT  8: [Phase 4] Weitere Maschinen                 ✅ FERTIG (Splitter/Merger)
+SCHRITT  9: [Phase 5] Spirit Pipes + Storage            ✅ FERTIG
+SCHRITT 10: [Phase 7] NPC-Basis + Dialogue              ⬜ OFFEN
+SCHRITT 11: [Phase 7] Quest-System                      ⬜ OFFEN
+SCHRITT 12: [Phase 8] Combat (Minimal)                  ✅ FERTIG
+SCHRITT 13: [Phase 6] Minor Realm Ressourcen-Anpassung  ⬜ OFFEN
+SCHRITT 14: [Phase 9] Story-Quests + Freischalt-Kette   ⬜ OFFEN
+SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 ```
 
 ---
@@ -518,6 +535,48 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition
 
 ---
 
+## KAMERA & BUILD-MODUS
+
+### Build-Modus Entkopplung ✅ IMPLEMENTIERT
+- Build-Modus ist **unabhängig von der Kameraperspektive** — funktioniert in 3rd Person UND Spirit Sense
+- **Shift-Taste** toggelt Build-Modus in jeder Perspektive
+- `GameEvents.OnBuildModeToggled(bool)` — neues Event, ersetzt die alte Kopplung an `OnMeditationToggled`
+- BuildMode-InputMap wird additiv aktiviert (Place, Cancel, Rotate funktionieren auch in 3rd Person)
+- Bei Spirit Sense Eintritt: Build-Modus wird automatisch aktiviert
+- Bei Spirit Sense Austritt: Build-Modus wird automatisch deaktiviert
+
+### Kamera-Transition Fix ✅ IMPLEMENTIERT
+- Cinemachine-Position/Rotation wird **vor dem Deaktivieren** gespeichert
+- Beim Rückwechsel (Spirit Sense → 3rd Person): Animation-Ziel ist die gespeicherte Position
+- Kamera-Transform wird vor Cinemachine-Reaktivierung gesetzt → nahtloser Übergang
+
+### Realm-basierte Spirit Sense Reichweite ✅ IMPLEMENTIERT
+- `RealmDefinition.spiritSenseRange` — maximale Zoom-Distanz pro Realm
+- `SpiritSenseCamera.SetMaxZoom(float)` — wird bei Spirit Sense Eintritt gesetzt
+- Höherer Realm = größere Übersicht = strategischer Vorteil beim Factory-Bau
+
+**Dateien:**
+- `Scripts/Core/GameEvents.cs` — OnBuildModeToggled Event
+- `Scripts/Data/DataTemplates/RealmDefinition.cs` — spiritSenseRange Feld
+- `Scripts/Player/Camera/CameraSystem.cs` — Build-Toggle, Kamera-Fix, Realm-Distanz
+- `Scripts/Player/Camera/SpiritSenseCamera.cs` — SetMaxZoom()
+- `Scripts/Ui/Building/BuildMenuController.cs` — hört auf OnBuildModeToggled
+- `Input/InputSystem_Actions.inputactions` — BuildToggle im Player-Map
+
+---
+
+## MANUELLE TODOs
+
+- [x] RealmDefinition-Assets aktualisieren: `spiritSenseRange` Werte gesetzt (Mortal: 30, QiRefinement1: 40, QiRefinement2: 50, QiRefinement3: 60, QiRefinement4: 70, QiRefinement5: 80)
+- [ ] CameraSystem Inspector: `playerStats` Referenz zuweisen
+- [ ] CameraSystem Inspector: `BuildToggle` InputActionReference auf Player/BuildToggle setzen
+- [ ] PlacementController Inspector: Input-Referenzen prüfen (Place, Cancel, Rotate, Remove)
+- [x] Splitter/Merger Maschinen implementiert (`Systems/Factory/Splitter.cs`, `Systems/Factory/Merger.cs`)
+- [ ] Cursor-Handling in 3rd Person Build-Modus testen (Cursor sichtbar + Kamera-Look ggf. einschränken)
+- [ ] Build-Menu UI-Styling für 3rd Person Overlay optimieren
+
+---
+
 ## ORDNER-STRUKTUR (erweitert)
 
 ```
@@ -525,35 +584,34 @@ Assets/_Project/Scripts/
 ├── Core/                    (bestehend + neue Events/Enums)
 ├── Data/
 │   └── DataTemplates/
-│       ├── ItemData.cs      (NEU)
-│       ├── PillData.cs      (NEU)
-│       ├── RecipeData.cs    (NEU)
-│       ├── MachineData.cs   (NEU)
-│       ├── NPCData.cs       (NEU)
-│       ├── QuestData.cs     (NEU)
-│       ├── EnemyData.cs     (NEU)
-│       ├── EssenceData.cs   (wird Subclass von ItemData)
-│       └── RealmDefinition.cs
+│       ├── ItemData.cs      ✅ implementiert
+│       ├── PillData.cs      ✅ implementiert
+│       ├── RecipeData.cs    ✅ implementiert
+│       ├── MachineData.cs   ✅ implementiert
+│       ├── NPCData.cs       ⬜ offen (Phase 7)
+│       ├── QuestData.cs     ⬜ offen (Phase 7)
+│       ├── EnemyData.cs     ✅ implementiert (Phase 8)
+│       ├── EssenceData.cs   ✅ Subclass von ItemData
+│       └── RealmDefinition.cs  ✅ mit spiritSenseRange
 ├── Player/                  (bestehend + Pill-Consumption)
 ├── Systems/
-│   ├── Crafting/            (NEU)
-│   ├── Factory/             (NEU)
-│   ├── Building/            (NEU)
-│   ├── NPC/                 (NEU)
-│   ├── Quest/               (NEU)
-│   ├── Combat/              (NEU)
-│   ├── Pill/                (NEU)
+│   ├── Crafting/            ✅ CraftingSystem.cs
+│   ├── Factory/             ✅ BaseMachine, SpiritPipe, StorageContainer, Splitter, Merger, QiNetwork, QiConduit, OreVein, ResourceExtractor
+│   ├── Building/            ✅ BuildGrid, PlacementController
+│   ├── NPC/                 ⬜ offen (Phase 7)
+│   ├── Quest/               ⬜ offen (Phase 7)
+│   ├── Combat/              ✅ implementiert (Phase 8)│   ├── Pill/                ✅ PillBuffSystem.cs
 │   ├── Realm/               (bestehend)
 │   ├── Essence/             (bestehend)
-│   ├── Save/                (bestehend + erweitern)
+│   ├── Save/                (bestehend + erweitert)
 │   └── Interaction/         (bestehend)
 └── Ui/
-    ├── Crafting/            (NEU)
-    ├── Factory/             (NEU)
-    ├── Building/            (NEU)
-    ├── Dialogue/            (NEU)
-    ├── Quest/               (NEU)
-    ├── Combat/              (NEU)
-    ├── Inventory/           (bestehend + anpassen)
+    ├── Crafting/            ✅ CraftingController.cs
+    ├── Factory/             ✅ MachineUIController.cs
+    ├── Building/            ✅ BuildMenuController, BuildMenuDataSource
+    ├── Dialogue/            ⬜ offen (Phase 7)
+    ├── Quest/               ⬜ offen (Phase 7)
+    ├── Combat/              ✅ implementiert (Phase 8)
+    ├── Inventory/           ✅ InventoryController.cs
     └── ...                  (bestehend)
 ```

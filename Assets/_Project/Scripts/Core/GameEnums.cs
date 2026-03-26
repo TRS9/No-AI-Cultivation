@@ -27,6 +27,21 @@ namespace CultivationGame.Core
         Distiller,
         Condenser,
         PillPress,
-        Storage
+        Storage,
+        SpiritPipe,
+        ResourceExtractor,
+        Splitter,
+        Merger,
+        QiConduit
+    }
+
+    public enum EnemyState
+    {
+        Idle,
+        Patrol,
+        Chase,
+        Attack,
+        Return,
+        Dead
     }
 }
