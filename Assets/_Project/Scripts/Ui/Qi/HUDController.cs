@@ -66,7 +66,7 @@ namespace CultivationGame.UI
             }
         }
 
-        private void OnBreakthroughClicked(ClickEvent evt) => GameEvents.RaiseAttemptBreakthrough();
+        private void OnBreakthroughClicked(ClickEvent evt) => GameEvents.RaiseBreakthroughConfirmRequested();
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

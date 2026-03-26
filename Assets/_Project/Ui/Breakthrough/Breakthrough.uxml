@@ -1,0 +1,17 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../Global.uss"/>
+    <Style src="Breakthrough.uss"/>
+    <ui:VisualElement name="BreakthroughOverlay" class="breakthrough-overlay" style="display: none;">
+        <ui:VisualElement name="BreakthroughPanel" class="panel breakthrough-panel">
+            <ui:VisualElement class="panel-header" style="justify-content: center;">
+                <ui:Label text="BREAKTHROUGH" name="BreakthroughTitle" class="panel-title breakthrough-title"/>
+            </ui:VisualElement>
+            <ui:Label text="Your Qi has reached its peak.\nAttempt to break through to the next realm?" name="BreakthroughDescription" class="breakthrough-description"/>
+            <ui:VisualElement class="breakthrough-actions">
+                <ui:Button text="BREAK THROUGH" name="ConfirmBtn" class="breakthrough-confirm-btn"/>
+                <ui:Button text="CANCEL" name="CancelBtn" class="breakthrough-cancel-btn"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label text="" name="BreakthroughResultLabel" class="breakthrough-result"/>
+    </ui:VisualElement>
+</ui:UXML>

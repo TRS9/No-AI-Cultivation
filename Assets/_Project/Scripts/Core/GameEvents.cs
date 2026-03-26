@@ -18,10 +18,20 @@ namespace CultivationGame.Core
         public static void RaiseQiMax()
             => OnQiMax?.Invoke();
 
+        public delegate void BreakthroughConfirmRequested();
+        public static event BreakthroughConfirmRequested OnBreakthroughConfirmRequested;
+        public static void RaiseBreakthroughConfirmRequested()
+            => OnBreakthroughConfirmRequested?.Invoke();
+
         public delegate void AttemptBreakthrough();
         public static event AttemptBreakthrough OnAttemptBreakthrough;
         public static void RaiseAttemptBreakthrough()
             => OnAttemptBreakthrough?.Invoke();
+
+        public delegate void RealmBreakthrough(bool success, string realmName);
+        public static event RealmBreakthrough OnRealmBreakthrough;
+        public static void RaiseRealmBreakthrough(bool success, string realmName)
+            => OnRealmBreakthrough?.Invoke(success, realmName);
 
         public delegate void AfterRealmBreakthrough();
         public static event AfterRealmBreakthrough OnAfterRealmBreakthrough;

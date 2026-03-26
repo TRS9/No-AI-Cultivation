@@ -19,6 +19,9 @@ namespace CultivationGame.Data
         [Tooltip("Maximum zoom distance for the Spirit Sense camera at this realm")]
         public float spiritSenseRange = 30f;
 
+        [Header("Sub-Stage")]
+        public int subStage;
+
         [Header("Combat")]
         [Tooltip("Base attack damage at this cultivation realm")]
         public float baseDamage = 5f;
