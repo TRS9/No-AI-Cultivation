@@ -18,6 +18,9 @@ namespace CultivationGame.UI
 
         private VisualElement _panel;
         private ScrollView _machineGrid;
+        private bool _inSpiritSense;
+
+        private const string ThirdPersonClass = "build-menu--third-person";
 
         // ------------------------------------------------------------------ //
         //  Lifecycle
@@ -29,16 +32,23 @@ namespace CultivationGame.UI
             _machineGrid = root.Q<ScrollView>("MachineGrid");
 
             GameEvents.OnBuildModeToggled += OnBuildModeToggled;
+            GameEvents.OnMeditationToggled += OnMeditationToggled;
         }
 
         private void OnDisable()
         {
             GameEvents.OnBuildModeToggled -= OnBuildModeToggled;
+            GameEvents.OnMeditationToggled -= OnMeditationToggled;
         }
 
         // ------------------------------------------------------------------ //
         //  Event handlers
         // ------------------------------------------------------------------ //
+
+        private void OnMeditationToggled(bool isMeditating)
+        {
+            _inSpiritSense = isMeditating;
+        }
 
         private void OnBuildModeToggled(bool isBuildMode)
         {
@@ -49,10 +59,18 @@ namespace CultivationGame.UI
                 buildMenuData?.BuildMachineList();
                 RebuildGrid();
                 _panel.style.display = DisplayStyle.Flex;
+
+                // Ensure clean state before applying layout class
+                _panel.RemoveFromClassList(ThirdPersonClass);
+
+                // Apply compact layout when in 3rd-person (not Spirit Sense)
+                if (!_inSpiritSense)
+                    _panel.AddToClassList(ThirdPersonClass);
             }
             else
             {
                 _panel.style.display = DisplayStyle.None;
+                _panel.RemoveFromClassList(ThirdPersonClass);
                 placementController?.CancelPlacement();
             }
         }

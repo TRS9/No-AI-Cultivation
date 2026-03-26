@@ -48,3 +48,13 @@
     color: rgb(216, 210, 190);
     -unity-text-align: middle-center;
 }
+
+/* Compact left-aligned overlay for 3rd-person camera mode */
+.build-menu--third-person {
+    left: 20px;
+    top: 50%;
+    bottom: auto;
+    translate: 0 -50%;
+    max-width: 200px;
+    background-color: rgba(9, 21, 11, 0.7);
+}
