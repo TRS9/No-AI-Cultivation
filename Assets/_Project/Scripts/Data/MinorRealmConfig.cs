@@ -207,5 +207,8 @@ namespace CultivationGame.Data
         public Color fogColor = new Color(0.7f, 0.75f, 0.8f);
         [Range(0f, 0.05f)] public float fogDensity = 0.01f;
         public Color ambientLight = Color.white;
+
+        [Header("Resources")]
+        public RealmResourceEntry[] availableResources;
     }
 }
