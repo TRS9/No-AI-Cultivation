@@ -5,10 +5,12 @@
     <ui:Template name="Crafting" src="Crafting/Crafting.uxml"/>
     <ui:Template name="PauseMenu" src="Pause/PauseMenu.uxml"/>
     <ui:Template name="BuildMenu" src="Building/BuildMenu.uxml"/>
+    <ui:Template name="Breakthrough" src="Breakthrough/Breakthrough.uxml"/>
 
     <ui:Instance template="HUD" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;"/>
     <ui:Instance template="Inventory" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;"/>
     <ui:Instance template="Crafting" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;"/>
     <ui:Instance template="PauseMenu" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;"/>
     <ui:Instance template="BuildMenu" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;"/>
+    <ui:Instance template="Breakthrough" picking-mode="Ignore" style="position: absolute; width: 100%; height: 100%;"/>
 </ui:UXML>
