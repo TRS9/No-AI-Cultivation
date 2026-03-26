@@ -80,6 +80,27 @@ namespace CultivationGame.Core
         public static void RaiseBuildLayerChanged(int layer, float worldY)
             => OnBuildLayerChanged?.Invoke(layer, worldY);
 
+        // --- Combat (Phase 8) ---
+        public delegate void PlayerHealthChanged(float currentHealth, float maxHealth);
+        public static event PlayerHealthChanged OnPlayerHealthChanged;
+        public static void RaisePlayerHealthChanged(float current, float max)
+            => OnPlayerHealthChanged?.Invoke(current, max);
+
+        public delegate void PlayerDied();
+        public static event PlayerDied OnPlayerDied;
+        public static void RaisePlayerDied()
+            => OnPlayerDied?.Invoke();
+
+        public delegate void PlayerAttack();
+        public static event PlayerAttack OnPlayerAttack;
+        public static void RaisePlayerAttack()
+            => OnPlayerAttack?.Invoke();
+
+        public delegate void PlayerDodge();
+        public static event PlayerDodge OnPlayerDodge;
+        public static void RaisePlayerDodge()
+            => OnPlayerDodge?.Invoke();
+
         // --- Game State ---
         public delegate void PauseStateChanged(bool isPaused);
         public static event PauseStateChanged OnPauseStateChanged;

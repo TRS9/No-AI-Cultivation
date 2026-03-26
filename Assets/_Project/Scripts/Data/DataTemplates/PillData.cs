@@ -24,6 +24,14 @@ namespace CultivationGame.Data
         [Tooltip("Duration of temporal buffs in seconds")]
         public float buffDuration;
 
+        [Header("Combat Buffs")]
+        [Tooltip("Additive damage multiplier bonus for buffDuration seconds (0 = no bonus)")]
+        public float damageBoost;
+        [Tooltip("Additive defense multiplier bonus for buffDuration seconds (0 = no bonus)")]
+        public float defenseBoost;
+        [Tooltip("Additive speed multiplier bonus for buffDuration seconds (0 = no bonus)")]
+        public float speedBoost;
+
         [Header("Tolerance & Lore")]
         [Tooltip("Maximum beneficial uses per session; additional uses have diminishing effect")]
         public int maxDailyUses = 1;

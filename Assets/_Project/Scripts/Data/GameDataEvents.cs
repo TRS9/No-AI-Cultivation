@@ -97,5 +97,26 @@ namespace CultivationGame.Data
         public static event ResourceExtracted OnResourceExtracted;
         public static void RaiseResourceExtracted(ItemData resource, int amount)
             => OnResourceExtracted?.Invoke(resource, amount);
+
+        // --- Combat / Enemy (Phase 8) ---
+        public delegate void EnemyDamaged(MonoBehaviour enemy, float damage);
+        public static event EnemyDamaged OnEnemyDamaged;
+        public static void RaiseEnemyDamaged(MonoBehaviour enemy, float damage)
+            => OnEnemyDamaged?.Invoke(enemy, damage);
+
+        public delegate void EnemyDied(MonoBehaviour enemy);
+        public static event EnemyDied OnEnemyDied;
+        public static void RaiseEnemyDied(MonoBehaviour enemy)
+            => OnEnemyDied?.Invoke(enemy);
+
+        public delegate void EnemySpawned(MonoBehaviour enemy);
+        public static event EnemySpawned OnEnemySpawned;
+        public static void RaiseEnemySpawned(MonoBehaviour enemy)
+            => OnEnemySpawned?.Invoke(enemy);
+
+        public delegate void LootDropped(ItemData item, int amount, UnityEngine.Vector3 position);
+        public static event LootDropped OnLootDropped;
+        public static void RaiseLootDropped(ItemData item, int amount, UnityEngine.Vector3 position)
+            => OnLootDropped?.Invoke(item, amount, position);
     }
 }
