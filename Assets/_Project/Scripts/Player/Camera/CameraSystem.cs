@@ -36,6 +36,7 @@ namespace CultivationGame.Player
         private InputActionMap _buildModeMap;
         private InputAction _meditateAction;
         private InputAction _buildToggleAction;
+        private CinemachineInputAxisController _inputAxisController;
 
         // Saved Cinemachine state for smooth return transition
         private Vector3 _savedActionPos;
@@ -46,6 +47,9 @@ namespace CultivationGame.Player
         {
             if (cinemachineBrain != null)
                 _mainCamera = cinemachineBrain.GetComponent<Camera>();
+
+            if (cinemachineVCam != null)
+                _inputAxisController = cinemachineVCam.GetComponent<CinemachineInputAxisController>();
 
             if (inputActions != null)
             {
@@ -97,6 +101,9 @@ namespace CultivationGame.Player
             {
                 // In 3rd person: enable BuildMode map additively so Place/Cancel/Rotate work
                 _buildModeMap?.Enable();
+                // Disable Cinemachine look input so mouse controls the cursor, not the camera
+                if (_inputAxisController != null)
+                    _inputAxisController.enabled = false;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
@@ -104,6 +111,9 @@ namespace CultivationGame.Player
             {
                 // Back to pure 3rd person
                 _buildModeMap?.Disable();
+                // Re-enable Cinemachine look input for normal camera control
+                if (_inputAxisController != null)
+                    _inputAxisController.enabled = true;
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
