@@ -175,7 +175,6 @@ namespace CultivationGame.UI
         {
             if (_buffContainer == null) return;
 
-            string key = $"{buff.BuffName}_{buff.PillName}";
             var icon = new VisualElement();
             icon.AddToClassList("buff-icon");
 
@@ -185,20 +184,18 @@ namespace CultivationGame.UI
 
             var timerLabel = new Label(buff.FormattedTime);
             timerLabel.AddToClassList("buff-icon__timer");
-            timerLabel.name = $"BuffTimer_{key}";
             icon.Add(timerLabel);
 
             _buffContainer.Add(icon);
-            _buffElements[key] = icon;
+            _buffElements[buff.Key] = icon;
         }
 
-        private void HandleBuffRemoved(string buffName, string pillName)
+        private void HandleBuffRemoved(ActiveBuff buff)
         {
-            string key = $"{buffName}_{pillName}";
-            if (_buffElements.TryGetValue(key, out var icon))
+            if (_buffElements.TryGetValue(buff.Key, out var icon))
             {
                 icon.RemoveFromHierarchy();
-                _buffElements.Remove(key);
+                _buffElements.Remove(buff.Key);
             }
         }
 
@@ -209,10 +206,9 @@ namespace CultivationGame.UI
                 if (hudData == null) return;
                 foreach (var buff in hudData.ActiveBuffs)
                 {
-                    string key = $"{buff.BuffName}_{buff.PillName}";
-                    if (_buffElements.TryGetValue(key, out var icon))
+                    if (_buffElements.TryGetValue(buff.Key, out var icon))
                     {
-                        var timerLabel = icon.Q<Label>($"BuffTimer_{key}");
+                        var timerLabel = icon.Q<Label>(className: "buff-icon__timer");
                         if (timerLabel != null)
                             timerLabel.text = buff.FormattedTime;
                     }

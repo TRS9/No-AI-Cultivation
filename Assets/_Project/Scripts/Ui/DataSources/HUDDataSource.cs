@@ -12,10 +12,15 @@ namespace CultivationGame.UI
     /// </summary>
     public class ActiveBuff
     {
+        private static int _nextId;
+
+        public int Id { get; } = _nextId++;
         public string BuffName;
         public string PillName;
         public float Duration;
         public float StartTime;
+
+        public string Key => $"Buff_{Id}";
 
         public float RemainingTime => Mathf.Max(0f, Duration - (Time.time - StartTime));
         public string FormattedTime
@@ -54,7 +59,7 @@ namespace CultivationGame.UI
         public IReadOnlyList<ActiveBuff> ActiveBuffs => _activeBuffs;
 
         public event Action<ActiveBuff> OnBuffAdded;
-        public event Action<string, string> OnBuffRemoved;
+        public event Action<ActiveBuff> OnBuffRemoved;
 
         [CreateProperty]
         public float StaminaPercent
@@ -311,8 +316,12 @@ namespace CultivationGame.UI
 
         private void HandleBuffExpired(string buffName, string pillName)
         {
-            _activeBuffs.RemoveAll(b => b.BuffName == buffName && b.PillName == pillName);
-            OnBuffRemoved?.Invoke(buffName, pillName);
+            int idx = _activeBuffs.FindIndex(b => b.BuffName == buffName && b.PillName == pillName);
+            if (idx < 0) return;
+
+            var removed = _activeBuffs[idx];
+            _activeBuffs.RemoveAt(idx);
+            OnBuffRemoved?.Invoke(removed);
         }
     }
 }
