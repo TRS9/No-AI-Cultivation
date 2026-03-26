@@ -250,13 +250,13 @@ namespace CultivationGame.UI
             var recipe = _currentMachine.CurrentRecipe;
             if (recipe == null)
             {
-                _recipeLabel.text = "Recipe: ---";
+                _recipeLabel.text = "Rezept: ---";
                 return;
             }
 
             string inputNames = BuildIngredientNames(recipe.inputs);
             string outputNames = BuildIngredientNames(recipe.outputs);
-            _recipeLabel.text = $"Recipe: {inputNames} \u2192 {outputNames}";
+            _recipeLabel.text = $"Rezept: {inputNames} \u2192 {outputNames}";
         }
 
         private static string BuildIngredientNames(List<RecipeIngredient> ingredients)
