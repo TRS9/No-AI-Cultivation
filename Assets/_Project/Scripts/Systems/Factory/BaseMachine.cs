@@ -42,6 +42,9 @@ namespace CultivationGame.Systems
         public float ProcessingProgress => _processingDuration > 0f
             ? Mathf.Clamp01(_processingTimer / _processingDuration) : 0f;
 
+        public float ProcessingTimer => _processingTimer;
+        public float ProcessingDuration => _processingDuration;
+
         private void Awake()
         {
             _inputInventory = new MachineInventory(inputCapacity);
