@@ -33,6 +33,10 @@ namespace CultivationGame.Data
         [Tooltip("Time in seconds to fully respawn after depletion")]
         public float respawnTimeSeconds = 600f;
 
+        [Header("Prefab")]
+        [Tooltip("Prefab with OreVein component used for spawning in the world")]
+        public GameObject prefab;
+
         [Header("Requirements")]
         [Tooltip("Minimum cultivation realm to interact with this vein")]
         public RealmDefinition requiredRealm;

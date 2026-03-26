@@ -37,6 +37,16 @@ namespace CultivationGame.Systems
             _collider = GetComponent<Collider>();
         }
 
+        /// <summary>
+        /// Called after procedural spawning to assign vein configuration at runtime.
+        /// </summary>
+        public void Initialize(OreVeinData data)
+        {
+            veinData = data;
+            if (string.IsNullOrEmpty(uniqueId))
+                uniqueId = System.Guid.NewGuid().ToString();
+        }
+
         private void Start()
         {
             if (veinData == null) return;

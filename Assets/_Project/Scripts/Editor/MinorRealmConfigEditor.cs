@@ -16,6 +16,7 @@ namespace CultivationGame.Editor
         private bool _showDeco       = true;
         private bool _showPOI        = true;
         private bool _showEssences   = true;
+        private bool _showOreVeins   = true;
         private bool _showSmoothing  = true;
         private bool _showSlope      = true;
         private bool _showAtmosphere = true;
@@ -30,6 +31,7 @@ namespace CultivationGame.Editor
         private static readonly Color ColDeco       = Hex(0x3A7A5C);
         private static readonly Color ColPOI        = Hex(0x7A6A2A);
         private static readonly Color ColEssences   = Hex(0x6A3A8A);
+        private static readonly Color ColOreVeins   = Hex(0x8A6A3A);
         private static readonly Color ColSmoothing  = Hex(0x4A6A7A);
         private static readonly Color ColSlope      = Hex(0x7A4A3A);
         private static readonly Color ColAtmosphere = Hex(0x2A6A7A);
@@ -284,6 +286,23 @@ namespace CultivationGame.Editor
                 EditorGUILayout.BeginVertical(_boxStyle);
                 Prop("essencePrefabs", "Essence Prefabs");
                 Prop("essenceCount",   "Count", "Number of essences scattered across the realm.");
+                EditorGUILayout.EndVertical();
+            }
+
+            GUILayout.Space(2);
+
+            // ── Ore Veins ─────────────────────────────────────────────────────
+            _showOreVeins = SectionFoldout("  ORE VEINS", ColOreVeins, _showOreVeins);
+            if (_showOreVeins)
+            {
+                EditorGUILayout.BeginVertical(_boxStyle);
+                Prop("availableResources", "Resource Entries", "OreVein entries with count ranges and spawn weights.");
+                GUILayout.Space(4);
+                SubHeader("Placement Constraints");
+                EditorGUI.indentLevel++;
+                Prop("minVeinSpacing",       "Min Spacing",     "Minimum world-space distance between any two ore veins.");
+                Prop("maxVeinSlopeDegrees",  "Max Slope (deg)", "Maximum terrain slope angle for ore vein placement.");
+                EditorGUI.indentLevel--;
                 EditorGUILayout.EndVertical();
             }
 
