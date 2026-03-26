@@ -255,7 +255,7 @@ namespace CultivationGame.UI
 
             // Cache all connectable machines once per connection-mode session
             _cachedConnectables = new();
-            foreach (var mono in FindObjectsOfType<MonoBehaviour>())
+            foreach (var mono in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
             {
                 if (mono is IMachineConnectable connectable && mono != _currentPipe)
                     _cachedConnectables.Add((mono, connectable));

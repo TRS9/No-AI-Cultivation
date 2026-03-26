@@ -40,7 +40,7 @@ namespace CultivationGame.Systems
         {
             // Pick up pipes that were already connected before this component enabled
             // (e.g. loaded from a save file).
-            foreach (var pipe in FindObjectsOfType<SpiritPipe>())
+            foreach (var pipe in FindObjectsByType<SpiritPipe>(FindObjectsSortMode.None))
             {
                 if (!pipe.IsConnected) continue;
 

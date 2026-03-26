@@ -227,7 +227,7 @@ namespace CultivationGame.UI
             _portraitImage.style.borderTopRightRadius = 4;
             _portraitImage.style.borderBottomLeftRadius = 4;
             _portraitImage.style.borderBottomRightRadius = 4;
-            _portraitImage.style.unityBackgroundScaleMode = ScaleMode.ScaleToFit;
+            _portraitImage.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
 
             var textColumn = new VisualElement { name = "DialogueTextColumn" };
             textColumn.style.flexGrow = 1;

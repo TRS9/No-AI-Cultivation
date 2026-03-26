@@ -5,11 +5,6 @@ using CultivationGame.Data;
 
 namespace CultivationGame.Tests
 {
-    /// <summary>
-    /// Concrete ItemData subclass used only in tests (ItemData is abstract).
-    /// </summary>
-    internal sealed class TestItemData : ItemData { }
-
     [TestFixture]
     public class LootSystemTests
     {
