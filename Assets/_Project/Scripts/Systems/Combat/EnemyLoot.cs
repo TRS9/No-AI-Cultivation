@@ -30,31 +30,26 @@ namespace CultivationGame.Systems
 
         private void DropLoot()
         {
-            if (enemyData == null || enemyData.lootTable == null) return;
+            if (enemyData == null) return;
+
+            var loot = LootSystem.GenerateLoot(enemyData.lootTable);
+            if (loot.Count == 0) return;
 
             // Cache the player reference once for the whole drop sequence
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             IInventory inventory = player != null ? player.GetComponent<IInventory>() : null;
 
-            foreach (LootDrop drop in enemyData.lootTable)
+            foreach (LootResult result in loot)
             {
-                if (drop.item == null) continue;
-
-                float roll = Random.Range(0f, 1f);
-                if (roll > drop.dropChance) continue;
-
-                int amount = Random.Range(drop.minAmount, drop.maxAmount + 1);
-                if (amount <= 0) continue;
-
-                GameDataEvents.RaiseLootDropped(drop.item, amount, transform.position);
+                GameDataEvents.RaiseLootDropped(result.item, result.amount, transform.position);
 
                 if (inventory != null)
                 {
-                    for (int i = 0; i < amount; i++)
+                    for (int i = 0; i < result.amount; i++)
                     {
-                        inventory.AddItem(drop.item);
+                        inventory.AddItem(result.item);
                     }
-                    Debug.Log($"Loot: {amount}x {drop.item.name} added to inventory.");
+                    Debug.Log($"Loot: {result.amount}x {result.item.name} added to inventory.");
                 }
             }
         }
