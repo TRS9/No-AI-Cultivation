@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using CultivationGame.Core;
 using CultivationGame.Data;
@@ -8,8 +7,9 @@ namespace CultivationGame.Systems
     /// <summary>
     /// Core machine component. Handles input/output inventories, recipe selection,
     /// and timer-based processing. Attach to any placed machine prefab.
+    /// Requires Qi from the QiNetwork to operate (IsPowered must be true).
     /// </summary>
-    public class BaseMachine : MonoBehaviour, IInteractable
+    public class BaseMachine : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
         [SerializeField] private MachineData machineData;
@@ -33,6 +33,12 @@ namespace CultivationGame.Systems
         public MachineInventory InputInventory => _inputInventory;
         public MachineInventory OutputInventory => _outputInventory;
         public bool IsProcessing => _isProcessing;
+
+        /// <summary>
+        /// Set by QiNetwork each frame. Machine only processes when powered.
+        /// </summary>
+        public bool IsPowered { get; set; }
+
         public float ProcessingProgress => _processingDuration > 0f
             ? Mathf.Clamp01(_processingTimer / _processingDuration) : 0f;
 
@@ -42,10 +48,24 @@ namespace CultivationGame.Systems
             _outputInventory = new MachineInventory(outputCapacity);
         }
 
+        private void Start()
+        {
+            if (QiNetwork.Instance != null)
+                QiNetwork.Instance.RegisterMachine(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (QiNetwork.Instance != null)
+                QiNetwork.Instance.UnregisterMachine(this);
+        }
+
         private void Update()
         {
             if (_isProcessing)
             {
+                if (!IsPowered) return; // stall if power is cut
+
                 _processingTimer += Time.deltaTime;
                 if (_processingTimer >= _processingDuration)
                 {
@@ -73,11 +93,28 @@ namespace CultivationGame.Systems
             GameDataEvents.RaiseMachineInteracted(this);
         }
 
+        /// <summary>
+        /// Convenience method: add an item to the input inventory.
+        /// </summary>
+        public int AddInput(ItemData item, int amount = 1)
+        {
+            return _inputInventory.TryAdd(item, amount);
+        }
+
+        /// <summary>
+        /// Convenience method: remove an item from the output inventory.
+        /// </summary>
+        public int RemoveOutput(ItemData item, int amount = 1)
+        {
+            return _outputInventory.TryRemove(item, amount);
+        }
+
         // --- Processing Logic ---
 
         private void TryStartProcessing()
         {
             if (currentRecipe == null || machineData == null) return;
+            if (!IsPowered) return;
 
             // Check all inputs are available
             foreach (var input in currentRecipe.inputs)
@@ -112,7 +149,7 @@ namespace CultivationGame.Systems
 
             if (currentRecipe == null) return;
 
-            // Produce outputs
+            // Produce outputs (always succeeds — factory precision)
             foreach (var output in currentRecipe.outputs)
             {
                 if (output.item == null) continue;

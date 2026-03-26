@@ -8,7 +8,7 @@ namespace CultivationGame.Systems
     /// A machine placed on or near an OreVein that automatically extracts resources.
     /// Extracted items go into the output inventory, which can be connected via Spirit Pipes.
     /// </summary>
-    public class ResourceExtractor : MonoBehaviour, IInteractable
+    public class ResourceExtractor : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
         [SerializeField] private MachineData machineData;
@@ -27,6 +27,7 @@ namespace CultivationGame.Systems
 
         // --- Public API ---
         public MachineData MachineData => machineData;
+        public MachineInventory InputInventory => null; // output-only machine
         public MachineInventory OutputInventory => _outputInventory;
         public OreVein TargetVein => _targetVein;
         public bool HasTarget => _targetVein != null && !_targetVein.IsDepleted;

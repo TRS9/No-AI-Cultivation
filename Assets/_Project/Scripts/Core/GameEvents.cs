@@ -68,6 +68,12 @@ namespace CultivationGame.Core
         public static void RaiseInteractPromptChanged(bool visible)
             => OnInteractPromptChanged?.Invoke(visible);
 
+        // --- Build Mode ---
+        public delegate void BuildModeToggled(bool isBuildMode);
+        public static event BuildModeToggled OnBuildModeToggled;
+        public static void RaiseBuildModeToggled(bool isBuildMode)
+            => OnBuildModeToggled?.Invoke(isBuildMode);
+
         // --- Build Elevation ---
         public delegate void BuildLayerChanged(int layer, float worldY);
         public static event BuildLayerChanged OnBuildLayerChanged;

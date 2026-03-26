@@ -31,6 +31,7 @@ namespace CultivationGame.Core
         SpiritPipe,
         ResourceExtractor,
         Splitter,
-        Merger
+        Merger,
+        QiConduit
     }
 }

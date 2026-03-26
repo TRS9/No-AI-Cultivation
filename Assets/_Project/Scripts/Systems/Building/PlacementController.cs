@@ -12,6 +12,7 @@ namespace CultivationGame.Systems
     ///   2. A semi-transparent ghost follows the cursor, snapped to the grid
     ///   3. Left-click confirms placement; right-click / Escape cancels
     ///   4. R key rotates the ghost in 90° steps
+    /// Also handles machine removal when not in placement mode.
     /// </summary>
     public class PlacementController : MonoBehaviour
     {
@@ -29,6 +30,10 @@ namespace CultivationGame.Systems
         [SerializeField] private InputActionReference placeAction;
         [SerializeField] private InputActionReference cancelAction;
         [SerializeField] private InputActionReference rotateAction;
+        [SerializeField] private InputActionReference removeAction;
+
+        [Header("Removal")]
+        [SerializeField] private LayerMask machineLayer;
 
         private MachineData _selectedMachine;
         private GameObject _ghostInstance;
@@ -51,6 +56,8 @@ namespace CultivationGame.Systems
                 cancelAction.action.performed += OnCancel;
             if (rotateAction != null)
                 rotateAction.action.performed += OnRotate;
+            if (removeAction != null)
+                removeAction.action.performed += OnRemove;
         }
 
         private void OnDisable()
@@ -61,6 +68,8 @@ namespace CultivationGame.Systems
                 cancelAction.action.performed -= OnCancel;
             if (rotateAction != null)
                 rotateAction.action.performed -= OnRotate;
+            if (removeAction != null)
+                removeAction.action.performed -= OnRemove;
 
             // Clean up ghost if we get disabled mid-placement
             if (_isPlacing) CancelPlacement();
@@ -181,18 +190,15 @@ namespace CultivationGame.Systems
             GameObject placed = Instantiate(_selectedMachine.prefab, position, rotation);
             placed.name = _selectedMachine.machineName;
 
-            // Wire machine data to the placed machine component
-            var baseMachine = placed.GetComponent<BaseMachine>();
-            if (baseMachine != null)
-                baseMachine.SetMachineData(_selectedMachine);
-
-            var extractor = placed.GetComponent<ResourceExtractor>();
-            if (extractor != null)
-                extractor.SetMachineData(_selectedMachine);
-
-            var storage = placed.GetComponent<StorageContainer>();
-            if (storage != null)
-                storage.SetMachineData(_selectedMachine);
+            // Wire machine data to the placed component
+            if (placed.GetComponent<BaseMachine>() is BaseMachine bm)
+                bm.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<ResourceExtractor>() is ResourceExtractor ext)
+                ext.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<StorageContainer>() is StorageContainer sc)
+                sc.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<QiConduit>() is QiConduit conduit)
+                conduit.SetMachineData(_selectedMachine);
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
@@ -213,6 +219,44 @@ namespace CultivationGame.Systems
         {
             if (!_isPlacing) return;
             _rotation = (_rotation + 1) % 4;
+        }
+
+        /// <summary>
+        /// Removes a placed machine under the cursor (when not in placement mode).
+        /// Frees the grid cells and destroys the machine GameObject.
+        /// </summary>
+        private void OnRemove(InputAction.CallbackContext ctx)
+        {
+            if (_isPlacing) return;
+
+            Camera cam = buildCamera != null ? buildCamera : Camera.main;
+            if (cam == null) return;
+
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (!Physics.Raycast(ray, out RaycastHit hit, 500f, machineLayer)) return;
+
+            // Try to find a machine component on the hit object
+            var connectable = hit.collider.GetComponentInParent<IMachineConnectable>();
+            if (connectable == null) return;
+
+            var mb = connectable as MonoBehaviour;
+            if (mb == null) return;
+
+            MachineData data = connectable.MachineData;
+            if (data == null) return;
+
+            Vector3 position = mb.transform.position;
+
+            // Free the grid cells
+            // Determine rotation from the object's Y euler angle
+            int rot = Mathf.RoundToInt(mb.transform.eulerAngles.y / 90f) % 4;
+            buildGrid.FreeCells(position, data.gridSize, rot);
+
+            // Notify the rest of the game
+            GameDataEvents.RaiseMachineRemoved(data, position);
+
+            // Destroy the machine
+            Destroy(mb.gameObject);
         }
 
         // ------------------------------------------------------------------ //

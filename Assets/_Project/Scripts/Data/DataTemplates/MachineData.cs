@@ -22,9 +22,16 @@ namespace CultivationGame.Data
         [Header("Build Cost")]
         public RecipeIngredient[] buildCost;
 
+        [Header("Requirements")]
+        public RealmDefinition requiredCultivationRealm;
+
         [Header("Machine Stats")]
         public float processingSpeed = 1f;
         public int inputSlots = 1;
         public int outputSlots = 1;
+
+        [Header("Qi")]
+        [Tooltip("Qi consumed per second while processing. 0 = no Qi consumption.")]
+        public float qiConsumptionRate = 1f;
     }
 }

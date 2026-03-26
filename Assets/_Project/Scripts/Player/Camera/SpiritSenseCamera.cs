@@ -107,6 +107,12 @@ namespace CultivationGame.Player
             return (_target.position, _target.rotation);
         }
 
+        public void SetMaxZoom(float range)
+        {
+            maxZoom = range;
+            _currentZoom = Mathf.Clamp(_currentZoom, minZoom, maxZoom);
+        }
+
         public void SetElevation(float y)
         {
             _focalPoint.y = y;

@@ -26,9 +26,12 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 | **Rezept/Crafting-System** | ✅ **Fertig** | RecipeData, RecipeDatabase, CraftingSystem |
 | **Pill-System** | ✅ **Fertig** | PillData, PillBuffSystem, CultivationBuffs |
 | **Building/Placement** | ✅ **Fertig** | BuildGrid, PlacementController, BuildMenu |
-| **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory |
-| **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe, StorageContainer |
+| **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory, IMachineConnectable |
+| **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe (IMachineConnectable), StorageContainer |
 | **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
+| **Maschinen-UI** | ✅ **Fertig** | MachineUIController (Rezept, Slots, Progress) |
+| **Machine-Removal** | ✅ **Fertig** | PlacementController.OnRemove |
+| **Qi-Netzwerk** | ✅ **Fertig** | QiNetwork, QiConduit (Satisfactory-Strom) |
 
 ---
 
@@ -51,11 +54,11 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 - **Tief (5+ Stufen):** Mehrere Zwischenprodukte, Nebenprodukte, Abfall. Satisfactory-Level.
 - **Empfehlung:** Start mit 3 Stufen, auf 5 erweitern wenn das Grundsystem steht.
 
-### DE-4: Qi-Maschinen-Interaktion
-- **Qi als Treibstoff:** Maschinen verbrauchen Qi des Spielers → Tension zwischen Cultivation und Produktion.
-- **Spirit Stones als Treibstoff:** Separate Ressource → Weniger Conflict, mehr Farming.
-- **Beides:** Frühes Spiel = eigenes Qi, später = Spirit Stones als Automatisierung.
-- **Empfehlung:** Beides. Natürliche Progression von manuell zu automatisiert.
+### DE-4: Qi-Maschinen-Interaktion ✅ ENTSCHIEDEN
+- **Qi-Netzwerk (wie Satisfactory-Strom):** Alles läuft über Qi. Spieler meditiert → füllt Qi-Pool → QiConduits (Leitungen) verteilen Qi → Maschinen in Reichweite sind "powered".
+- Kein `FuelType`, keine Spirit Stones als Treibstoff, keine Multiple-Fuel-Logik.
+- `MachineData.qiConsumptionRate` = Qi/Sekunde während Produktion.
+- Natürliche Progression: höherer Realm = mehr Qi-Kapazität = mehr Maschinen betreibbar.
 
 ### DE-5: Combat-Tiefe
 - **Minimal (empfohlen für V1):** Einfaches Action-Combat. Angriff, Ausweichen, 2-3 Techniken.
@@ -218,7 +221,7 @@ MachineData (ScriptableObject)
 ├── processingSpeed (float) — Multiplikator
 ├── inputSlots (int)
 ├── outputSlots (int)
-└── fuelType (enum: None, Qi, SpiritStone, Both)
+└── qiConsumptionRate (float) — Qi/s während Produktion (gespeist über QiConduits)
 ```
 
 #### Schritt 3.2: Grid-System
@@ -321,6 +324,13 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - Splitter: 1 Input → 2 Outputs (verteilt Items)
 - Merger: 2 Inputs → 1 Output (kombiniert Ströme)
 - Nötig für komplexe Produktionsketten
+
+#### Schritt 5.5: Qi-Netzwerk (Satisfactory-Strom) ✅ IMPLEMENTIERT
+- **QiConduit**: Platzierbare Qi-Leitung mit connectionRadius (Conduit↔Conduit) und machineRadius (Conduit→Maschine)
+- **QiNetwork**: Singleton, BFS-Connectivity vom Qi-Source-Punkt, aggregierter Qi-Verbrauch pro Frame
+- Maschinen brauchen Qi-Verbindung → `IsPowered` muss true sein
+- `MachineData.qiConsumptionRate` = Qi/s während Produktion
+- Kein `successRate` mehr — Produktion gelingt immer (Factory = Präzision)
 
 **Dateien:**
 - `Systems/Factory/SpiritPipe.cs`
@@ -494,7 +504,7 @@ SCHRITT  3: [Phase 2] Pill-System + Cultivation-Hook    ✅ FERTIG
 SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content) ✅ FERTIG (OreVeins)
 SCHRITT  5: [Phase 3] Grid + Placement-System           ✅ FERTIG
 SCHRITT  6: [Phase 4] Erste Maschine (Furnace)          ✅ FERTIG (BaseMachine)
-SCHRITT  7: [Phase 4] Maschinen-UI                      ⬜ OFFEN
+SCHRITT  7: [Phase 4] Maschinen-UI                      ✅ FERTIG
 SCHRITT  8: [Phase 4] Weitere Maschinen                 ⬜ OFFEN (Splitter/Merger)
 SCHRITT  9: [Phase 5] Spirit Pipes + Storage            ✅ FERTIG
 SCHRITT 10: [Phase 7] NPC-Basis + Dialogue              ⬜ OFFEN
@@ -522,6 +532,48 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 
 5. **Save-System inkrementell erweitern:** Jede Phase fügt ihre Daten zu SaveData hinzu.
    Backward-Compatibility durch Default-Werte bei fehlenden Feldern.
+
+---
+
+## KAMERA & BUILD-MODUS
+
+### Build-Modus Entkopplung ✅ IMPLEMENTIERT
+- Build-Modus ist **unabhängig von der Kameraperspektive** — funktioniert in 3rd Person UND Spirit Sense
+- **Shift-Taste** toggelt Build-Modus in jeder Perspektive
+- `GameEvents.OnBuildModeToggled(bool)` — neues Event, ersetzt die alte Kopplung an `OnMeditationToggled`
+- BuildMode-InputMap wird additiv aktiviert (Place, Cancel, Rotate funktionieren auch in 3rd Person)
+- Bei Spirit Sense Eintritt: Build-Modus wird automatisch aktiviert
+- Bei Spirit Sense Austritt: Build-Modus wird automatisch deaktiviert
+
+### Kamera-Transition Fix ✅ IMPLEMENTIERT
+- Cinemachine-Position/Rotation wird **vor dem Deaktivieren** gespeichert
+- Beim Rückwechsel (Spirit Sense → 3rd Person): Animation-Ziel ist die gespeicherte Position
+- Kamera-Transform wird vor Cinemachine-Reaktivierung gesetzt → nahtloser Übergang
+
+### Realm-basierte Spirit Sense Reichweite ✅ IMPLEMENTIERT
+- `RealmDefinition.spiritSenseRange` — maximale Zoom-Distanz pro Realm
+- `SpiritSenseCamera.SetMaxZoom(float)` — wird bei Spirit Sense Eintritt gesetzt
+- Höherer Realm = größere Übersicht = strategischer Vorteil beim Factory-Bau
+
+**Dateien:**
+- `Scripts/Core/GameEvents.cs` — OnBuildModeToggled Event
+- `Scripts/Data/DataTemplates/RealmDefinition.cs` — spiritSenseRange Feld
+- `Scripts/Player/Camera/CameraSystem.cs` — Build-Toggle, Kamera-Fix, Realm-Distanz
+- `Scripts/Player/Camera/SpiritSenseCamera.cs` — SetMaxZoom()
+- `Scripts/Ui/Building/BuildMenuController.cs` — hört auf OnBuildModeToggled
+- `Input/InputSystem_Actions.inputactions` — BuildToggle im Player-Map
+
+---
+
+## MANUELLE TODOs
+
+- [ ] RealmDefinition-Assets aktualisieren: `spiritSenseRange` Werte setzen (Mortal: 30, QiRefinement1: 40, QiRefinement2: 50, ...)
+- [ ] CameraSystem Inspector: `playerStats` Referenz zuweisen
+- [ ] CameraSystem Inspector: `BuildToggle` InputActionReference auf Player/BuildToggle setzen
+- [ ] PlacementController Inspector: Input-Referenzen prüfen (Place, Cancel, Rotate, Remove)
+- [ ] Splitter/Merger Maschinen implementieren (Phase 4, Schritt 8)
+- [ ] Cursor-Handling in 3rd Person Build-Modus testen (Cursor sichtbar + Kamera-Look ggf. einschränken)
+- [ ] Build-Menu UI-Styling für 3rd Person Overlay optimieren
 
 ---
 
