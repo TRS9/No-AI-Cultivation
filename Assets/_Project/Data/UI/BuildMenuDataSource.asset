@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3788bc6e6d084b2ab6b37d0638f83cb2, type: 3}
+  m_Name: BuildMenuDataSource
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.BuildMenuDataSource
+  availableMachines:
+  - {fileID: 11400000, guid: 9c4d0c8e21364c9c86e37a6fd50fd627, type: 2}
+  - {fileID: 11400000, guid: 49faeffc41264b2bbed58a3fec3a6100, type: 2}
+  - {fileID: 11400000, guid: a84f5db8013f4672bc1c10cee5928a0d, type: 2}
+  - {fileID: 11400000, guid: b615ef5d928340ca9ad2cc584d40bd65, type: 2}
+  - {fileID: 11400000, guid: dbc588214d404484b24c1d53484a2cba, type: 2}
+  - {fileID: 11400000, guid: 7de3da4657024cbdb1934fd750bae51c, type: 2}
+  - {fileID: 11400000, guid: a68412cd46924593b5adb43e48e47bba, type: 2}
+  - {fileID: 11400000, guid: f5ceedbbfbe046c5b118568038054b75, type: 2}
+  - {fileID: 11400000, guid: eabc4eae2b914baebb17fb3130b6e5eb, type: 2}
+  - {fileID: 11400000, guid: 3acf907bc24345d19eb985d8aa6c8aa9, type: 2}
+  - {fileID: 11400000, guid: cac072ff60ca4b0c94d901b89efa8820, type: 2}
