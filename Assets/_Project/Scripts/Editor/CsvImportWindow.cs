@@ -64,6 +64,10 @@ namespace CultivationGame.Editor
         private readonly Dictionary<string, ScriptableObject> _createdAssets =
             new(StringComparer.OrdinalIgnoreCase);
 
+        // Cache for asset lookups to avoid repeated AssetDatabase queries.
+        private readonly Dictionary<(string name, Type type), UnityEngine.Object> _assetLookupCache =
+            new();
+
         // ─── Data Structures ──────────────────────────────────────────────
         private class CsvSection
         {
@@ -317,6 +321,7 @@ namespace CultivationGame.Editor
         {
             int created = 0, skipped = 0, errors = 0;
             _createdAssets.Clear();
+            _assetLookupCache.Clear();
 
             foreach (CsvSection section in _sections)
             {
@@ -353,7 +358,8 @@ namespace CultivationGame.Editor
                     if (existing != null && !_overwriteExisting)
                     {
                         Log($"  \u23ED '{assetName}' already exists \u2014 skipped.");
-                        _createdAssets.TryAdd(assetName, existing);
+                        if (type.IsInstanceOfType(existing))
+                            _createdAssets.TryAdd(assetName, existing);
                         skipped++;
                         continue;
                     }
@@ -412,9 +418,9 @@ namespace CultivationGame.Editor
                             }
                         }
                     }
-                    catch
+                    catch (ReflectionTypeLoadException)
                     {
-                        // Skip assemblies that can't be reflected.
+                        // Skip assemblies whose types cannot be loaded.
                     }
                 }
             }
@@ -504,7 +510,7 @@ namespace CultivationGame.Editor
                     ? new Vector2Int(
                         int.Parse(parts[0].Trim(), CultureInfo.InvariantCulture),
                         int.Parse(parts[1].Trim(), CultureInfo.InvariantCulture))
-                    : Vector2Int.one;
+                    : Vector2Int.zero;
             }
             if (targetType == typeof(Vector2))
             {
@@ -660,11 +666,26 @@ namespace CultivationGame.Editor
         private UnityEngine.Object FindAssetByName(string name, Type type)
         {
             // Check recently created assets first (handles cross-references within one import)
-            if (_createdAssets.TryGetValue(name, out ScriptableObject cached)
-                && type.IsInstanceOfType(cached))
+            if (_createdAssets.TryGetValue(name, out ScriptableObject created)
+                && type.IsInstanceOfType(created))
+                return created;
+
+            // Check lookup cache to avoid repeated AssetDatabase queries
+            var cacheKey = (name, type);
+            if (_assetLookupCache.TryGetValue(cacheKey, out UnityEngine.Object cached))
                 return cached;
 
             // Search in the AssetDatabase
+            UnityEngine.Object found = SearchAssetDatabase(name, type);
+            if (found == null)
+                Log($"    \u26A0 Asset '{name}' of type {type.Name} not found in project.");
+
+            _assetLookupCache[cacheKey] = found;
+            return found;
+        }
+
+        private static UnityEngine.Object SearchAssetDatabase(string name, Type type)
+        {
             string[] guids = AssetDatabase.FindAssets($"{name} t:{type.Name}");
             foreach (string guid in guids)
             {
@@ -690,7 +711,6 @@ namespace CultivationGame.Editor
                 }
             }
 
-            Log($"    \u26A0 Asset '{name}' of type {type.Name} not found in project.");
             return null;
         }
 
@@ -801,7 +821,7 @@ namespace CultivationGame.Editor
             if (t == typeof(bool))    return "false";
             if (t.IsEnum)             return Enum.GetNames(t).FirstOrDefault() ?? "";
             if (t == typeof(Color))   return "#FFFFFF";
-            if (t == typeof(Vector2Int)) return "1;1";
+            if (t == typeof(Vector2Int)) return "0;0";
             if (t == typeof(Vector2)) return "0;0";
             if (t == typeof(Vector3)) return "0;0;0";
             if (t == typeof(List<RecipeIngredient>) || t == typeof(RecipeIngredient[])) return "ItemName:1";
