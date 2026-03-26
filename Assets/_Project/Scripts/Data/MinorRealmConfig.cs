@@ -109,6 +109,16 @@ namespace CultivationGame.Data
         [Range(0f, 1f)] public float maxHeight;
     }
 
+    [System.Serializable]
+    public class RealmResourceEntry
+    {
+        public OreVeinData oreVeinData;
+        [Range(1, 50)] public int minCount;
+        [Range(1, 50)] public int maxCount;
+        [Range(0f, 1f)] public float spawnWeight;
+        public BiomeType[] allowedBiomes;
+    }
+
     [CreateAssetMenu(fileName = "NewRealmConfig", menuName = "Cultivation/Minor Realm Config")]
     public class MinorRealmConfig : ScriptableObject
     {
@@ -181,5 +191,8 @@ namespace CultivationGame.Data
         public Color fogColor = new Color(0.7f, 0.75f, 0.8f);
         [Range(0f, 0.05f)] public float fogDensity = 0.01f;
         public Color ambientLight = Color.white;
+
+        [Header("Resources")]
+        public RealmResourceEntry[] availableResources;
     }
 }
