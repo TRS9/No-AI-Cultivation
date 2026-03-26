@@ -183,9 +183,13 @@ namespace CultivationGame.Player
             }
 
             // Dodge in movement direction, or forward if standing still
-            if (_rb != null && new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z).sqrMagnitude > 0.1f)
+            Vector3 horizontalVelocity = _rb != null
+                ? new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z)
+                : Vector3.zero;
+
+            if (horizontalVelocity.sqrMagnitude > 0.1f)
             {
-                _dodgeDirection = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z).normalized;
+                _dodgeDirection = horizontalVelocity.normalized;
             }
             else
             {

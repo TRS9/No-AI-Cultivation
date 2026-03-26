@@ -32,6 +32,10 @@ namespace CultivationGame.Systems
         {
             if (enemyData == null || enemyData.lootTable == null) return;
 
+            // Cache the player reference once for the whole drop sequence
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            IInventory inventory = player != null ? player.GetComponent<IInventory>() : null;
+
             foreach (LootDrop drop in enemyData.lootTable)
             {
                 if (drop.item == null) continue;
@@ -44,19 +48,13 @@ namespace CultivationGame.Systems
 
                 GameDataEvents.RaiseLootDropped(drop.item, amount, transform.position);
 
-                // Try to add directly to player inventory if nearby
-                GameObject player = GameObject.FindGameObjectWithTag("Player");
-                if (player != null)
+                if (inventory != null)
                 {
-                    var inventory = player.GetComponent<IInventory>();
-                    if (inventory != null)
+                    for (int i = 0; i < amount; i++)
                     {
-                        for (int i = 0; i < amount; i++)
-                        {
-                            inventory.AddItem(drop.item);
-                        }
-                        Debug.Log($"Loot: {amount}x {drop.item.name} added to inventory.");
+                        inventory.AddItem(drop.item);
                     }
+                    Debug.Log($"Loot: {amount}x {drop.item.name} added to inventory.");
                 }
             }
         }

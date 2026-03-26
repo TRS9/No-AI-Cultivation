@@ -272,11 +272,21 @@ namespace CultivationGame.Systems
         {
             if (_target != null) return;
 
+            // Only search once; the reference is cached for the lifetime of this enemy.
+            _target = FindPlayerTransform();
+        }
+
+        private static Transform _cachedPlayer;
+
+        private static Transform FindPlayerTransform()
+        {
+            if (_cachedPlayer != null) return _cachedPlayer;
+
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
-            {
-                _target = player.transform;
-            }
+                _cachedPlayer = player.transform;
+
+            return _cachedPlayer;
         }
 
         private bool CanDetectTarget()
