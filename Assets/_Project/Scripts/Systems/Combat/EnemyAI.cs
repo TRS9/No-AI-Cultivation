@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.AI;
 using CultivationGame.Core;
 using CultivationGame.Data;
 
 namespace CultivationGame.Systems
 {
+    [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyAI : MonoBehaviour, IDamageable
     {
         [Header("Configuration")]
@@ -21,14 +23,26 @@ namespace CultivationGame.Systems
         private float _attackTimer;
         private float _idleTimer;
         private float _stateTimer;
+        private NavMeshAgent _agent;
 
         private const float IdleDurationMin = 1f;
         private const float IdleDurationMax = 3f;
-        private const float PatrolArrivalThreshold = 0.5f;
+        private const float AttackRangeHysteresis = 1.2f;
+
+        private void Awake()
+        {
+            _agent = GetComponent<NavMeshAgent>();
+        }
 
         private void Start()
         {
             _spawnPoint = transform.position;
+
+            if (_agent != null && enemyData != null)
+            {
+                _agent.speed = enemyData.moveSpeed;
+                _agent.updateRotation = false; // We handle rotation with smooth slerp
+            }
 
             if (healthSystem != null && enemyData != null)
             {
@@ -86,9 +100,20 @@ namespace CultivationGame.Systems
             {
                 case EnemyState.Idle:
                     _idleTimer = Random.Range(IdleDurationMin, IdleDurationMax);
+                    StopAgent();
                     break;
                 case EnemyState.Patrol:
                     PickPatrolTarget();
+                    NavigateTo(_patrolTarget);
+                    break;
+                case EnemyState.Chase:
+                    // Destination is updated each frame in UpdateChase
+                    break;
+                case EnemyState.Attack:
+                    StopAgent();
+                    break;
+                case EnemyState.Return:
+                    NavigateTo(_spawnPoint);
                     break;
             }
         }
@@ -121,19 +146,28 @@ namespace CultivationGame.Systems
                 return;
             }
 
-            MoveToward(_patrolTarget);
-
-            float distToTarget = Vector3.Distance(transform.position, _patrolTarget);
-            if (distToTarget < PatrolArrivalThreshold)
+            if (HasArrivedAtDestination())
             {
                 SetState(EnemyState.Idle);
             }
+
+            RotateAlongPath();
         }
 
         private void PickPatrolTarget()
         {
             Vector2 randomOffset = Random.insideUnitCircle * enemyData.patrolRadius;
-            _patrolTarget = _spawnPoint + new Vector3(randomOffset.x, 0f, randomOffset.y);
+            Vector3 candidate = _spawnPoint + new Vector3(randomOffset.x, 0f, randomOffset.y);
+
+            // Snap patrol target to a valid NavMesh position
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, enemyData.patrolRadius, NavMesh.AllAreas))
+            {
+                _patrolTarget = hit.position;
+            }
+            else
+            {
+                _patrolTarget = _spawnPoint;
+            }
         }
 
         // --- Chase ---
@@ -143,8 +177,8 @@ namespace CultivationGame.Systems
             if (_target == null || !CanDetectTarget())
             {
                 // Lost target — check if too far from spawn
-                float distFromSpawn = Vector3.Distance(transform.position, _spawnPoint);
-                if (distFromSpawn > enemyData.leashRange)
+                float sqrDistFromSpawn = (transform.position - _spawnPoint).sqrMagnitude;
+                if (sqrDistFromSpawn > enemyData.leashRange * enemyData.leashRange)
                 {
                     SetState(EnemyState.Return);
                 }
@@ -155,23 +189,25 @@ namespace CultivationGame.Systems
                 return;
             }
 
-            float distToTarget = Vector3.Distance(transform.position, _target.position);
+            float sqrDistToTarget = (transform.position - _target.position).sqrMagnitude;
 
             // Leash check
-            float distFromHome = Vector3.Distance(transform.position, _spawnPoint);
-            if (distFromHome > enemyData.leashRange)
+            float sqrDistFromHome = (transform.position - _spawnPoint).sqrMagnitude;
+            if (sqrDistFromHome > enemyData.leashRange * enemyData.leashRange)
             {
                 SetState(EnemyState.Return);
                 return;
             }
 
-            if (distToTarget <= enemyData.attackRange)
+            if (sqrDistToTarget <= enemyData.attackRange * enemyData.attackRange)
             {
                 SetState(EnemyState.Attack);
                 return;
             }
 
-            MoveToward(_target.position);
+            // Update destination each frame since the player is moving
+            NavigateTo(_target.position);
+            RotateAlongPath();
         }
 
         // --- Attack ---
@@ -184,10 +220,11 @@ namespace CultivationGame.Systems
                 return;
             }
 
-            float distToTarget = Vector3.Distance(transform.position, _target.position);
+            float sqrDistToTarget = (transform.position - _target.position).sqrMagnitude;
+            float extendedRange = enemyData.attackRange * AttackRangeHysteresis;
 
             // If target moved out of attack range, chase again
-            if (distToTarget > enemyData.attackRange * 1.2f)
+            if (sqrDistToTarget > extendedRange * extendedRange)
             {
                 SetState(EnemyState.Chase);
                 return;
@@ -219,13 +256,13 @@ namespace CultivationGame.Systems
 
         private void UpdateReturn()
         {
-            MoveToward(_spawnPoint);
-
-            float distToSpawn = Vector3.Distance(transform.position, _spawnPoint);
-            if (distToSpawn < PatrolArrivalThreshold)
+            if (HasArrivedAtDestination())
             {
                 SetState(EnemyState.Idle);
+                return;
             }
+
+            RotateAlongPath();
         }
 
         // --- IDamageable Implementation ---
@@ -256,11 +293,15 @@ namespace CultivationGame.Systems
         private void HandleDeath()
         {
             CurrentState = EnemyState.Dead;
+            StopAgent();
             GameDataEvents.RaiseEnemyDied(this);
 
             // Disable collider so player can walk through
             Collider col = GetComponent<Collider>();
             if (col != null) col.enabled = false;
+
+            // Disable agent so it doesn't interfere with death effects
+            if (_agent != null) _agent.enabled = false;
 
             // Destroy after short delay to allow death effects
             Destroy(gameObject, 2f);
@@ -292,21 +333,41 @@ namespace CultivationGame.Systems
         private bool CanDetectTarget()
         {
             if (_target == null) return false;
-            float dist = Vector3.Distance(transform.position, _target.position);
-            return dist <= enemyData.detectionRange;
+            float sqrDist = (transform.position - _target.position).sqrMagnitude;
+            return sqrDist <= enemyData.detectionRange * enemyData.detectionRange;
         }
 
-        private void MoveToward(Vector3 destination)
+        // --- NavMeshAgent Helpers ---
+
+        private void NavigateTo(Vector3 destination)
         {
-            Vector3 direction = (destination - transform.position);
-            direction.y = 0f;
+            if (_agent == null || !_agent.isOnNavMesh) return;
+            _agent.isStopped = false;
+            _agent.SetDestination(destination);
+        }
 
-            if (direction.sqrMagnitude < 0.01f) return;
+        private void StopAgent()
+        {
+            if (_agent == null || !_agent.isOnNavMesh) return;
+            _agent.isStopped = true;
+            _agent.ResetPath();
+        }
 
-            direction.Normalize();
-            transform.position += direction * enemyData.moveSpeed * Time.deltaTime;
+        private bool HasArrivedAtDestination()
+        {
+            if (_agent == null) return false;
+            return !_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance;
+        }
 
-            LookAt(destination);
+        /// <summary>
+        /// Smoothly rotates the enemy along the NavMeshAgent's current movement direction.
+        /// </summary>
+        private void RotateAlongPath()
+        {
+            if (_agent != null && _agent.velocity.sqrMagnitude > 0.01f)
+            {
+                LookAt(transform.position + _agent.velocity);
+            }
         }
 
         private void LookAt(Vector3 target)

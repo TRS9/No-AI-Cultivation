@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 using CultivationGame.Core;
 using CultivationGame.Data;
 
@@ -148,11 +149,12 @@ namespace CultivationGame.Player
                 animator.SetTrigger("Attack");
 
             // Reset attack state after a short delay
-            Invoke(nameof(ResetAttack), 0.2f);
+            StartCoroutine(ResetAttackAfterDelay());
         }
 
-        private void ResetAttack()
+        private IEnumerator ResetAttackAfterDelay()
         {
+            yield return new WaitForSeconds(0.2f);
             IsAttacking = false;
         }
 
