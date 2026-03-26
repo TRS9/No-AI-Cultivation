@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../Global.uss"/>
+    <Style src="BuildMenu.uss"/>
+    <ui:VisualElement name="BuildMenuPanel" class="build-menu" style="display: none;">
+        <ui:Label text="Build" class="panel-title" style="margin-bottom: 8px;"/>
+        <ui:ScrollView name="MachineGrid" class="build-grid"/>
+    </ui:VisualElement>
+</ui:UXML>
