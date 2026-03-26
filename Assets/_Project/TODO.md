@@ -61,7 +61,28 @@ Jeder Maschinen-Typ braucht ein Prefab mit der richtigen Component:
 - [ ] Merger Prefab → `Merger` Component
 - [ ] Jedes MachineData-Asset hat sein Prefab-Feld gesetzt
 
-### 1.6 OreVeins in Overworld platzieren
+### 1.6 UI-Components auf UIManager-GameObject setzen
+
+Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden via `BroadcastMessage` vom `UIManager` aufgerufen. Sie müssen als **Components auf demselben GameObject** wie `UIManager` sitzen:
+
+- [ ] `BuildMenuController`
+- [ ] `DialogueUI`
+- [ ] `MachineInspectUI`
+- [ ] `MachineUIController` (evtl. Duplikat von MachineInspectUI — prüfen)
+- [ ] `FactoryDashboardUI`
+- [ ] `PipeConnectionUI`
+- [ ] `BreakthroughController`
+- [ ] `HealthBarUI`
+- [ ] `EnemyHealthBarUI`
+
+### 1.7 Weitere Singletons/Systems auf GameObjects
+
+- [ ] `PillBuffSystem` — braucht eigenes GameObject oder auf Player
+- [ ] `SoundEventTrigger` — braucht eigenes GameObject (subscribed auf Events)
+- [ ] `PipeConnectionVisualizer` — braucht eigenes GameObject
+- [ ] `BreakthroughSystem` — braucht eigenes GameObject mit PlayerStats-Zugriff
+
+### 1.8 OreVeins in Overworld platzieren
 
 - [ ] OreVein GameObjects mit MeshRenderer + Collider + OreVein-Component erstellen
 - [ ] OreVeinData-Assets zuweisen (Spirit Stone Ore, Iron Ore, Crystal, Jade)
@@ -135,6 +156,7 @@ Jeder Maschinen-Typ braucht ein Prefab mit der richtigen Component:
 ### 4.1 Duplikate / Redundanz prüfen
 
 - [ ] `MachineUIController.cs` vs `MachineInspectUI.cs` — mögliche Duplikation der Maschinen-UI. Klären welches das aktive ist, anderes löschen
+- [ ] `GameManager.cs` vs `GameStateManager.cs` — beide tracken Pause-State separat. `GameManager` wird nirgends aktiv genutzt, `GameStateManager` schon. Wahrscheinlich kann `GameManager` gelöscht oder konsolidiert werden
 - [ ] `UIManager.cs` vs `GameStateManager.cs` — beide managen UI-State. Klären ob beide nötig sind oder konsolidiert werden können
 - [ ] `HUDController.cs` + `HUDDataSource.cs` — HUD hat zwei Files, funktioniert aber. Architektur-Review ob das sauber ist
 
