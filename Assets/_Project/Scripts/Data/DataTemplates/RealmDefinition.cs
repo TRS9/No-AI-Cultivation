@@ -15,6 +15,10 @@ namespace CultivationGame.Data
         public double baseQiRate = 1;
         [Range(0f, 1f)] public float breakthroughSuccessRate = 1f;
 
+        [Header("Spirit Sense")]
+        [Tooltip("Maximum zoom distance for the Spirit Sense camera at this realm")]
+        public float spiritSenseRange = 30f;
+
         [Header("Progression")]
         public RealmDefinition nextRealm;
     }

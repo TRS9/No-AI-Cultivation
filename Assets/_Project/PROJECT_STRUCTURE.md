@@ -111,8 +111,11 @@ Scripts/
 │   │   └── EssenceSpawner.cs        Spirit essence world spawning
 │   ├── Factory/                 Machine production pipeline
 │   │   ├── BaseMachine.cs           Core machine: input/output, timer processing
+│   │   ├── IMachineConnectable.cs   Interface for pipe-connectable machines
 │   │   ├── MachineInventory.cs      Shared item buffer with capacity limits
 │   │   ├── OreVein.cs               World resource node (depletion + respawn)
+│   │   ├── QiConduit.cs             Qi power pole (conduit chain)
+│   │   ├── QiNetwork.cs             Qi power grid manager (BFS, singleton)
 │   │   ├── ResourceExtractor.cs     Auto-mines nearby OreVeins
 │   │   ├── SpiritPipe.cs            Transport: connects machine outputs to inputs
 │   │   └── StorageContainer.cs      Buffer storage between production steps
@@ -158,7 +161,7 @@ Scripts/
 | Script | Type | Purpose |
 |--------|------|---------|
 | **GameEnums.cs** | Enums | All shared enumerations: GameState, RealmSubStage, DaoType, DaoCategory, BiomeType, POIType, TerrainType, InnerWorldTileType, BuildingTerrain, BuildingRarity, SectRank, BuffType, **MachineType** (Furnace, Crusher, Mixer, Distiller, Condenser, PillPress, Storage, SpiritPipe, ResourceExtractor, Splitter, Merger) |
-| **GameEvents.cs** | Static class | Core event bus for player state. Events: OnQiChanged, OnRealmChanged, OnStaminaChanged, OnInventoryChanged, OnMeditationStateChanged, OnUIToggle |
+| **GameEvents.cs** | Static class | Core event bus for player state. Events: OnQiChanged, OnRealmChanged, OnStaminaChanged, OnInventoryChanged, OnMeditationToggled, **OnBuildModeToggled**, OnBuildLayerChanged, OnPauseStateChanged, OnPanelStateChanged |
 | **GameManager.cs** | MonoBehaviour (Singleton) | Holds global GameState. Persists across scenes via DontDestroyOnLoad. Access via GameManager.Instance |
 | **IInteractable.cs** | Interface | Contract for any world object the player can interact with. Single method: Interact(GameObject user) |
 | **IQiReceiver.cs** | Interface | Contract for anything that can receive Qi. Single method: AddQi(double amount). Implemented by PlayerStats |
@@ -172,12 +175,12 @@ Scripts/
 | **EssenceData.cs** | ScriptableObject | Spirit essence data (extends ItemData). Additional fields: qiValue, essenceColor, collectionEffect |
 | **RawMaterialData.cs** | ScriptableObject | Raw material data (extends ItemData). Used for ores, herbs, minerals |
 | **PillData.cs** | ScriptableObject | Pill item data (extends ItemData). Fields: pillTier, qiBoost, cultivationSpeedMultiplier, breakthroughBonus, buffDuration, maxDailyUses |
-| **MachineData.cs** | ScriptableObject | Machine configuration. Fields: machineName, machineType, prefab, ghostPrefab, gridSize, buildCost, icon, processingSpeed, inputSlots, outputSlots |
+| **MachineData.cs** | ScriptableObject | Machine configuration. Fields: machineName, machineType, prefab, ghostPrefab, gridSize, buildCost, icon, processingSpeed, inputSlots, outputSlots, **qiConsumptionRate** |
 | **OreVeinData.cs** | ScriptableObject | Ore vein configuration. Fields: resource (RawMaterialData), totalYield, yieldPerExtraction, respawnTimeSeconds |
-| **RealmDefinition.cs** | ScriptableObject | Cultivation realm definitions. Fields: realmName, realmIndex, subStage, qiCapacity, baseQiRate, breakthroughSuccessRate, nextRealm |
-| **RecipeData.cs** | ScriptableObject | Crafting recipe. Fields: recipeName, inputs (RecipeSlot[]), outputs (RecipeSlot[]), processingTime, requiredMachine, successRate, qiCost |
+| **RealmDefinition.cs** | ScriptableObject | Cultivation realm definitions. Fields: realmName, realmIndex, qiCapacity, baseQiRate, breakthroughSuccessRate, **spiritSenseRange**, nextRealm |
+| **RecipeData.cs** | ScriptableObject | Crafting recipe. Fields: recipeName, inputs (RecipeSlot[]), outputs (RecipeSlot[]), processingTime, requiredMachine, craftingDuration |
 | **RecipeDatabase.cs** | ScriptableObject | Recipe lookup database. Methods: GetRecipesForMachine(MachineType), GetRecipesForItem(ItemData) |
-| **GameDataEvents.cs** | Static class | Data-layer event bus. Events: OnCraftingStarted, OnCraftingCompleted, OnPillConsumed, OnBuildingPlaced, OnBuildingRemoved, OnMachineInteracted, OnMachineProcessingCompleted, OnPipeConnected, OnPipeDisconnected, OnPipeInteracted, OnResourceExtracted |
+| **GameDataEvents.cs** | Static class | Data-layer event bus. Events: OnCraftingStarted, OnCraftingCompleted, OnCraftingFailed, OnPillConsumed, OnPillEffectsApplied, OnMachinePlaced, OnMachineRemoved, OnBuildModeGhostStarted, OnBuildModeGhostCancelled, OnMachineInteracted, OnMachineProcessingCompleted, OnPipeConnected, OnPipeDisconnected, OnPipeInteracted, **OnQiNetworkChanged**, OnResourceExtracted |
 | **IInventory.cs** | Interface | Contract for anything that stores items. Method: AddItem(ItemData, int amount). Implemented by PlayerInventory, MachineInventory |
 | **MinorRealmConfig.cs** | ScriptableObject | Minor realm generation configuration |
 | **SaveData.cs** | Serializable classes | Save/load data structures. Includes: InventorySaveEntry, BuildingSaveEntry, PipeConnectionSaveEntry, MachineInventorySaveEntry, OreVeinSaveEntry |
@@ -186,6 +189,8 @@ Scripts/
 
 | Script | Type | Purpose |
 |--------|------|---------|
+| **CameraSystem.cs** | MonoBehaviour | Manages camera transitions between Cinemachine (3rd person) and SpiritSenseCamera (overhead). Build mode toggle (Shift), saves/restores Cinemachine state for smooth transitions. Realm-based Spirit Sense zoom range |
+| **SpiritSenseCamera.cs** | MonoBehaviour | Overhead camera for build/meditation mode. Pan (WASD), orbit (middle mouse), zoom (scroll). SetMaxZoom(float) for realm-based range scaling |
 | **PlayerStats.cs** | MonoBehaviour | Tracks player cultivation state (current realm, Qi). Handles breakthrough attempts. Implements IQiReceiver. Fires GameEvents for Qi and realm changes |
 | **PlayerMovement.cs** | MonoBehaviour | Camera-relative movement with Rigidbody physics. Sprint system with stamina drain/regen. Jump with ground detection. Fires GameEvents for stamina changes |
 | **PlayerInteractor.cs** | MonoBehaviour | Detects nearby IInteractable objects via OverlapSphere. Shows/hides interaction prompt UI. Triggers interaction on input action |
@@ -200,7 +205,10 @@ Scripts/
 | **PlacementController.cs** | MonoBehaviour | Build mode controller. Ghost preview, grid snapping, rotation (90° steps), placement validation, inventory cost deduction. Wires MachineData to BaseMachine/ResourceExtractor/StorageContainer on placement |
 | **CraftingSystem.cs** | MonoBehaviour | Manual crafting logic. Checks recipe requirements, consumes inputs, produces outputs. Works with CraftingStation interaction |
 | **EssenceSpawner.cs** | MonoBehaviour | Spirit essence world spawning with respawn timers |
-| **BaseMachine.cs** | MonoBehaviour | Core machine component. Input/output MachineInventory, timer-based recipe processing. Methods: TryStartProcessing(), AddInput(), RemoveOutput(), SetRecipe() |
+| **IMachineConnectable.cs** | Interface | Contract for machine connectivity (SpiritPipe). Properties: InputInventory, OutputInventory, MachineData. Implemented by BaseMachine, ResourceExtractor, StorageContainer, QiConduit |
+| **BaseMachine.cs** | MonoBehaviour | Core machine component. Input/output MachineInventory, timer-based recipe processing. IsPowered set by QiNetwork. Methods: TryStartProcessing(), AddInput(), RemoveOutput(), SetRecipe() |
+| **QiNetwork.cs** | MonoBehaviour (Singleton) | Qi power grid manager. BFS connectivity from source through QiConduits. Sets IsPowered on machines in range. Consumes Qi from player pool per frame |
+| **QiConduit.cs** | MonoBehaviour | Qi power pole. connectionRadius (conduit↔conduit), machineRadius (conduit→machine). Placed on grid. IsConnected set by QiNetwork |
 | **MachineInventory.cs** | Class | Shared item buffer (Dictionary<ItemData, int>) with capacity limits. Used by BaseMachine, ResourceExtractor, StorageContainer |
 | **SpiritPipe.cs** | MonoBehaviour | Transport system. Connects output of one machine to input of another. Configurable transferInterval and itemsPerTransfer. Optional item filter |
 | **OreVein.cs** | MonoBehaviour | World resource node with finite yield, depletion, and respawn. Uses WorldState for persistence. Visual dimming when depleted |
@@ -223,7 +231,7 @@ Scripts/
 
 | Script | Type | Purpose |
 |--------|------|---------|
-| **BuildMenuController.cs** | MonoBehaviour | Build menu panel controller. Displays available machines from BuildMenuDataSource. Triggers PlacementController on selection |
+| **BuildMenuController.cs** | MonoBehaviour | Build menu panel controller. Listens to **OnBuildModeToggled** (works in any camera perspective). Displays available machines from BuildMenuDataSource. Triggers PlacementController on selection |
 | **BuildMenuDataSource.cs** | ScriptableObject | Data source for build menu. Holds array of available MachineData assets |
 | **CraftingController.cs** | MonoBehaviour | Crafting panel UI controller. Displays available recipes, handles crafting interaction |
 | **GameStateManager.cs** | MonoBehaviour | Game state UI management (pause, menus) |
@@ -249,8 +257,11 @@ Lightweight events for **player state** — accessible from all assemblies.
 | OnRealmChanged | Player advances to new cultivation realm |
 | OnStaminaChanged | Player stamina changes (sprint, regen) |
 | OnInventoryChanged | Player inventory contents change |
-| OnMeditationStateChanged | Player enters/exits meditation |
-| OnUIToggle | UI panel opened/closed |
+| OnMeditationToggled | Player enters/exits meditation |
+| OnBuildModeToggled | Build mode toggled on/off (Shift key, any perspective) |
+| OnBuildLayerChanged | Build elevation layer changed |
+| OnPauseStateChanged | Game paused/unpaused |
+| OnPanelStateChanged | UI panel opened/closed |
 
 ### GameDataEvents.cs (Data Assembly)
 Data-layer events for **factory and crafting systems** — accessible from Systems and UI.
@@ -260,8 +271,11 @@ Data-layer events for **factory and crafting systems** — accessible from Syste
 | OnCraftingStarted | Recipe crafting begins |
 | OnCraftingCompleted | Recipe crafting finishes |
 | OnPillConsumed | Player consumes a pill |
-| OnBuildingPlaced | Machine placed on grid |
-| OnBuildingRemoved | Machine removed from grid |
+| OnMachinePlaced | Machine placed on grid |
+| OnMachineRemoved | Machine removed from grid |
+| OnBuildModeGhostStarted | Ghost placement preview started |
+| OnBuildModeGhostCancelled | Ghost placement preview cancelled |
+| OnQiNetworkChanged | Qi network demand/supply changed |
 | OnMachineInteracted | Player interacts with a machine |
 | OnMachineProcessingCompleted | Machine finishes processing a recipe |
 | OnPipeConnected | Spirit pipe connection established |
@@ -276,10 +290,14 @@ Data-layer events for **factory and crafting systems** — accessible from Syste
 ### Factory Pipeline
 
 ```
+Player Meditation → Qi Pool
+    → QiNetwork (BFS from source through QiConduits)
+    → IsPowered = true on machines in conduit range
+
 OreVein (world resource node)
     → ResourceExtractor (auto-mines on timer, Physics.OverlapSphere 4m)
     → SpiritPipe (transfers items at configurable interval)
-    → BaseMachine (processes recipe: inputs → outputs on timer)
+    → BaseMachine (processes recipe: inputs → outputs on timer, requires IsPowered)
     → SpiritPipe (moves outputs to next stage)
     → StorageContainer (buffer storage)
 ```
@@ -393,19 +411,20 @@ In `Assets/_Project/Prefab/CraftingStations/`:
 3. Make sure each prefab has at least one **Renderer** (for the ghost material swap)
    and one **Collider** (for interaction raycasting after placement).
 
-#### Controls (during Spirit Sense / Build Mode)
+#### Controls
 
-| Key | Action |
-|-----|--------|
-| Click a machine in the Build Menu | Start ghost placement |
-| **Left Click** | Confirm placement |
-| **Right Click** or **Escape** | Cancel placement |
-| **R** | Rotate ghost 90° |
-| **WASD** | Pan camera |
-| **Middle Mouse + Drag** | Orbit camera |
-| **Scroll Wheel** | Zoom |
-| **Page Up / Page Down** | Change build layer |
-| **G** | Exit Spirit Sense (return to action mode) |
+| Key | Action | Context |
+|-----|--------|---------|
+| **Left Shift** | Toggle Build Mode | Any perspective |
+| Click a machine in the Build Menu | Start ghost placement | Build Mode |
+| **Left Click** | Confirm placement | Build Mode (ghost active) |
+| **Right Click** or **Escape** | Cancel placement | Build Mode (ghost active) |
+| **R** | Rotate ghost 90° | Build Mode (ghost active) |
+| **WASD** | Pan camera | Spirit Sense |
+| **Middle Mouse + Drag** | Orbit camera | Spirit Sense |
+| **Scroll Wheel** | Zoom (realm-based max) | Spirit Sense |
+| **Page Up / Page Down** | Change build layer | Spirit Sense |
+| **G** | Toggle meditation / Spirit Sense | 3rd Person |
 
 ---
 
@@ -491,11 +510,12 @@ Each machine type needs a prefab with the appropriate component:
 ## Future Work
 - **Pipe Connection UI**: Visual interface for selecting source/destination machines
 - **Splitter/Merger**: 1→2 and 2→1 item distribution (MachineType entries already added to GameEnums)
-- **Machine UI**: Display input/output inventories, recipe selection, processing progress
 - **Save/Load Integration**: Implement serialization using the new SaveData entries
 - **Visual Pipes**: Line renderers or mesh generation between connected machines
 - **Throughput Upgrades**: Increase `itemsPerTransfer` or decrease `transferInterval`
 - **Minor Realm Resource Adaptation**: Add resource spawning to MinorRealmConfig
+- **3rd Person Build Cursor**: Fine-tune cursor visibility + camera look interaction in 3rd person build mode
+- **Realm Asset spiritSenseRange**: Set per-realm values (Mortal: 30, QiRefinement1: 40, etc.)
 - **NPC System**: Phase 7 — NPCs, dialogue, quests
 - **Combat System**: Phase 8 — Minimal viable combat
 - **Progression & Story**: Phase 9 — Quest chains, unlock progression, win condition

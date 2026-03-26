@@ -7,8 +7,9 @@ using CultivationGame.Systems;
 namespace CultivationGame.UI
 {
     /// <summary>
-    /// Controls the Build Menu panel that appears during Spirit Sense (meditation) mode.
+    /// Controls the Build Menu panel that appears when Build Mode is toggled (Shift key).
     /// Lists available machines as clickable slots; clicking a slot starts ghost placement.
+    /// Works in any camera perspective (3rd person or Spirit Sense).
     /// </summary>
     public class BuildMenuController : MonoBehaviour
     {
@@ -27,23 +28,23 @@ namespace CultivationGame.UI
             _panel = root.Q<VisualElement>("BuildMenuPanel");
             _machineGrid = root.Q<ScrollView>("MachineGrid");
 
-            GameEvents.OnMeditationToggled += OnMeditationToggled;
+            GameEvents.OnBuildModeToggled += OnBuildModeToggled;
         }
 
         private void OnDisable()
         {
-            GameEvents.OnMeditationToggled -= OnMeditationToggled;
+            GameEvents.OnBuildModeToggled -= OnBuildModeToggled;
         }
 
         // ------------------------------------------------------------------ //
         //  Event handlers
         // ------------------------------------------------------------------ //
 
-        private void OnMeditationToggled(bool isMeditating)
+        private void OnBuildModeToggled(bool isBuildMode)
         {
             if (_panel == null) return;
 
-            if (isMeditating)
+            if (isBuildMode)
             {
                 buildMenuData?.BuildMachineList();
                 RebuildGrid();

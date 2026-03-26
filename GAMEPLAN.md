@@ -221,7 +221,7 @@ MachineData (ScriptableObject)
 ├── processingSpeed (float) — Multiplikator
 ├── inputSlots (int)
 ├── outputSlots (int)
-└── fuelType (enum: None, Qi, SpiritStone, Both)
+└── qiConsumptionRate (float) — Qi/s während Produktion (gespeist über QiConduits)
 ```
 
 #### Schritt 3.2: Grid-System
@@ -532,6 +532,48 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 
 5. **Save-System inkrementell erweitern:** Jede Phase fügt ihre Daten zu SaveData hinzu.
    Backward-Compatibility durch Default-Werte bei fehlenden Feldern.
+
+---
+
+## KAMERA & BUILD-MODUS
+
+### Build-Modus Entkopplung ✅ IMPLEMENTIERT
+- Build-Modus ist **unabhängig von der Kameraperspektive** — funktioniert in 3rd Person UND Spirit Sense
+- **Shift-Taste** toggelt Build-Modus in jeder Perspektive
+- `GameEvents.OnBuildModeToggled(bool)` — neues Event, ersetzt die alte Kopplung an `OnMeditationToggled`
+- BuildMode-InputMap wird additiv aktiviert (Place, Cancel, Rotate funktionieren auch in 3rd Person)
+- Bei Spirit Sense Eintritt: Build-Modus wird automatisch aktiviert
+- Bei Spirit Sense Austritt: Build-Modus wird automatisch deaktiviert
+
+### Kamera-Transition Fix ✅ IMPLEMENTIERT
+- Cinemachine-Position/Rotation wird **vor dem Deaktivieren** gespeichert
+- Beim Rückwechsel (Spirit Sense → 3rd Person): Animation-Ziel ist die gespeicherte Position
+- Kamera-Transform wird vor Cinemachine-Reaktivierung gesetzt → nahtloser Übergang
+
+### Realm-basierte Spirit Sense Reichweite ✅ IMPLEMENTIERT
+- `RealmDefinition.spiritSenseRange` — maximale Zoom-Distanz pro Realm
+- `SpiritSenseCamera.SetMaxZoom(float)` — wird bei Spirit Sense Eintritt gesetzt
+- Höherer Realm = größere Übersicht = strategischer Vorteil beim Factory-Bau
+
+**Dateien:**
+- `Scripts/Core/GameEvents.cs` — OnBuildModeToggled Event
+- `Scripts/Data/DataTemplates/RealmDefinition.cs` — spiritSenseRange Feld
+- `Scripts/Player/Camera/CameraSystem.cs` — Build-Toggle, Kamera-Fix, Realm-Distanz
+- `Scripts/Player/Camera/SpiritSenseCamera.cs` — SetMaxZoom()
+- `Scripts/Ui/Building/BuildMenuController.cs` — hört auf OnBuildModeToggled
+- `Input/InputSystem_Actions.inputactions` — BuildToggle im Player-Map
+
+---
+
+## MANUELLE TODOs
+
+- [ ] RealmDefinition-Assets aktualisieren: `spiritSenseRange` Werte setzen (Mortal: 30, QiRefinement1: 40, QiRefinement2: 50, ...)
+- [ ] CameraSystem Inspector: `playerStats` Referenz zuweisen
+- [ ] CameraSystem Inspector: `BuildToggle` InputActionReference auf Player/BuildToggle setzen
+- [ ] PlacementController Inspector: Input-Referenzen prüfen (Place, Cancel, Rotate, Remove)
+- [ ] Splitter/Merger Maschinen implementieren (Phase 4, Schritt 8)
+- [ ] Cursor-Handling in 3rd Person Build-Modus testen (Cursor sichtbar + Kamera-Look ggf. einschränken)
+- [ ] Build-Menu UI-Styling für 3rd Person Overlay optimieren
 
 ---
 
