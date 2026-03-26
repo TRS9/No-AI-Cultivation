@@ -29,6 +29,7 @@ namespace CultivationGame.UI
 
         private BaseMachine _currentMachine;
         private List<RecipeData> _availableRecipes = new();
+        private bool _slotsDirty = true;
 
         // ------------------------------------------------------------------ //
         //  Lifecycle
@@ -69,8 +70,15 @@ namespace CultivationGame.UI
             if (_panel.style.display == DisplayStyle.None) return;
 
             UpdateProgress();
-            UpdateSlots();
+
+            if (_slotsDirty)
+            {
+                UpdateSlots();
+                _slotsDirty = false;
+            }
         }
+
+        private void MarkSlotsDirty() => _slotsDirty = true;
 
         // ------------------------------------------------------------------ //
         //  Event handlers
@@ -112,16 +120,32 @@ namespace CultivationGame.UI
             if (_machineIcon != null && machine.MachineData != null && machine.MachineData.icon != null)
                 _machineIcon.style.backgroundImage = new StyleBackground(machine.MachineData.icon);
 
+            // Subscribe to inventory changes so we only rebuild slots when needed
+            if (machine.InputInventory != null)
+                machine.InputInventory.OnChanged += MarkSlotsDirty;
+            if (machine.OutputInventory != null)
+                machine.OutputInventory.OnChanged += MarkSlotsDirty;
+
             // Populate recipe dropdown
             PopulateRecipes();
 
-            // Initial slot display
+            // Force an initial slot display
+            _slotsDirty = true;
             UpdateSlots();
+            _slotsDirty = false;
             UpdateProgress();
         }
 
         public void Close()
         {
+            if (_currentMachine != null)
+            {
+                if (_currentMachine.InputInventory != null)
+                    _currentMachine.InputInventory.OnChanged -= MarkSlotsDirty;
+                if (_currentMachine.OutputInventory != null)
+                    _currentMachine.OutputInventory.OnChanged -= MarkSlotsDirty;
+            }
+
             if (_panel != null)
                 _panel.style.display = DisplayStyle.None;
 
@@ -238,7 +262,7 @@ namespace CultivationGame.UI
             {
                 playerInventory.AddItem(item);
                 GameEvents.RaiseInventoryChanged();
-                UpdateSlots();
+                // Slots will be refreshed via the OnChanged event subscription
             }
         }
 
@@ -266,7 +290,7 @@ namespace CultivationGame.UI
                         if (playerItems[input.item] <= 0) playerItems.Remove(input.item);
                         _currentMachine.InputInventory.TryAdd(input.item, 1);
                         GameEvents.RaiseInventoryChanged();
-                        UpdateSlots();
+                        // Slots will be refreshed via the OnChanged event subscription
                         return;
                     }
                 }

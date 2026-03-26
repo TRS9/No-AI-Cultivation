@@ -10,8 +10,12 @@ namespace CultivationGame.Player
         public LayerMask interactableLayer;
         public InputActionReference interactAction;
 
+        [Tooltip("How often (in seconds) the nearby-interactable check runs. Lower = more responsive, higher = cheaper.")]
+        public float checkInterval = 0.15f;
+
         private Collider[] _nearbyColliders = System.Array.Empty<Collider>();
         private bool _promptVisible;
+        private float _nextCheckTime;
 
         private void OnEnable()
         {
@@ -25,6 +29,9 @@ namespace CultivationGame.Player
 
         private void Update()
         {
+            if (Time.time < _nextCheckTime) return;
+            _nextCheckTime = Time.time + checkInterval;
+
             _nearbyColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
             bool visible = _nearbyColliders.Length > 0;
 
