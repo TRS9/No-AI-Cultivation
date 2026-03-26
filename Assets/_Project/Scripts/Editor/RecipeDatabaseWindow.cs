@@ -38,6 +38,11 @@ namespace CultivationGame.Editor
 
         // ── Constants ──────────────────────────────────────────────────────
         private static readonly Color HeaderColor = new Color(0.22f, 0.38f, 0.54f);
+        private static readonly Color ErrorHighlightColor = new Color(1f, 0.3f, 0.3f, 0.2f);
+        private static readonly Color WarningHighlightColor = new Color(1f, 0.75f, 0.2f, 0.2f);
+        private static readonly Color PositiveNetColor = new Color(0.3f, 0.9f, 0.3f);
+        private static readonly Color NegativeNetColor = new Color(0.9f, 0.3f, 0.3f);
+        private static readonly Color ErrorRowColor = new Color(1f, 0.3f, 0.3f, 0.15f);
 
         // ════════════════════════════════════════════════════════════════════
         // Menu & Lifecycle
@@ -186,7 +191,7 @@ namespace CultivationGame.Editor
         {
             var bgColor = GUI.backgroundColor;
             if (hasError)
-                GUI.backgroundColor = new Color(1f, 0.3f, 0.3f, 0.15f);
+                GUI.backgroundColor = ErrorRowColor;
 
             EditorGUILayout.BeginHorizontal(index % 2 == 0 ? "box" : "box");
             GUI.backgroundColor = bgColor;
@@ -286,8 +291,8 @@ namespace CultivationGame.Editor
         {
             var bgColor = GUI.backgroundColor;
             GUI.backgroundColor = entry.Severity == ValidationSeverity.Error
-                ? new Color(1f, 0.3f, 0.3f, 0.2f)
-                : new Color(1f, 0.75f, 0.2f, 0.2f);
+                ? ErrorHighlightColor
+                : WarningHighlightColor;
 
             EditorGUILayout.BeginHorizontal("box");
             GUI.backgroundColor = bgColor;
@@ -664,7 +669,7 @@ namespace CultivationGame.Editor
 
                 double netValue = entry.TotalOutputQi - entry.TotalInputQi - entry.QiCost;
                 var color = GUI.contentColor;
-                GUI.contentColor = netValue >= 0 ? new Color(0.3f, 0.9f, 0.3f) : new Color(0.9f, 0.3f, 0.3f);
+                GUI.contentColor = netValue >= 0 ? PositiveNetColor : NegativeNetColor;
                 EditorGUILayout.LabelField(netValue.ToString("F1"), GUILayout.Width(70));
                 GUI.contentColor = color;
 
