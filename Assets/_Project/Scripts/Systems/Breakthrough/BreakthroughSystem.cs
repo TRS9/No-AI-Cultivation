@@ -30,13 +30,13 @@ namespace CultivationGame.Systems
             var realm = playerStats.currentRealm;
             if (realm == null || realm.nextRealm == null)
             {
-                Debug.Log("Kein weiterer Realm verfügbar.");
+                Debug.Log("No further realm available.");
                 return;
             }
 
             if (playerStats.currentQi < realm.qiCapacity)
             {
-                Debug.Log("Nicht genug Qi für einen Durchbruch!");
+                Debug.Log("Not enough Qi for a breakthrough!");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace CultivationGame.Systems
             CultivationBuffs.DamageMultiplier = nextRealm.baseDamage / 5f;
             CultivationBuffs.DefenseMultiplier = 1f + nextRealm.baseDefense * 0.1f;
 
-            Debug.Log($"Durchbruch geschafft! Neuer Rang: {nextRealm.realmName}");
+            Debug.Log($"Breakthrough successful! New realm: {nextRealm.realmName}");
 
             GameEvents.RaiseQiChanged(playerStats.currentQi, playerStats.MaxQi);
             GameEvents.RaiseRealmChanged(playerStats.RealmName, playerStats.SubStage);
@@ -70,9 +70,9 @@ namespace CultivationGame.Systems
 
         private void PerformFailure()
         {
-            playerStats.currentQi *= (1.0 - failureQiLoss);
+            playerStats.currentQi *= 1.0 - failureQiLoss;
 
-            Debug.Log("Durchbruch fehlgeschlagen! Qi-Stabilität verloren.");
+            Debug.Log("Breakthrough failed! Qi destabilized.");
 
             GameEvents.RaiseQiChanged(playerStats.currentQi, playerStats.MaxQi);
             GameEvents.RaiseRealmBreakthrough(false, playerStats.RealmName);
