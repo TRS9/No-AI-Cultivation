@@ -31,3 +31,34 @@
     border-color: rgba(140, 110, 40, 0.5);
     color: rgb(212, 168, 74);
 }
+
+.volume-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-top-color: rgba(140, 110, 40, 0.3);
+}
+
+.volume-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: rgb(212, 168, 74);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.volume-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.volume-label {
+    width: 60px;
+    font-size: 12px;
+    color: rgb(184, 200, 168);
+}
+
+.volume-slider {
+    flex-grow: 1;
+}
