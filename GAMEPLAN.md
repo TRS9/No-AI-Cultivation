@@ -294,11 +294,11 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - Rezept-Dropdown oder Rezept-Browser
 
 **Dateien:**
-- `Systems/Factory/BaseMachine.cs`
-- `Systems/Factory/MachineInteraction.cs`
-- `Systems/Factory/FurnaceMachine.cs` (etc. für Spezialfälle)
-- `Ui/Factory/MachineUI.cs`
-- `Ui/Factory/ItemSlotUI.cs`
+- `Systems/Factory/BaseMachine.cs` ✅
+- `Systems/Factory/MachineInventory.cs` ✅
+- `Systems/Factory/Splitter.cs` ✅ (neu — verteilt Items 1→2, Round-Robin)
+- `Systems/Factory/Merger.cs` ✅ (neu — kombiniert Streams 2→1)
+- `Ui/Factory/MachineUIController.cs` ✅
 
 ---
 
@@ -505,7 +505,7 @@ SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content) ✅ FERTIG (OreVeins)
 SCHRITT  5: [Phase 3] Grid + Placement-System           ✅ FERTIG
 SCHRITT  6: [Phase 4] Erste Maschine (Furnace)          ✅ FERTIG (BaseMachine)
 SCHRITT  7: [Phase 4] Maschinen-UI                      ✅ FERTIG
-SCHRITT  8: [Phase 4] Weitere Maschinen                 ⬜ OFFEN (Splitter/Merger)
+SCHRITT  8: [Phase 4] Weitere Maschinen                 ✅ FERTIG (Splitter/Merger)
 SCHRITT  9: [Phase 5] Spirit Pipes + Storage            ✅ FERTIG
 SCHRITT 10: [Phase 7] NPC-Basis + Dialogue              ⬜ OFFEN
 SCHRITT 11: [Phase 7] Quest-System                      ⬜ OFFEN
@@ -567,11 +567,11 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 
 ## MANUELLE TODOs
 
-- [ ] RealmDefinition-Assets aktualisieren: `spiritSenseRange` Werte setzen (Mortal: 30, QiRefinement1: 40, QiRefinement2: 50, ...)
+- [x] RealmDefinition-Assets aktualisieren: `spiritSenseRange` Werte gesetzt (Mortal: 30, QiRefinement1: 40, QiRefinement2: 50, QiRefinement3: 60, QiRefinement4: 70, QiRefinement5: 80)
 - [ ] CameraSystem Inspector: `playerStats` Referenz zuweisen
 - [ ] CameraSystem Inspector: `BuildToggle` InputActionReference auf Player/BuildToggle setzen
 - [ ] PlacementController Inspector: Input-Referenzen prüfen (Place, Cancel, Rotate, Remove)
-- [ ] Splitter/Merger Maschinen implementieren (Phase 4, Schritt 8)
+- [x] Splitter/Merger Maschinen implementiert (`Systems/Factory/Splitter.cs`, `Systems/Factory/Merger.cs`)
 - [ ] Cursor-Handling in 3rd Person Build-Modus testen (Cursor sichtbar + Kamera-Look ggf. einschränken)
 - [ ] Build-Menu UI-Styling für 3rd Person Overlay optimieren
 
@@ -584,35 +584,35 @@ Assets/_Project/Scripts/
 ├── Core/                    (bestehend + neue Events/Enums)
 ├── Data/
 │   └── DataTemplates/
-│       ├── ItemData.cs      (NEU)
-│       ├── PillData.cs      (NEU)
-│       ├── RecipeData.cs    (NEU)
-│       ├── MachineData.cs   (NEU)
-│       ├── NPCData.cs       (NEU)
-│       ├── QuestData.cs     (NEU)
-│       ├── EnemyData.cs     (NEU)
-│       ├── EssenceData.cs   (wird Subclass von ItemData)
-│       └── RealmDefinition.cs
+│       ├── ItemData.cs      ✅ implementiert
+│       ├── PillData.cs      ✅ implementiert
+│       ├── RecipeData.cs    ✅ implementiert
+│       ├── MachineData.cs   ✅ implementiert
+│       ├── NPCData.cs       ⬜ offen (Phase 7)
+│       ├── QuestData.cs     ⬜ offen (Phase 7)
+│       ├── EnemyData.cs     ⬜ offen (Phase 8)
+│       ├── EssenceData.cs   ✅ Subclass von ItemData
+│       └── RealmDefinition.cs  ✅ mit spiritSenseRange
 ├── Player/                  (bestehend + Pill-Consumption)
 ├── Systems/
-│   ├── Crafting/            (NEU)
-│   ├── Factory/             (NEU)
-│   ├── Building/            (NEU)
-│   ├── NPC/                 (NEU)
-│   ├── Quest/               (NEU)
-│   ├── Combat/              (NEU)
-│   ├── Pill/                (NEU)
+│   ├── Crafting/            ✅ CraftingSystem.cs
+│   ├── Factory/             ✅ BaseMachine, SpiritPipe, StorageContainer, Splitter, Merger, QiNetwork, QiConduit, OreVein, ResourceExtractor
+│   ├── Building/            ✅ BuildGrid, PlacementController
+│   ├── NPC/                 ⬜ offen (Phase 7)
+│   ├── Quest/               ⬜ offen (Phase 7)
+│   ├── Combat/              ⬜ offen (Phase 8)
+│   ├── Pill/                ✅ PillBuffSystem.cs
 │   ├── Realm/               (bestehend)
 │   ├── Essence/             (bestehend)
-│   ├── Save/                (bestehend + erweitern)
+│   ├── Save/                (bestehend + erweitert)
 │   └── Interaction/         (bestehend)
 └── Ui/
-    ├── Crafting/            (NEU)
-    ├── Factory/             (NEU)
-    ├── Building/            (NEU)
-    ├── Dialogue/            (NEU)
-    ├── Quest/               (NEU)
-    ├── Combat/              (NEU)
-    ├── Inventory/           (bestehend + anpassen)
+    ├── Crafting/            ✅ CraftingController.cs
+    ├── Factory/             ✅ MachineUIController.cs
+    ├── Building/            ✅ BuildMenuController, BuildMenuDataSource
+    ├── Dialogue/            ⬜ offen (Phase 7)
+    ├── Quest/               ⬜ offen (Phase 7)
+    ├── Combat/              ⬜ offen (Phase 8)
+    ├── Inventory/           ✅ InventoryController.cs
     └── ...                  (bestehend)
 ```

@@ -113,10 +113,12 @@ Scripts/
 │   │   ├── BaseMachine.cs           Core machine: input/output, timer processing
 │   │   ├── IMachineConnectable.cs   Interface for pipe-connectable machines
 │   │   ├── MachineInventory.cs      Shared item buffer with capacity limits
+│   │   ├── Merger.cs                2-input / 1-output routing node (2→1 combiner)
 │   │   ├── OreVein.cs               World resource node (depletion + respawn)
 │   │   ├── QiConduit.cs             Qi power pole (conduit chain)
 │   │   ├── QiNetwork.cs             Qi power grid manager (BFS, singleton)
 │   │   ├── ResourceExtractor.cs     Auto-mines nearby OreVeins
+│   │   ├── Splitter.cs              1-input / 2-output routing node (round-robin)
 │   │   ├── SpiritPipe.cs            Transport: connects machine outputs to inputs
 │   │   └── StorageContainer.cs      Buffer storage between production steps
 │   ├── Interaction/             World-side interactable objects
@@ -211,6 +213,8 @@ Scripts/
 | **QiConduit.cs** | MonoBehaviour | Qi power pole. connectionRadius (conduit↔conduit), machineRadius (conduit→machine). Placed on grid. IsConnected set by QiNetwork |
 | **MachineInventory.cs** | Class | Shared item buffer (Dictionary<ItemData, int>) with capacity limits. Used by BaseMachine, ResourceExtractor, StorageContainer |
 | **SpiritPipe.cs** | MonoBehaviour | Transport system. Connects output of one machine to input of another. Configurable transferInterval and itemsPerTransfer. Optional item filter |
+| **Splitter.cs** | MonoBehaviour | 1-input / 2-output routing node. Round-robin distribution from its InputInventory buffer to two destination machines. Implements IMachineConnectable |
+| **Merger.cs** | MonoBehaviour | 2-input / 1-output routing node. Alternately pulls from two source machines into its OutputInventory buffer. Implements IMachineConnectable |
 | **OreVein.cs** | MonoBehaviour | World resource node with finite yield, depletion, and respawn. Uses WorldState for persistence. Visual dimming when depleted |
 | **ResourceExtractor.cs** | MonoBehaviour | Machine that auto-mines nearby OreVeins (Physics.OverlapSphere, 4m radius). Extraction on timer, outputs to MachineInventory |
 | **StorageContainer.cs** | MonoBehaviour | Buffer storage between production steps. Single MachineInventory for input+output |
@@ -300,6 +304,12 @@ OreVein (world resource node)
     → BaseMachine (processes recipe: inputs → outputs on timer, requires IsPowered)
     → SpiritPipe (moves outputs to next stage)
     → StorageContainer (buffer storage)
+
+Splitter (1→2 routing):
+    SpiritPipe → Splitter.InputInventory → round-robin to destA.InputInventory / destB.InputInventory
+
+Merger (2→1 routing):
+    sourceA.OutputInventory + sourceB.OutputInventory → Merger.OutputInventory → SpiritPipe → next machine
 ```
 
 ### Crafting Flow
@@ -508,14 +518,15 @@ Each machine type needs a prefab with the appropriate component:
 ---
 
 ## Future Work
-- **Pipe Connection UI**: Visual interface for selecting source/destination machines
-- **Splitter/Merger**: 1→2 and 2→1 item distribution (MachineType entries already added to GameEnums)
-- **Save/Load Integration**: Implement serialization using the new SaveData entries
+- **Pipe Connection UI**: Visual interface for selecting source/destination machines for SpiritPipe, Splitter, Merger
+- **Save/Load Integration**: Implement serialization for Splitter/Merger connections using the existing SaveData entries
 - **Visual Pipes**: Line renderers or mesh generation between connected machines
-- **Throughput Upgrades**: Increase `itemsPerTransfer` or decrease `transferInterval`
-- **Minor Realm Resource Adaptation**: Add resource spawning to MinorRealmConfig
+- **Throughput Upgrades**: Increase `itemsPerTransfer` or decrease `transferInterval` via upgrades
+- **Minor Realm Resource Adaptation**: Add resource spawning to MinorRealmConfig (Phase 6, Schritt 13)
 - **3rd Person Build Cursor**: Fine-tune cursor visibility + camera look interaction in 3rd person build mode
-- **Realm Asset spiritSenseRange**: Set per-realm values (Mortal: 30, QiRefinement1: 40, etc.)
+- **Build Menu UI Styling**: Optimize build menu overlay for 3rd person perspective
+- **CameraSystem Inspector Setup**: Assign `playerStats` reference and `BuildToggle` InputActionReference in the Inspector
+- **PlacementController Inspector Setup**: Verify Place, Cancel, Rotate, Remove input references in the Inspector
 - **NPC System**: Phase 7 — NPCs, dialogue, quests
 - **Combat System**: Phase 8 — Minimal viable combat
 - **Progression & Story**: Phase 9 — Quest chains, unlock progression, win condition

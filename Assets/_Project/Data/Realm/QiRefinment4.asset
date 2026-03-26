@@ -19,5 +19,6 @@ MonoBehaviour:
   qiCapacity: 100
   baseQiRate: 1
   breakthroughSuccessRate: 1
+  spiritSenseRange: 70
   nextRealm: {fileID: 11400000, guid: e5a2f69bda295ab4da82dd8b3f12b349, type: 2}
   baseCombatPower: 0
