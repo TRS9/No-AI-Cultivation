@@ -565,53 +565,6 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 
 ---
 
-## MANUELLE TODOs
+## TODOs
 
-- [x] RealmDefinition-Assets aktualisieren: `spiritSenseRange` Werte gesetzt (Mortal: 30, QiRefinement1: 40, QiRefinement2: 50, QiRefinement3: 60, QiRefinement4: 70, QiRefinement5: 80)
-- [ ] CameraSystem Inspector: `playerStats` Referenz zuweisen
-- [ ] CameraSystem Inspector: `BuildToggle` InputActionReference auf Player/BuildToggle setzen
-- [ ] PlacementController Inspector: Input-Referenzen prüfen (Place, Cancel, Rotate, Remove)
-- [x] Splitter/Merger Maschinen implementiert (`Systems/Factory/Splitter.cs`, `Systems/Factory/Merger.cs`)
-- [ ] Cursor-Handling in 3rd Person Build-Modus testen (Cursor sichtbar + Kamera-Look ggf. einschränken)
-- [ ] Build-Menu UI-Styling für 3rd Person Overlay optimieren
-
----
-
-## ORDNER-STRUKTUR (erweitert)
-
-```
-Assets/_Project/Scripts/
-├── Core/                    (bestehend + neue Events/Enums)
-├── Data/
-│   └── DataTemplates/
-│       ├── ItemData.cs      ✅ implementiert
-│       ├── PillData.cs      ✅ implementiert
-│       ├── RecipeData.cs    ✅ implementiert
-│       ├── MachineData.cs   ✅ implementiert
-│       ├── NPCData.cs       ⬜ offen (Phase 7)
-│       ├── QuestData.cs     ⬜ offen (Phase 7)
-│       ├── EnemyData.cs     ✅ implementiert (Phase 8)
-│       ├── EssenceData.cs   ✅ Subclass von ItemData
-│       └── RealmDefinition.cs  ✅ mit spiritSenseRange
-├── Player/                  (bestehend + Pill-Consumption)
-├── Systems/
-│   ├── Crafting/            ✅ CraftingSystem.cs
-│   ├── Factory/             ✅ BaseMachine, SpiritPipe, StorageContainer, Splitter, Merger, QiNetwork, QiConduit, OreVein, ResourceExtractor
-│   ├── Building/            ✅ BuildGrid, PlacementController
-│   ├── NPC/                 ⬜ offen (Phase 7)
-│   ├── Quest/               ⬜ offen (Phase 7)
-│   ├── Combat/              ✅ implementiert (Phase 8)│   ├── Pill/                ✅ PillBuffSystem.cs
-│   ├── Realm/               (bestehend)
-│   ├── Essence/             (bestehend)
-│   ├── Save/                (bestehend + erweitert)
-│   └── Interaction/         (bestehend)
-└── Ui/
-    ├── Crafting/            ✅ CraftingController.cs
-    ├── Factory/             ✅ MachineUIController.cs
-    ├── Building/            ✅ BuildMenuController, BuildMenuDataSource
-    ├── Dialogue/            ⬜ offen (Phase 7)
-    ├── Quest/               ⬜ offen (Phase 7)
-    ├── Combat/              ✅ implementiert (Phase 8)
-    ├── Inventory/           ✅ InventoryController.cs
-    └── ...                  (bestehend)
-```
+→ Siehe `Assets/_Project/TODO.md`

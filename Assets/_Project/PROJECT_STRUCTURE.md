@@ -518,15 +518,5 @@ Each machine type needs a prefab with the appropriate component:
 ---
 
 ## Future Work
-- **Pipe Connection UI**: Visual interface for selecting source/destination machines for SpiritPipe, Splitter, Merger
-- **Save/Load Integration**: Implement serialization for Splitter/Merger connections using the existing SaveData entries
-- **Visual Pipes**: Line renderers or mesh generation between connected machines
-- **Throughput Upgrades**: Increase `itemsPerTransfer` or decrease `transferInterval` via upgrades
-- **Minor Realm Resource Adaptation**: Add resource spawning to MinorRealmConfig (Phase 6, Schritt 13)
-- **3rd Person Build Cursor**: Fine-tune cursor visibility + camera look interaction in 3rd person build mode
-- **Build Menu UI Styling**: Optimize build menu overlay for 3rd person perspective
-- **CameraSystem Inspector Setup**: Assign `playerStats` reference and `BuildToggle` InputActionReference in the Inspector
-- **PlacementController Inspector Setup**: Verify Place, Cancel, Rotate, Remove input references in the Inspector
-- **NPC System**: Phase 7 — NPCs, dialogue, quests
-- **Combat System**: Phase 8 — Minimal viable combat
-- **Progression & Story**: Phase 9 — Quest chains, unlock progression, win condition
+
+→ Siehe `Assets/_Project/TODO.md`
