@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using CultivationGame.Core;
 using CultivationGame.Data;
@@ -33,6 +34,7 @@ namespace CultivationGame.Systems
         // --- Public API ---
         public float TotalDemand => _totalDemand;
         public int ConnectedConduitCount => _connectedConduits.Count;
+        public ReadOnlyCollection<BaseMachine> RegisteredMachines => _machines.AsReadOnly();
 
         private void Awake()
         {
