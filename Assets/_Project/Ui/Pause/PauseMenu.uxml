@@ -10,5 +10,20 @@
         <ui:Button text="LOAD" name="LoadBtn" class="menu-btn"/>
         <ui:Button text="NEW GAME" name="NewGameBtn" class="menu-btn"/>
         <ui:Button text="QUIT" name="QuitBtn" class="menu-btn"/>
+        <ui:VisualElement class="volume-section">
+            <ui:Label text="AUDIO" class="volume-header"/>
+            <ui:VisualElement class="volume-row">
+                <ui:Label text="Master" class="volume-label"/>
+                <ui:Slider name="MasterVolumeSlider" low-value="0" high-value="1" value="1" class="volume-slider"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="volume-row">
+                <ui:Label text="SFX" class="volume-label"/>
+                <ui:Slider name="SFXVolumeSlider" low-value="0" high-value="1" value="1" class="volume-slider"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="volume-row">
+                <ui:Label text="Music" class="volume-label"/>
+                <ui:Slider name="MusicVolumeSlider" low-value="0" high-value="1" value="1" class="volume-slider"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
