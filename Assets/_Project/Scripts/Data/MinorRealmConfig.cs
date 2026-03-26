@@ -109,6 +109,22 @@ namespace CultivationGame.Data
         [Range(0f, 1f)] public float maxHeight;
     }
 
+    [System.Serializable]
+    public struct ResourceSpawnEntry
+    {
+        [Tooltip("OreVein data asset defining the resource, yield, and prefab.")]
+        public OreVeinData oreVeinData;
+
+        [Tooltip("Minimum number of veins to spawn.")]
+        public int minCount;
+
+        [Tooltip("Maximum number of veins to spawn.")]
+        public int maxCount;
+
+        [Tooltip("Relative spawn weight — higher values make this entry more likely in weighted selection.")]
+        [Min(0.01f)] public float spawnWeight;
+    }
+
     [CreateAssetMenu(fileName = "NewRealmConfig", menuName = "Cultivation/Minor Realm Config")]
     public class MinorRealmConfig : ScriptableObject
     {
@@ -156,6 +172,16 @@ namespace CultivationGame.Data
         public GameObject[] essencePrefabs;
         public int essenceCount = 5;
 
+        [Header("Ore Veins")]
+        [Tooltip("Resource entries defining which ore veins can spawn and how many.")]
+        public ResourceSpawnEntry[] availableResources;
+
+        [Tooltip("Minimum world-space distance between any two ore veins.")]
+        [Min(1f)] public float minVeinSpacing = 5f;
+
+        [Tooltip("Maximum terrain slope (degrees) on which an ore vein can spawn.")]
+        [Range(0f, 60f)] public float maxVeinSlopeDegrees = 30f;
+
         [Header("Heightmap Smoothing")]
         [Tooltip("Box-blur iterations on the final heightmap. Higher = smoother terrain.")]
         [Range(0, 10)] public int smoothingIterations = 2;
@@ -181,5 +207,8 @@ namespace CultivationGame.Data
         public Color fogColor = new Color(0.7f, 0.75f, 0.8f);
         [Range(0f, 0.05f)] public float fogDensity = 0.01f;
         public Color ambientLight = Color.white;
+
+        [Header("Resources")]
+        public RealmResourceEntry[] availableResources;
     }
 }

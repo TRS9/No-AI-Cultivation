@@ -70,6 +70,11 @@ namespace CultivationGame.Data
         public static void RaiseMachineProcessingCompleted(MonoBehaviour machine, RecipeData recipe)
             => OnMachineProcessingCompleted?.Invoke(machine, recipe);
 
+        public delegate void MachineInventoryChanged(MonoBehaviour machine);
+        public static event MachineInventoryChanged OnMachineInventoryChanged;
+        public static void RaiseMachineInventoryChanged(MonoBehaviour machine)
+            => OnMachineInventoryChanged?.Invoke(machine);
+
         // --- Spirit Pipes ---
         public delegate void PipeConnected(MonoBehaviour pipe, MonoBehaviour source, MonoBehaviour destination);
         public static event PipeConnected OnPipeConnected;

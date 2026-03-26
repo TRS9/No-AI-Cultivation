@@ -111,5 +111,11 @@ namespace CultivationGame.Core
         public static event PanelStateChanged OnPanelStateChanged;
         public static void RaisePanelStateChanged(string panelId, bool isOpen)
             => OnPanelStateChanged?.Invoke(panelId, isOpen);
+
+        // --- Dialogue (Phase 7) ---
+        public delegate void DialogueStateChanged(bool isActive);
+        public static event DialogueStateChanged OnDialogueStateChanged;
+        public static void RaiseDialogueStateChanged(bool isActive)
+            => OnDialogueStateChanged?.Invoke(isActive);
     }
 }

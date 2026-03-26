@@ -105,6 +105,10 @@ namespace CultivationGame.Systems
             _rotation = 0;
             _isPlacing = true;
 
+            // Ensure cursor is visible and free for placement interaction
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
             // Instantiate ghost preview (prefer dedicated ghost prefab, fall back to real prefab)
             GameObject ghostPrefab = machine.ghostPrefab != null ? machine.ghostPrefab : machine.prefab;
             _ghostInstance = Instantiate(ghostPrefab);

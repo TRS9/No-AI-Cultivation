@@ -26,6 +26,7 @@ namespace CultivationGame.Systems
         private float _processingTimer;
         private float _processingDuration;
         private bool _isProcessing;
+        private bool _isStalled;
 
         // --- Public API ---
         public MachineData MachineData => machineData;
@@ -41,6 +42,9 @@ namespace CultivationGame.Systems
 
         public float ProcessingProgress => _processingDuration > 0f
             ? Mathf.Clamp01(_processingTimer / _processingDuration) : 0f;
+
+        public float ProcessingTimer => _processingTimer;
+        public float ProcessingDuration => _processingDuration;
 
         private void Awake()
         {
@@ -64,8 +68,17 @@ namespace CultivationGame.Systems
         {
             if (_isProcessing)
             {
-                if (!IsPowered) return; // stall if power is cut
+                if (!IsPowered)
+                {
+                    if (!_isStalled)
+                    {
+                        _isStalled = true;
+                        GameDataEvents.RaiseMachineStalled(this);
+                    }
+                    return;
+                }
 
+                _isStalled = false;
                 _processingTimer += Time.deltaTime;
                 if (_processingTimer >= _processingDuration)
                 {
