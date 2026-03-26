@@ -101,6 +101,17 @@ namespace CultivationGame.Core
         public static void RaisePlayerDodge()
             => OnPlayerDodge?.Invoke();
 
+        // --- Buff Tracking (HUD) ---
+        public delegate void BuffStarted(string buffName, string pillName, float duration);
+        public static event BuffStarted OnBuffStarted;
+        public static void RaiseBuffStarted(string buffName, string pillName, float duration)
+            => OnBuffStarted?.Invoke(buffName, pillName, duration);
+
+        public delegate void BuffExpired(string buffName, string pillName);
+        public static event BuffExpired OnBuffExpired;
+        public static void RaiseBuffExpired(string buffName, string pillName)
+            => OnBuffExpired?.Invoke(buffName, pillName);
+
         // --- Game State ---
         public delegate void PauseStateChanged(bool isPaused);
         public static event PauseStateChanged OnPauseStateChanged;
