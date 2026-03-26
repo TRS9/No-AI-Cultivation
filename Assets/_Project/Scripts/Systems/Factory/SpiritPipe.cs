@@ -7,14 +7,10 @@ namespace CultivationGame.Systems
     /// <summary>
     /// Spirit Pipe: connects the output of one machine to the input of another.
     /// Periodically transfers items from source output to destination input.
-    /// Placed on the grid like any other machine.
+    /// Works with any IMachineConnectable (BaseMachine, StorageContainer, ResourceExtractor).
     /// </summary>
     public class SpiritPipe : MonoBehaviour, IInteractable
     {
-        [Header("Connection")]
-        [SerializeField] private BaseMachine sourceMachine;
-        [SerializeField] private BaseMachine destinationMachine;
-
         [Header("Transport Settings")]
         [SerializeField] private float transferInterval = 1f;
         [SerializeField] private int itemsPerTransfer = 1;
@@ -23,12 +19,14 @@ namespace CultivationGame.Systems
         [Tooltip("If set, only this item type is transported. Leave null for any item.")]
         [SerializeField] private ItemData filterItem;
 
+        private IMachineConnectable _source;
+        private IMachineConnectable _destination;
         private float _transferTimer;
         private bool _isConnected;
 
         // --- Public API ---
-        public BaseMachine SourceMachine => sourceMachine;
-        public BaseMachine DestinationMachine => destinationMachine;
+        public IMachineConnectable Source => _source;
+        public IMachineConnectable Destination => _destination;
         public bool IsConnected => _isConnected;
         public ItemData FilterItem => filterItem;
 
@@ -48,25 +46,26 @@ namespace CultivationGame.Systems
         /// Connect this pipe between two machines.
         /// Called during placement or when loading from save.
         /// </summary>
-        public void Connect(BaseMachine source, BaseMachine destination)
+        public void Connect(IMachineConnectable source, IMachineConnectable destination)
         {
-            sourceMachine = source;
-            destinationMachine = destination;
-            _isConnected = source != null && destination != null;
+            _source = source;
+            _destination = destination;
+            _isConnected = source != null && destination != null
+                        && source.OutputInventory != null
+                        && destination.InputInventory != null;
 
             if (_isConnected)
-                GameDataEvents.RaisePipeConnected(this, source, destination);
+                GameDataEvents.RaisePipeConnected(this, source as MonoBehaviour, destination as MonoBehaviour);
         }
 
         public void Disconnect()
         {
-            var oldSource = sourceMachine;
-            var oldDest = destinationMachine;
-            sourceMachine = null;
-            destinationMachine = null;
+            var oldSource = _source as MonoBehaviour;
+            _source = null;
+            _destination = null;
             _isConnected = false;
 
-            if (oldSource != null || oldDest != null)
+            if (oldSource != null)
                 GameDataEvents.RaisePipeDisconnected(this);
         }
 
@@ -77,16 +76,15 @@ namespace CultivationGame.Systems
 
         public void Interact(GameObject user)
         {
-            // Open pipe configuration UI (connect source/destination)
             GameDataEvents.RaisePipeInteracted(this);
         }
 
         private void TransferItems()
         {
-            if (sourceMachine == null || destinationMachine == null) return;
+            if (_source == null || _destination == null) return;
 
-            var sourceOutput = sourceMachine.OutputInventory;
-            var destInput = destinationMachine.InputInventory;
+            var sourceOutput = _source.OutputInventory;
+            var destInput = _destination.InputInventory;
 
             if (sourceOutput == null || destInput == null) return;
 
@@ -96,13 +94,11 @@ namespace CultivationGame.Systems
 
                 if (filterItem != null)
                 {
-                    // Transfer only the filtered item
                     if (!sourceOutput.HasItem(filterItem)) return;
                     itemToTransfer = filterItem;
                 }
                 else
                 {
-                    // Transfer any available item
                     itemToTransfer = sourceOutput.GetFirstItem();
                     if (itemToTransfer == null) return;
                 }

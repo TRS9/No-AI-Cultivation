@@ -9,7 +9,7 @@ namespace CultivationGame.Systems
     /// Has both input and output inventories (same backing store).
     /// Spirit Pipes can push items in and pull items out.
     /// </summary>
-    public class StorageContainer : MonoBehaviour, IInteractable
+    public class StorageContainer : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
         [SerializeField] private MachineData machineData;

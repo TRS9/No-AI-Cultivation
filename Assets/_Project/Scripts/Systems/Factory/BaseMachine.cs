@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using CultivationGame.Core;
 using CultivationGame.Data;
@@ -9,7 +8,7 @@ namespace CultivationGame.Systems
     /// Core machine component. Handles input/output inventories, recipe selection,
     /// and timer-based processing. Attach to any placed machine prefab.
     /// </summary>
-    public class BaseMachine : MonoBehaviour, IInteractable
+    public class BaseMachine : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
         [SerializeField] private MachineData machineData;
@@ -26,6 +25,7 @@ namespace CultivationGame.Systems
         private float _processingTimer;
         private float _processingDuration;
         private bool _isProcessing;
+        private float _fuelLevel;
 
         // --- Public API ---
         public MachineData MachineData => machineData;
@@ -33,6 +33,7 @@ namespace CultivationGame.Systems
         public MachineInventory InputInventory => _inputInventory;
         public MachineInventory OutputInventory => _outputInventory;
         public bool IsProcessing => _isProcessing;
+        public float FuelLevel => _fuelLevel;
         public float ProcessingProgress => _processingDuration > 0f
             ? Mathf.Clamp01(_processingTimer / _processingDuration) : 0f;
 
@@ -73,6 +74,22 @@ namespace CultivationGame.Systems
             GameDataEvents.RaiseMachineInteracted(this);
         }
 
+        /// <summary>
+        /// Convenience method: add an item to the input inventory.
+        /// </summary>
+        public int AddInput(ItemData item, int amount = 1)
+        {
+            return _inputInventory.TryAdd(item, amount);
+        }
+
+        /// <summary>
+        /// Convenience method: remove an item from the output inventory.
+        /// </summary>
+        public int RemoveOutput(ItemData item, int amount = 1)
+        {
+            return _outputInventory.TryRemove(item, amount);
+        }
+
         // --- Processing Logic ---
 
         private void TryStartProcessing()
@@ -91,6 +108,13 @@ namespace CultivationGame.Systems
             foreach (var output in currentRecipe.outputs)
                 totalOutput += output.amount;
             if (!_outputInventory.HasSpace(totalOutput)) return;
+
+            // Check and deduct Qi cost
+            if (currentRecipe.qiCost > 0)
+            {
+                if (GameEvents.TryDeductQi == null || !GameEvents.TryDeductQi(currentRecipe.qiCost))
+                    return;
+            }
 
             // Consume inputs
             foreach (var input in currentRecipe.inputs)
@@ -111,6 +135,13 @@ namespace CultivationGame.Systems
             _isProcessing = false;
 
             if (currentRecipe == null) return;
+
+            // Check success rate
+            if (currentRecipe.successRate < 1f && Random.value > currentRecipe.successRate)
+            {
+                GameDataEvents.RaiseCraftingFailed(currentRecipe);
+                return;
+            }
 
             // Produce outputs
             foreach (var output in currentRecipe.outputs)

@@ -33,4 +33,12 @@ namespace CultivationGame.Core
         Splitter,
         Merger
     }
+
+    public enum FuelType
+    {
+        None,
+        Qi,
+        SpiritStone,
+        Both
+    }
 }

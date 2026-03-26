@@ -53,6 +53,12 @@ namespace CultivationGame.Data
         public static void RaiseBuildModeGhostCancelled()
             => OnBuildModeGhostCancelled?.Invoke();
 
+        // --- Machine Removal ---
+        public delegate void MachineRemoved(MachineData machine, UnityEngine.Vector3 position);
+        public static event MachineRemoved OnMachineRemoved;
+        public static void RaiseMachineRemoved(MachineData machine, UnityEngine.Vector3 position)
+            => OnMachineRemoved?.Invoke(machine, position);
+
         // --- Machine Interaction ---
         public delegate void MachineInteracted(MonoBehaviour machine);
         public static event MachineInteracted OnMachineInteracted;

@@ -56,6 +56,13 @@ namespace CultivationGame.Core
         public static void RaiseMeditationBonusApplied(float multiplier)
             => OnMeditationBonusApplied?.Invoke(multiplier);
 
+        // --- Qi Deduction (for machines) ---
+        /// <summary>
+        /// Tries to deduct Qi from the player. Returns true if enough Qi was available.
+        /// Subscribe from PlayerStats to handle the actual deduction.
+        /// </summary>
+        public static System.Func<double, bool> TryDeductQi;
+
         // --- Crafting UI ---
         public delegate void CraftingStationInteracted();
         public static event CraftingStationInteracted OnCraftingStationInteracted;

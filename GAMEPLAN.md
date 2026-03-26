@@ -26,9 +26,11 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 | **Rezept/Crafting-System** | ✅ **Fertig** | RecipeData, RecipeDatabase, CraftingSystem |
 | **Pill-System** | ✅ **Fertig** | PillData, PillBuffSystem, CultivationBuffs |
 | **Building/Placement** | ✅ **Fertig** | BuildGrid, PlacementController, BuildMenu |
-| **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory |
-| **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe, StorageContainer |
+| **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory, IMachineConnectable |
+| **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe (IMachineConnectable), StorageContainer |
 | **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
+| **Maschinen-UI** | ✅ **Fertig** | MachineUIController (Rezept, Slots, Progress) |
+| **Machine-Removal** | ✅ **Fertig** | PlacementController.OnRemove |
 
 ---
 
@@ -494,7 +496,7 @@ SCHRITT  3: [Phase 2] Pill-System + Cultivation-Hook    ✅ FERTIG
 SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content) ✅ FERTIG (OreVeins)
 SCHRITT  5: [Phase 3] Grid + Placement-System           ✅ FERTIG
 SCHRITT  6: [Phase 4] Erste Maschine (Furnace)          ✅ FERTIG (BaseMachine)
-SCHRITT  7: [Phase 4] Maschinen-UI                      ⬜ OFFEN
+SCHRITT  7: [Phase 4] Maschinen-UI                      ✅ FERTIG
 SCHRITT  8: [Phase 4] Weitere Maschinen                 ⬜ OFFEN (Splitter/Merger)
 SCHRITT  9: [Phase 5] Spirit Pipes + Storage            ✅ FERTIG
 SCHRITT 10: [Phase 7] NPC-Basis + Dialogue              ⬜ OFFEN
