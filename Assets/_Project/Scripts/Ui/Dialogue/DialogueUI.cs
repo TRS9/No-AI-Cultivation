@@ -110,9 +110,11 @@ namespace CultivationGame.UI
             _textLabel.text = string.Empty;
             _choicesContainer.style.display = DisplayStyle.None;
 
+            var sb = new System.Text.StringBuilder(_fullText.Length);
             for (int i = 0; i < _fullText.Length; i++)
             {
-                _textLabel.text = _fullText.Substring(0, i + 1);
+                sb.Append(_fullText[i]);
+                _textLabel.text = sb.ToString();
                 yield return new WaitForSecondsRealtime(typewriterSpeed);
             }
 
