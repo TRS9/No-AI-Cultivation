@@ -86,7 +86,7 @@ namespace CultivationGame.Systems
 
         private void PlaySFX3D(AudioClip clip, Vector3 position, float volume, float pitch)
         {
-            GameObject temp = new GameObject("SFX_Temp");
+            GameObject temp = new GameObject("SFX_3D");
             temp.transform.position = position;
             AudioSource source = temp.AddComponent<AudioSource>();
             source.clip = clip;
@@ -94,12 +94,12 @@ namespace CultivationGame.Systems
             source.pitch = pitch;
             source.spatialBlend = 1f;
             source.Play();
-            Destroy(temp, clip.length / Mathf.Max(pitch, 0.01f));
+            Destroy(temp, ClipDuration(clip, pitch));
         }
 
         private void PlaySFX2D(AudioClip clip, float volume, float pitch)
         {
-            GameObject temp = new GameObject("SFX_Temp");
+            GameObject temp = new GameObject("SFX_2D");
             temp.transform.position = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
             AudioSource source = temp.AddComponent<AudioSource>();
             source.clip = clip;
@@ -107,7 +107,12 @@ namespace CultivationGame.Systems
             source.pitch = pitch;
             source.spatialBlend = 0f;
             source.Play();
-            Destroy(temp, clip.length / Mathf.Max(pitch, 0.01f));
+            Destroy(temp, ClipDuration(clip, pitch));
+        }
+
+        private static float ClipDuration(AudioClip clip, float pitch)
+        {
+            return clip.length / Mathf.Max(pitch, 0.01f);
         }
     }
 }
