@@ -61,6 +61,12 @@ namespace CultivationGame.Player
             return items;
         }
 
+        public bool HasItem(ItemData item, int amount = 1)
+        {
+            if (item == null) return false;
+            return items.TryGetValue(item, out int count) && count >= amount;
+        }
+
         public void LoadInventory(Dictionary<ItemData, int> loaded)
         {
             items = new Dictionary<ItemData, int>(loaded);

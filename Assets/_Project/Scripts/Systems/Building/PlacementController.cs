@@ -38,6 +38,7 @@ namespace CultivationGame.Systems
         private MachineData _selectedMachine;
         private GameObject _ghostInstance;
         private Renderer[] _ghostRenderers;
+        private Material[][] _cachedMaterialArrays;
         private bool _isPlacing;
         private bool _canPlace;
         private int _rotation; // 0, 1, 2, 3 → 0°, 90°, 180°, 270°
@@ -119,6 +120,12 @@ namespace CultivationGame.Systems
 
             // Cache renderers for material swapping
             _ghostRenderers = _ghostInstance.GetComponentsInChildren<Renderer>();
+
+            // Pre-allocate material arrays to avoid per-frame heap allocations
+            _cachedMaterialArrays = new Material[_ghostRenderers.Length][];
+            for (int i = 0; i < _ghostRenderers.Length; i++)
+                _cachedMaterialArrays[i] = new Material[_ghostRenderers[i].sharedMaterials.Length];
+
             SetGhostMaterial(ghostValidMaterial);
 
             GameDataEvents.RaiseBuildModeGhostStarted(_selectedMachine);
@@ -134,6 +141,7 @@ namespace CultivationGame.Systems
 
             _ghostInstance = null;
             _ghostRenderers = null;
+            _cachedMaterialArrays = null;
             _selectedMachine = null;
             _isPlacing = false;
             _rotation = 0;
@@ -266,12 +274,12 @@ namespace CultivationGame.Systems
         private void SetGhostMaterial(Material mat)
         {
             if (_ghostRenderers == null || mat == null) return;
-            foreach (var r in _ghostRenderers)
+            for (int i = 0; i < _ghostRenderers.Length; i++)
             {
-                var mats = new Material[r.sharedMaterials.Length];
-                for (int i = 0; i < mats.Length; i++)
-                    mats[i] = mat;
-                r.materials = mats;
+                var mats = _cachedMaterialArrays[i];
+                for (int j = 0; j < mats.Length; j++)
+                    mats[j] = mat;
+                _ghostRenderers[i].materials = mats;
             }
         }
 
@@ -280,11 +288,10 @@ namespace CultivationGame.Systems
             if (machine.buildCost == null || machine.buildCost.Length == 0) return true;
             if (playerInventory == null) return true;
 
-            var items = playerInventory.GetItems();
             foreach (var cost in machine.buildCost)
             {
                 if (cost.item == null) continue;
-                if (!items.TryGetValue(cost.item, out int count) || count < cost.amount)
+                if (!playerInventory.HasItem(cost.item, cost.amount))
                     return false;
             }
             return true;
