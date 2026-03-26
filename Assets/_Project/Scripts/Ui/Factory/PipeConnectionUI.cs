@@ -48,6 +48,9 @@ namespace CultivationGame.UI
         private static readonly int BaseColorProperty = Shader.PropertyToID("_BaseColor");
         private static readonly int ColorProperty = Shader.PropertyToID("_Color");
 
+        // Cached connectable machines (populated once per connection-mode entry)
+        private List<(MonoBehaviour mono, IMachineConnectable connectable)> _cachedConnectables;
+
         private enum ConnectionState
         {
             Idle,
@@ -250,7 +253,15 @@ namespace CultivationGame.UI
             _selectedSource = null;
             _selectedSourceMono = null;
 
-            _instructionLabel.text = "Click on a source machine (output)\u2026";
+            // Cache all connectable machines once per connection-mode session
+            _cachedConnectables = new();
+            foreach (var mono in FindObjectsOfType<MonoBehaviour>())
+            {
+                if (mono is IMachineConnectable connectable && mono != _currentPipe)
+                    _cachedConnectables.Add((mono, connectable));
+            }
+
+            _instructionLabel.text = "Click on a source machine (output)...";
             _instructionLabel.style.display = DisplayStyle.Flex;
 
             HighlightCompatibleMachines(requireOutput: true);
@@ -262,6 +273,7 @@ namespace CultivationGame.UI
             _state = ConnectionState.Idle;
             _selectedSource = null;
             _selectedSourceMono = null;
+            _cachedConnectables = null;
 
             ClearAllHighlights();
 
@@ -319,7 +331,7 @@ namespace CultivationGame.UI
                 HighlightCompatibleMachines(requireInput: true);
 
                 _state = ConnectionState.SelectingDestination;
-                _instructionLabel.text = "Click on a destination machine (input)\u2026";
+                _instructionLabel.text = "Click on a destination machine (input)...";
             }
             else if (_state == ConnectionState.SelectingDestination)
             {
@@ -386,13 +398,10 @@ namespace CultivationGame.UI
 
         private void HighlightCompatibleMachines(bool requireOutput = false, bool requireInput = false)
         {
-            foreach (var mono in FindObjectsOfType<MonoBehaviour>())
+            if (_cachedConnectables == null) return;
+
+            foreach (var (mono, connectable) in _cachedConnectables)
             {
-                if (mono is not IMachineConnectable connectable) continue;
-
-                // Skip the pipe itself
-                if (mono == _currentPipe) continue;
-
                 // Skip the already-selected source
                 if (_selectedSourceMono != null && mono == _selectedSourceMono) continue;
 
