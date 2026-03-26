@@ -43,6 +43,16 @@ namespace CultivationGame.Systems
             if (pill.breakthroughBonus > 0f && pill.buffDuration > 0f)
                 StartCoroutine(ApplyBreakthroughBuff(pill.breakthroughBonus, pill.buffDuration, effectiveness));
 
+            // Combat buffs (Phase 8)
+            if (pill.damageBoost > 0f && pill.buffDuration > 0f)
+                StartCoroutine(ApplyDamageBuff(pill.damageBoost, pill.buffDuration, effectiveness));
+
+            if (pill.defenseBoost > 0f && pill.buffDuration > 0f)
+                StartCoroutine(ApplyDefenseBuff(pill.defenseBoost, pill.buffDuration, effectiveness));
+
+            if (pill.speedBoost > 0f && pill.buffDuration > 0f)
+                StartCoroutine(ApplyCombatSpeedBuff(pill.speedBoost, pill.buffDuration, effectiveness));
+
             GameDataEvents.RaisePillEffectsApplied(pill, effectiveness);
         }
 
@@ -60,6 +70,30 @@ namespace CultivationGame.Systems
             CultivationBuffs.BreakthroughBonus += applied;
             yield return new WaitForSeconds(duration);
             CultivationBuffs.BreakthroughBonus -= applied;
+        }
+
+        private IEnumerator ApplyDamageBuff(float bonus, float duration, float effectiveness)
+        {
+            float applied = bonus * effectiveness;
+            CultivationBuffs.DamageMultiplier += applied;
+            yield return new WaitForSeconds(duration);
+            CultivationBuffs.DamageMultiplier -= applied;
+        }
+
+        private IEnumerator ApplyDefenseBuff(float bonus, float duration, float effectiveness)
+        {
+            float applied = bonus * effectiveness;
+            CultivationBuffs.DefenseMultiplier += applied;
+            yield return new WaitForSeconds(duration);
+            CultivationBuffs.DefenseMultiplier -= applied;
+        }
+
+        private IEnumerator ApplyCombatSpeedBuff(float bonus, float duration, float effectiveness)
+        {
+            float applied = bonus * effectiveness;
+            CultivationBuffs.SpeedMultiplier += applied;
+            yield return new WaitForSeconds(duration);
+            CultivationBuffs.SpeedMultiplier -= applied;
         }
     }
 }

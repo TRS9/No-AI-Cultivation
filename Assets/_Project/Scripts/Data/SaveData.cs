@@ -10,6 +10,10 @@ namespace CultivationGame.Data
         public double currentQi;
         public int currentRealmIndex;
 
+        // Player Health (Phase 8)
+        public float currentHealth;
+        public float maxHealth;
+
         // Player Position
         public float positionX, positionY, positionZ;
         public float rotationY;

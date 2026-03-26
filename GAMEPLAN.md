@@ -509,7 +509,7 @@ SCHRITT  8: [Phase 4] Weitere Maschinen                 ✅ FERTIG (Splitter/Mer
 SCHRITT  9: [Phase 5] Spirit Pipes + Storage            ✅ FERTIG
 SCHRITT 10: [Phase 7] NPC-Basis + Dialogue              ⬜ OFFEN
 SCHRITT 11: [Phase 7] Quest-System                      ⬜ OFFEN
-SCHRITT 12: [Phase 8] Combat (Minimal)                  ⬜ OFFEN
+SCHRITT 12: [Phase 8] Combat (Minimal)                  ✅ FERTIG
 SCHRITT 13: [Phase 6] Minor Realm Ressourcen-Anpassung  ⬜ OFFEN
 SCHRITT 14: [Phase 9] Story-Quests + Freischalt-Kette   ⬜ OFFEN
 SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
@@ -590,7 +590,7 @@ Assets/_Project/Scripts/
 │       ├── MachineData.cs   ✅ implementiert
 │       ├── NPCData.cs       ⬜ offen (Phase 7)
 │       ├── QuestData.cs     ⬜ offen (Phase 7)
-│       ├── EnemyData.cs     ⬜ offen (Phase 8)
+│       ├── EnemyData.cs     ✅ implementiert (Phase 8)
 │       ├── EssenceData.cs   ✅ Subclass von ItemData
 │       └── RealmDefinition.cs  ✅ mit spiritSenseRange
 ├── Player/                  (bestehend + Pill-Consumption)
@@ -600,8 +600,7 @@ Assets/_Project/Scripts/
 │   ├── Building/            ✅ BuildGrid, PlacementController
 │   ├── NPC/                 ⬜ offen (Phase 7)
 │   ├── Quest/               ⬜ offen (Phase 7)
-│   ├── Combat/              ⬜ offen (Phase 8)
-│   ├── Pill/                ✅ PillBuffSystem.cs
+│   ├── Combat/              ✅ implementiert (Phase 8)│   ├── Pill/                ✅ PillBuffSystem.cs
 │   ├── Realm/               (bestehend)
 │   ├── Essence/             (bestehend)
 │   ├── Save/                (bestehend + erweitert)
@@ -612,7 +611,7 @@ Assets/_Project/Scripts/
     ├── Building/            ✅ BuildMenuController, BuildMenuDataSource
     ├── Dialogue/            ⬜ offen (Phase 7)
     ├── Quest/               ⬜ offen (Phase 7)
-    ├── Combat/              ⬜ offen (Phase 8)
+    ├── Combat/              ✅ implementiert (Phase 8)
     ├── Inventory/           ✅ InventoryController.cs
     └── ...                  (bestehend)
 ```

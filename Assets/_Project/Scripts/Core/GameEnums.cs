@@ -34,4 +34,14 @@ namespace CultivationGame.Core
         Merger,
         QiConduit
     }
+
+    public enum EnemyState
+    {
+        Idle,
+        Patrol,
+        Chase,
+        Attack,
+        Return,
+        Dead
+    }
 }
