@@ -60,11 +60,12 @@ namespace CultivationGame.UI
                 RebuildGrid();
                 _panel.style.display = DisplayStyle.Flex;
 
+                // Ensure clean state before applying layout class
+                _panel.RemoveFromClassList(ThirdPersonClass);
+
                 // Apply compact layout when in 3rd-person (not Spirit Sense)
                 if (!_inSpiritSense)
                     _panel.AddToClassList(ThirdPersonClass);
-                else
-                    _panel.RemoveFromClassList(ThirdPersonClass);
             }
             else
             {
