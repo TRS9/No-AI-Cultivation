@@ -86,6 +86,12 @@ namespace CultivationGame.Data
         public static void RaisePipeInteracted(MonoBehaviour pipe)
             => OnPipeInteracted?.Invoke(pipe);
 
+        // --- Qi Network ---
+        public delegate void QiNetworkChanged(float totalDemand, float available);
+        public static event QiNetworkChanged OnQiNetworkChanged;
+        public static void RaiseQiNetworkChanged(float demand, float available)
+            => OnQiNetworkChanged?.Invoke(demand, available);
+
         // --- Resource Extraction ---
         public delegate void ResourceExtracted(ItemData resource, int amount);
         public static event ResourceExtracted OnResourceExtracted;

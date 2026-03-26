@@ -30,7 +30,8 @@ namespace CultivationGame.Data
         public int inputSlots = 1;
         public int outputSlots = 1;
 
-        [Header("Fuel")]
-        public FuelType fuelType = FuelType.None;
+        [Header("Qi")]
+        [Tooltip("Qi consumed per second while processing. 0 = no Qi consumption.")]
+        public float qiConsumptionRate = 1f;
     }
 }

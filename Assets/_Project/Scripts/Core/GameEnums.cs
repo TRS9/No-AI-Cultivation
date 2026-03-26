@@ -31,14 +31,7 @@ namespace CultivationGame.Core
         SpiritPipe,
         ResourceExtractor,
         Splitter,
-        Merger
-    }
-
-    public enum FuelType
-    {
-        None,
-        Qi,
-        SpiritStone,
-        Both
+        Merger,
+        QiConduit
     }
 }

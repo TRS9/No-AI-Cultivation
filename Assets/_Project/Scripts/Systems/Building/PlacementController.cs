@@ -190,18 +190,15 @@ namespace CultivationGame.Systems
             GameObject placed = Instantiate(_selectedMachine.prefab, position, rotation);
             placed.name = _selectedMachine.machineName;
 
-            // Wire machine data via IMachineConnectable if available
-            var connectable = placed.GetComponent<IMachineConnectable>();
-            if (connectable != null)
-            {
-                // All IMachineConnectable types have SetMachineData
-                if (connectable is BaseMachine bm)
-                    bm.SetMachineData(_selectedMachine);
-                else if (connectable is ResourceExtractor ext)
-                    ext.SetMachineData(_selectedMachine);
-                else if (connectable is StorageContainer sc)
-                    sc.SetMachineData(_selectedMachine);
-            }
+            // Wire machine data to the placed component
+            if (placed.GetComponent<BaseMachine>() is BaseMachine bm)
+                bm.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<ResourceExtractor>() is ResourceExtractor ext)
+                ext.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<StorageContainer>() is StorageContainer sc)
+                sc.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<QiConduit>() is QiConduit conduit)
+                conduit.SetMachineData(_selectedMachine);
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);

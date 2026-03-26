@@ -31,6 +31,7 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 | **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
 | **Maschinen-UI** | ✅ **Fertig** | MachineUIController (Rezept, Slots, Progress) |
 | **Machine-Removal** | ✅ **Fertig** | PlacementController.OnRemove |
+| **Qi-Netzwerk** | ✅ **Fertig** | QiNetwork, QiConduit (Satisfactory-Strom) |
 
 ---
 
@@ -53,11 +54,11 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 - **Tief (5+ Stufen):** Mehrere Zwischenprodukte, Nebenprodukte, Abfall. Satisfactory-Level.
 - **Empfehlung:** Start mit 3 Stufen, auf 5 erweitern wenn das Grundsystem steht.
 
-### DE-4: Qi-Maschinen-Interaktion
-- **Qi als Treibstoff:** Maschinen verbrauchen Qi des Spielers → Tension zwischen Cultivation und Produktion.
-- **Spirit Stones als Treibstoff:** Separate Ressource → Weniger Conflict, mehr Farming.
-- **Beides:** Frühes Spiel = eigenes Qi, später = Spirit Stones als Automatisierung.
-- **Empfehlung:** Beides. Natürliche Progression von manuell zu automatisiert.
+### DE-4: Qi-Maschinen-Interaktion ✅ ENTSCHIEDEN
+- **Qi-Netzwerk (wie Satisfactory-Strom):** Alles läuft über Qi. Spieler meditiert → füllt Qi-Pool → QiConduits (Leitungen) verteilen Qi → Maschinen in Reichweite sind "powered".
+- Kein `FuelType`, keine Spirit Stones als Treibstoff, keine Multiple-Fuel-Logik.
+- `MachineData.qiConsumptionRate` = Qi/Sekunde während Produktion.
+- Natürliche Progression: höherer Realm = mehr Qi-Kapazität = mehr Maschinen betreibbar.
 
 ### DE-5: Combat-Tiefe
 - **Minimal (empfohlen für V1):** Einfaches Action-Combat. Angriff, Ausweichen, 2-3 Techniken.
@@ -323,6 +324,13 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - Splitter: 1 Input → 2 Outputs (verteilt Items)
 - Merger: 2 Inputs → 1 Output (kombiniert Ströme)
 - Nötig für komplexe Produktionsketten
+
+#### Schritt 5.5: Qi-Netzwerk (Satisfactory-Strom) ✅ IMPLEMENTIERT
+- **QiConduit**: Platzierbare Qi-Leitung mit connectionRadius (Conduit↔Conduit) und machineRadius (Conduit→Maschine)
+- **QiNetwork**: Singleton, BFS-Connectivity vom Qi-Source-Punkt, aggregierter Qi-Verbrauch pro Frame
+- Maschinen brauchen Qi-Verbindung → `IsPowered` muss true sein
+- `MachineData.qiConsumptionRate` = Qi/s während Produktion
+- Kein `successRate` mehr — Produktion gelingt immer (Factory = Präzision)
 
 **Dateien:**
 - `Systems/Factory/SpiritPipe.cs`

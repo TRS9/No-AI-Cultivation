@@ -46,24 +46,12 @@ namespace CultivationGame.Player
         {
             GameEvents.OnAttemptBreakthrough += AttemptBreakthrough;
             GameEvents.OnAddQi += AddQi;
-            GameEvents.TryDeductQi = HandleTryDeductQi;
         }
 
         private void OnDisable()
         {
             GameEvents.OnAttemptBreakthrough -= AttemptBreakthrough;
             GameEvents.OnAddQi -= AddQi;
-            if (GameEvents.TryDeductQi == HandleTryDeductQi)
-                GameEvents.TryDeductQi = null;
-        }
-
-        private bool HandleTryDeductQi(double amount)
-        {
-            if (amount <= 0) return true;
-            if (currentQi < amount) return false;
-            currentQi -= amount;
-            GameEvents.RaiseQiChanged(currentQi, MaxQi);
-            return true;
         }
 
         public void ToggleMeditation()
