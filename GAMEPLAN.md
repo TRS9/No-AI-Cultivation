@@ -14,14 +14,21 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 |--------|--------|-------------------|
 | Player Movement + Stamina | Fertig | Fliegen später hinzufügen |
 | Minor Realm Generierung | Fertig | Biome-Configs für Materialien anpassen |
-| Essence Collection | Fertig | Wird zu allgemeinem Item-Pickup erweitert |
-| Inventar (EssenceData-basiert) | Fertig | Muss auf generisches Item-System umgebaut werden |
-| Cultivation / Breakthrough | Fertig | Pillen-Integration hinzufügen |
-| Save/Load | Fertig | Muss um Factory-Daten erweitert werden |
+| Essence Collection | Fertig | ~~Wird zu allgemeinem Item-Pickup erweitert~~ ✅ Erledigt |
+| Inventar (EssenceData-basiert) | ✅ Umgebaut | ~~Muss auf generisches Item-System umgebaut werden~~ ✅ Nutzt jetzt ItemData |
+| Cultivation / Breakthrough | Fertig | ~~Pillen-Integration hinzufügen~~ ✅ PillBuffSystem implementiert |
+| Save/Load | ✅ Erweitert | ~~Muss um Factory-Daten erweitert werden~~ ✅ Building, Pipe, Machine, OreVein SaveEntries |
 | Scene Management / Portale | Fertig | Prison Realm = Universe, Grotto = Workshop |
-| UI (Qi, Stamina, Inventory) | Fertig | Factory-UI hinzufügen |
-| GameEvents System | Fertig | Neue Events für Factory hinzufügen |
+| UI (Qi, Stamina, Inventory) | Fertig | Factory-UI hinzufügen (Build Menu fertig) |
+| GameEvents System | ✅ Erweitert | ~~Neue Events für Factory hinzufügen~~ ✅ GameDataEvents.cs mit allen Factory-Events |
 | Terrain Generation | Fertig | Bleibt für Minor Realms |
+| **Generisches Item-System** | ✅ **Fertig** | ItemData, RawMaterialData, PillData, EssenceData |
+| **Rezept/Crafting-System** | ✅ **Fertig** | RecipeData, RecipeDatabase, CraftingSystem |
+| **Pill-System** | ✅ **Fertig** | PillData, PillBuffSystem, CultivationBuffs |
+| **Building/Placement** | ✅ **Fertig** | BuildGrid, PlacementController, BuildMenu |
+| **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory |
+| **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe, StorageContainer |
+| **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
 
 ---
 
@@ -71,7 +78,7 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 
 ---
 
-### PHASE 0: Refactoring — Generisches Item-System
+### PHASE 0: Refactoring — Generisches Item-System ✅ IMPLEMENTIERT
 **Priorität: HÖCHSTE — ohne das geht nichts weiter**
 **Geschätzter Umfang: Das erste was gebaut werden muss**
 
@@ -120,7 +127,7 @@ ItemData (ScriptableObject) — Ersetzt/erweitert EssenceData
 
 ---
 
-### PHASE 1: Rezept- und Crafting-System
+### PHASE 1: Rezept- und Crafting-System ✅ IMPLEMENTIERT
 **Priorität: HOCH — Kern der Factory-Mechanik**
 
 #### Schritt 1.1: RecipeData ScriptableObject
@@ -156,7 +163,7 @@ RecipeData (ScriptableObject)
 
 ---
 
-### PHASE 2: Pill-System und Cultivation-Integration
+### PHASE 2: Pill-System und Cultivation-Integration ✅ IMPLEMENTIERT
 **Priorität: HOCH — verbindet Factory mit bestehendem Cultivation**
 
 #### Schritt 2.1: PillData (erbt von ItemData)
@@ -194,7 +201,7 @@ Tier 5: Realm-Breaking Pill       — Das Endziel. Erfordert massive Ressourcen.
 
 ---
 
-### PHASE 3: Building & Placement System
+### PHASE 3: Building & Placement System ✅ IMPLEMENTIERT
 **Priorität: HOCH — ohne Maschinen keine Factory**
 
 #### Schritt 3.1: MachineData ScriptableObject
@@ -242,7 +249,7 @@ MachineData (ScriptableObject)
 
 ---
 
-### PHASE 4: Maschinen-Logik und Produktion
+### PHASE 4: Maschinen-Logik und Produktion ✅ IMPLEMENTIERT
 **Priorität: HOCH — das Herz der Factory**
 
 #### Schritt 4.1: BaseMachine Komponente
@@ -292,7 +299,7 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 
 ---
 
-### PHASE 5: Transport und Logistik
+### PHASE 5: Transport und Logistik ✅ IMPLEMENTIERT
 **Priorität: MITTEL — kommt nachdem einzelne Maschinen funktionieren**
 
 #### Schritt 5.1: Manueller Transport (schon implizit da)
@@ -323,7 +330,7 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 
 ---
 
-### PHASE 6: Ressourcen und Minor Realm Anpassung
+### PHASE 6: Ressourcen und Minor Realm Anpassung ⚠️ TEILWEISE IMPLEMENTIERT
 **Priorität: MITTEL — Content für die Factory**
 
 #### Schritt 6.1: Neue Ressourcen-Typen definieren
@@ -481,21 +488,21 @@ Realm 5 (Dao)           → Alle Maschinen, Realm-Breaking Pill Rezept
 ## EMPFOHLENE REIHENFOLGE (Step-by-Step)
 
 ```
-SCHRITT  1: [Phase 0] Generisches Item-System          ← JETZT ANFANGEN
-SCHRITT  2: [Phase 1] Rezept/Crafting-System
-SCHRITT  3: [Phase 2] Pill-System + Cultivation-Hook
-SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content)
-SCHRITT  5: [Phase 3] Grid + Placement-System
-SCHRITT  6: [Phase 4] Erste Maschine (Furnace)
-SCHRITT  7: [Phase 4] Maschinen-UI
-SCHRITT  8: [Phase 4] Weitere Maschinen
-SCHRITT  9: [Phase 5] Spirit Pipes + Storage
-SCHRITT 10: [Phase 7] NPC-Basis + Dialogue
-SCHRITT 11: [Phase 7] Quest-System
-SCHRITT 12: [Phase 8] Combat (Minimal)
-SCHRITT 13: [Phase 6] Minor Realm Ressourcen-Anpassung
-SCHRITT 14: [Phase 9] Story-Quests + Freischalt-Kette
-SCHRITT 15: [Phase 9] Balancing + Win-Condition
+SCHRITT  1: [Phase 0] Generisches Item-System          ✅ FERTIG
+SCHRITT  2: [Phase 1] Rezept/Crafting-System            ✅ FERTIG
+SCHRITT  3: [Phase 2] Pill-System + Cultivation-Hook    ✅ FERTIG
+SCHRITT  4: [Phase 6] Ressourcen-Definitionen (Content) ✅ FERTIG (OreVeins)
+SCHRITT  5: [Phase 3] Grid + Placement-System           ✅ FERTIG
+SCHRITT  6: [Phase 4] Erste Maschine (Furnace)          ✅ FERTIG (BaseMachine)
+SCHRITT  7: [Phase 4] Maschinen-UI                      ⬜ OFFEN
+SCHRITT  8: [Phase 4] Weitere Maschinen                 ⬜ OFFEN (Splitter/Merger)
+SCHRITT  9: [Phase 5] Spirit Pipes + Storage            ✅ FERTIG
+SCHRITT 10: [Phase 7] NPC-Basis + Dialogue              ⬜ OFFEN
+SCHRITT 11: [Phase 7] Quest-System                      ⬜ OFFEN
+SCHRITT 12: [Phase 8] Combat (Minimal)                  ⬜ OFFEN
+SCHRITT 13: [Phase 6] Minor Realm Ressourcen-Anpassung  ⬜ OFFEN
+SCHRITT 14: [Phase 9] Story-Quests + Freischalt-Kette   ⬜ OFFEN
+SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 ```
 
 ---

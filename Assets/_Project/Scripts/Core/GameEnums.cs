@@ -27,6 +27,10 @@ namespace CultivationGame.Core
         Distiller,
         Condenser,
         PillPress,
-        Storage
+        Storage,
+        SpiritPipe,
+        ResourceExtractor,
+        Splitter,
+        Merger
     }
 }
