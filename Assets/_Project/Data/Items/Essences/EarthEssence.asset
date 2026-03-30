@@ -11,10 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5aab8049ae9030e468fc871036b001fe, type: 3}
   m_Name: EarthEssence
-  m_EditorClassIdentifier: Assembly-CSharp::EssenceData
-  essenceName: Earth Essence
-  description: Hot
-  qiValue: 15
-  essenceColor: {r: 0.8235295, g: 0.4117647, b: 0.1176471, a: 1}
-  icon: {fileID: 21300000, guid: d8b28855ced73444faab10faf6eefee8, type: 3}
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.EssenceData
+  itemId: earth_essence
+  description: Dense essence of stabilizing earth.
+  qiValue: 25
+  icon: {fileID: 0}
   collectionEffect: {fileID: 0}
+  itemType: 0
+  essenceName: Earth Essence
+  essenceColor: {r: 0.53333336, g: 0.4, b: 0.26666668, a: 1}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 249dc837571f2914c87bd740b5bb575c, type: 3}
+  m_Name: BrewQiPill
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.RecipeData
+  recipeName: Brew Qi Gathering Pill
+  description: Combine essences to brew a Qi Gathering Pill.
+  inputs:
+  - item: {fileID: 11400000, guid: 9ada9d604349d3b40a1b8fd95f627222, type: 2}
+    amount: 2
+  - item: {fileID: 11400000, guid: 92bd08b893270ea498a41bd3ace09de2, type: 2}
+    amount: 1
+  outputs:
+  - item: {fileID: 11400000, guid: 254ad0d0d6863d947811b92b1f45d481, type: 2}
+    amount: 1
+  craftingDuration: 30
+  requiredMachine: 6
+  requiredRealm: {fileID: 0}
+  successRate: 0.85
+  qiCost: 10

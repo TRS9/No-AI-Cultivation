@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c43b63715e8d6844dac35b05deadc19d, type: 3}
+  m_Name: QiGatheringPill
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.PillData
+  itemId: qi_gathering_pill
+  description: A basic pill that aids Qi accumulation.
+  qiValue: 20
+  icon: {fileID: 0}
+  collectionEffect: {fileID: 0}
+  itemType: 1
+  pillName: Qi Gathering Pill
+  pillColor: {r: 0.53333336, g: 1, b: 0.6666667, a: 1}
+  grade: 0
+  pillTier: 1
+  qiBoost: 50
+  cultivationSpeedMultiplier: 1.5
+  breakthroughBonus: 0
+  buffDuration: 60
+  damageBoost: 0
+  defenseBoost: 0
+  speedBoost: 0
+  maxDailyUses: 3
+  sideEffects: May cause mild dizziness.

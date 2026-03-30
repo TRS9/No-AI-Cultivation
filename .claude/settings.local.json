@@ -34,7 +34,11 @@
       "Bash(gh pr:*)",
       "Bash(cmd /c \"gh pr create --title \"\"Add CSV SO Importer template\"\" --body \"\"## Summary\\\\n- Adds Assets/_Project/Data/import_template.csv — ready-to-use template for Tools > CSV ScriptableObject Importer\\\\n- Covers all 8 SO types: RealmDefinition, RawMaterialData, EssenceData, PillData, MachineData, RecipeData, OreVeinData, EnemyData\\\\n- Includes sample rows with correct field names and format\\\\n\\\\n## Test plan\\\\n- [ ] Open Unity > Tools > CSV ScriptableObject Importer\\\\n- [ ] Select import_template.csv, output folder Assets/_Project/Data/Generated\\\\n- [ ] Click Parse CSV and verify no errors\\\\n- [ ] Click Generate Assets and verify .asset files are created\\\\n\\\\n Generated with Claude Code\"\" --base master --head claude/dazzling-lehmann 2>&1\")",
       "Bash(where gh:*)",
-      "Bash(cmd /c \"where gh 2>&1\")"
+      "Bash(cmd /c \"where gh 2>&1\")",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Read(//c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Data/Generated/**)",
+      "Bash(grep -r 5a2473de51614a5aa641fe17791a8324 'c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/' --include=*.meta -l)"
     ]
   }
 }

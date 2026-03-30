@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 478acae477139eb409927ed146851227, type: 3}
   m_Name: SpiritStone
   m_EditorClassIdentifier: Game.Data::CultivationGame.Data.RawMaterialData
-  description: A crystallized stone imbued with spiritual energy.
-  qiValue: 10
+  itemId: spirit_stone
+  description: A crystal humming with ambient Qi.
+  qiValue: 50
   icon: {fileID: 0}
   collectionEffect: {fileID: 0}
   itemType: 2
   materialName: Spirit Stone
-  materialColor: {r: 0.7, g: 0.85, b: 1, a: 1}
+  materialColor: {r: 0.627451, g: 0.78431374, b: 1, a: 1}

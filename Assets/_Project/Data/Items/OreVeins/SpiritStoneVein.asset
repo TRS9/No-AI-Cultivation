@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2473de51614a5aa641fe17791a8324, type: 3}
+  m_Name: SpiritStoneVein
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.OreVeinData
+  veinName: Spirit Stone Vein
+  description: A glittering cluster of spirit stones.
+  icon: {fileID: 0}
+  veinColor: {r: 0.53333336, g: 0.6666667, b: 1, a: 1}
+  resource: {fileID: 11400000, guid: 193ebf2b768b7f449bd8bc2e55dc5d2c, type: 2}
+  totalYield: 50
+  yieldPerExtraction: 1
+  canRespawn: 1
+  respawnTimeSeconds: 1800
+  prefab: {fileID: 0}
+  requiredRealm: {fileID: 0}

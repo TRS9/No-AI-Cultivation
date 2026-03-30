@@ -11,10 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5aab8049ae9030e468fc871036b001fe, type: 3}
   m_Name: WaterEssence
-  m_EditorClassIdentifier: Assembly-CSharp::EssenceData
-  essenceName: Water Essence
-  description: Hot
-  qiValue: 40
-  essenceColor: {r: 0, g: 0.62352943, b: 1, a: 1}
-  icon: {fileID: 21300000, guid: 7d18c8463afd5c34eb8e96c239471ed2, type: 3}
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.EssenceData
+  itemId: water_essence
+  description: Fluid essence drawn from still pools.
+  qiValue: 30
+  icon: {fileID: 0}
   collectionEffect: {fileID: 0}
+  itemType: 0
+  essenceName: Water Essence
+  essenceColor: {r: 0, g: 0.53333336, b: 1, a: 1}

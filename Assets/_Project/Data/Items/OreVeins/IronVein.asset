@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2473de51614a5aa641fe17791a8324, type: 3}
+  m_Name: IronVein
+  m_EditorClassIdentifier: Game.Data::CultivationGame.Data.OreVeinData
+  veinName: Iron Vein
+  description: A rich deposit of iron ore.
+  icon: {fileID: 0}
+  veinColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  resource: {fileID: 11400000, guid: 98407529277e04a42886f1dc6beb7720, type: 2}
+  totalYield: 200
+  yieldPerExtraction: 5
+  canRespawn: 1
+  respawnTimeSeconds: 600
+  prefab: {fileID: 0}
+  requiredRealm: {fileID: 0}

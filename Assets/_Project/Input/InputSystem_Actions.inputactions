@@ -1116,7 +1116,7 @@
                     "name": "LayerUp",
                     "type": "Button",
                     "id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1271,7 +1271,7 @@
                 },
                 {
                     "name": "",
-                    "id": "a1b2c3d4-0004-4000-8000-000000000004",
+                    "id": "363e5969-e23e-4075-884d-3f7e52b0d504",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
