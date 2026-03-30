@@ -40,9 +40,11 @@ namespace CultivationGame.UI
             GameEvents.OnBuildModeToggled -= OnBuildModeToggled;
             GameEvents.OnMeditationToggled -= OnMeditationToggled;
             GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
+            GameEvents.OnInventoryChanged -= OnInventoryChanged;
             GameEvents.OnBuildModeToggled += OnBuildModeToggled;
             GameEvents.OnMeditationToggled += OnMeditationToggled;
             GameEvents.OnPanelStateChanged += OnPanelStateChanged;
+            GameEvents.OnInventoryChanged += OnInventoryChanged;
         }
 
         private void OnDisable()
@@ -50,6 +52,7 @@ namespace CultivationGame.UI
             GameEvents.OnBuildModeToggled -= OnBuildModeToggled;
             GameEvents.OnMeditationToggled -= OnMeditationToggled;
             GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
+            GameEvents.OnInventoryChanged -= OnInventoryChanged;
         }
 
         // ------------------------------------------------------------------ //
@@ -59,6 +62,11 @@ namespace CultivationGame.UI
         private void OnMeditationToggled(bool isMeditating)
         {
             _inSpiritSense = isMeditating;
+        }
+
+        private void OnInventoryChanged()
+        {
+            if (_isOpen) RebuildGrid();
         }
 
         private void OnBuildModeToggled(bool isBuildMode)
