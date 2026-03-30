@@ -1,7 +1,7 @@
 # Prison Realm: Alchemy Factory — Vollständige Aufgabenliste
 
-Letzte Aktualisierung: 2026-03-26
-Komplett-Übersicht aller offenen Aufgaben als ob das Projekt frisch aufgesetzt wird.
+Letzte Aktualisierung: 2026-03-30
+Analyse-Status: Alle Scripts und Data-Assets manuell geprüft.
 
 ---
 
@@ -94,50 +94,51 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 
 ### Phase 7: NPC & Quest System
 
-| Issue | Titel | Hängt von | Parallel-sicher? |
-|-------|-------|-----------|-----------------|
-| #102 | QuestData ScriptableObject & QuestSystem | — | ✅ Ja |
-| #103 | NPCController MonoBehaviour | NPCData (existiert) | ✅ Ja |
-| #104 | Quest-Journal UI | #102 | ❌ Warten |
-| #105 | Händler-System: ShopData & UI | NPCData | ✅ Ja |
+| Issue | Titel | Status | Hängt von | Anmerkung |
+|-------|-------|--------|-----------|-----------|
+| #102 | QuestData ScriptableObject & QuestSystem | ❌ OFFEN | — | Kein QuestData.cs, kein QuestManager.cs |
+| #103 | NPCController MonoBehaviour | ❌ OFFEN | NPCData (existiert ✅) | NPCData.cs + DialogueNode.cs vorhanden, aber kein NPCController.cs MonoBehaviour |
+| #104 | Quest-Journal UI | ❌ OFFEN | #102 | Warten auf #102 |
+| #105 | Händler-System: ShopData & UI | ❌ OFFEN | NPCData (existiert ✅) | Kein ShopData.cs, kein ShopUI |
 
 ### Phase 9: Story & Endgame
 
-| Issue | Titel | Hängt von | Parallel-sicher? |
-|-------|-------|-----------|-----------------|
-| #106 | StoryData, StoryProgressSystem & Win-Condition | #102 | ❌ Warten |
-| #112 | Realm-Breaking Pill Produktionskette | — | ✅ Ja |
+| Issue | Titel | Status | Hängt von | Anmerkung |
+|-------|-------|--------|-----------|-----------|
+| #106 | StoryData, StoryProgressSystem & Win-Condition | ❌ OFFEN | #102 | Kein StoryData.cs, kein Win-Condition |
+| #112 | Realm-Breaking Pill Produktionskette | ❌ OFFEN | — | Kein Rezept-Asset für Realm-Breaking Pill, keine Produktionskette |
 
 ### Systems & Scenes
 
-| Issue | Titel | Hängt von | Parallel-sicher? |
-|-------|-------|-----------|-----------------|
-| #107 | SceneTransitionManager | — | ✅ Ja |
-| #108 | Tutorial-System | — | ✅ Ja |
-| #109 | Hauptmenü-Scene | — | ✅ Ja |
-| #110 | Kompass-HUD | — | ✅ Ja |
-| #111 | Inventar-Tooltips & Rechtsklick-Kontextmenü | — | ✅ Ja |
+| Issue | Titel | Status | Hängt von | Anmerkung |
+|-------|-------|--------|-----------|-----------|
+| #107 | SceneTransitionManager | ⚠️ TEILWEISE | — | Portal.cs, RealmPortal.cs, SceneEntryPoint.cs, SceneTransitionData.cs existieren — aber kein zentraler SceneTransitionManager |
+| #108 | Tutorial-System | ❌ OFFEN | — | Kein TutorialSystem.cs |
+| #109 | Hauptmenü-Scene | ❌ OFFEN | — | Keine MainMenu.unity (Szenen: Universe, Grotto, MinorRealm, test) |
+| #110 | Kompass-HUD | ❌ OFFEN | — | Kein CompassHUD.cs |
+| #111 | Inventar-Tooltips & Rechtsklick-Kontextmenü | ❌ OFFEN | — | Nicht implementiert |
 
 ### Tests
 
-| Issue | Titel | Hängt von | Parallel-sicher? |
-|-------|-------|-----------|-----------------|
-| #114 | Unit Tests: QiNetwork BFS | — | ✅ Ja |
-| #115 | Unit Tests: BaseMachine Pipeline | — | ✅ Ja |
-| #116 | Unit Tests: SaveSystem | — | ✅ Ja |
+| Issue | Titel | Status | Anmerkung |
+|-------|-------|--------|-----------|
+| #114 | Unit Tests: QiNetwork BFS | ❌ OFFEN | Kein QiNetworkTests.cs (MachineInventoryTests vorhanden) |
+| #115 | Unit Tests: BaseMachine Pipeline | ⚠️ TEILWEISE | MachineInventoryTests.cs deckt Inventory-Teil ab, aber kein vollständiger BaseMachine-Pipeline-Test |
+| #116 | Unit Tests: SaveSystem | ❌ OFFEN | Kein SaveSystemTests.cs |
 
 ### Qualität
 
-| Issue | Titel | Hängt von | Parallel-sicher? |
-|-------|-------|-----------|-----------------|
-| #113 | Game Balance Pass | alle Content-Assets | ❌ Zuletzt |
-| #117 | Code-Qualität Review | — | ✅ Ja |
+| Issue | Titel | Status | Anmerkung |
+|-------|-------|--------|-----------|
+| #113 | Game Balance Pass | ❌ OFFEN | Zuletzt (nach allem Content) |
+| #117 | Code-Qualität Review | ❌ OFFEN | Siehe Sektion 4 |
 
 ### Empfohlene Agent-Reihenfolge
 
-**Welle 1** (alle parallel): #102, #103, #105, #107, #108, #109, #110, #111, #112, #114, #115, #116, #117
+**Welle 1** (alle parallel): #102, #103, #105, #107, #108, #109, #110, #111, #112, #114, #116, #117
 **Welle 2** (nach #102 fertig): #104, #106
-**Welle 3** (zum Schluss): #113
+**Welle 3** (nach #115-Partial ausbauen): vollständige #115
+**Welle 4** (zum Schluss): #113
 
 ---
 
@@ -170,59 +171,83 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 ## 5. Implementierte Features (Referenz)
 
 ### Core Factory (vollständig ✅)
-- ItemData, PillData, EssenceData, RawMaterialData
-- RecipeData + RecipeDatabase (mit Lookup-Methoden)
-- MachineData Assets (alle 11 Typen: Furnace, Crusher, Mixer, Distiller, Condenser, PillPress, Storage, ResourceExtractor, SpiritPipe, Splitter, Merger)
-- BaseMachine (Input/Output Inventories, Recipe Processing, Power Check)
-- MachineInventory (Dictionary-basiert, Stack-Limits)
-- SpiritPipe, Splitter, Merger (Logistics-Routing)
-- QiNetwork + QiConduit (BFS-Konnektivität, Dirty-Flag Optimierung)
-- OreVein + ResourceExtractor (Auto-Mining, Depletion, Respawn)
-- StorageContainer
-- BuildGrid + PlacementController (Ghost Preview, Rotation, Inventory-Kosten)
-- PipeConnectionUI + PipeConnectionVisualizer (Click-to-Connect)
-- MachineInspectUI (Echtzeit-Status, Recipe-Wechsel)
-- FactoryDashboardUI (Produktion/Minute, Bottleneck-Detection)
-- RecipeDatabase Editor-Tool (Validierung + Balance-Analyse)
+- `ItemData`, `PillData`, `EssenceData`, `RawMaterialData`, `OreVeinData`
+- `RecipeData` + `RecipeDatabase` (mit Lookup-Methoden)
+- MachineData Assets (14 Assets: AlchemyDistiller, BasicFurnace, Condenser, Crusher, Distiller, Furnace, Merger, Mixer, PillPress, ResourceExtractor, SpiritCrusher, SpiritPipe, Splitter, Storage)
+- `BaseMachine` (Input/Output Inventories, Recipe Processing, Power Check)
+- `MachineInventory` (Dictionary-basiert, Stack-Limits)
+- `SpiritPipe`, `Splitter`, `Merger` (Logistics-Routing)
+- `QiNetwork` + `QiConduit` (BFS-Konnektivität, Dirty-Flag Optimierung)
+- `OreVein` + `ResourceExtractor` (Auto-Mining, Depletion, Respawn)
+- OreVein Assets: CopperVein, IronVein, SpiritStoneVein
+- `StorageContainer`
+- `BuildGrid` + `PlacementController` (Ghost Preview, Rotation, Inventory-Kosten)
+- `PipeConnectionUI` + `PipeConnectionVisualizer` (Click-to-Connect)
+- `MachineInspectUI` (Echtzeit-Status, Recipe-Wechsel)
+- `FactoryDashboardUI` (Produktion/Minute, Bottleneck-Detection)
+- `RecipeDatabaseWindow` Editor-Tool (Validierung + Balance-Analyse)
 
 ### Player & Combat (vollständig ✅)
-- PlayerMovement, PlayerStats, PlayerInventory, PlayerInteractor
-- CameraSystem (3rd Person ↔ Spirit Sense, Build-Mode entkoppelt)
-- PlayerCombatController (Attack, Dodge, Abilities)
-- EnemyAI (NavMeshAgent: Patrol → Detect → Chase → Attack)
-- HealthSystem, EnemyLoot, LootSystem
-- 5 EnemyData Assets mit Drop Tables
+- `PlayerMovement`, `PlayerStats`, `PlayerInventory`, `PlayerInteractor`, `PlayerPersistence`
+- `CameraSystem` (3rd Person ↔ Spirit Sense, Build-Mode entkoppelt)
+- `SpiritSenseCamera` + `BuildElevation`
+- `PlayerCombatController` (Attack, Dodge, Abilities)
+- `EnemyAI` (NavMeshAgent: Patrol → Detect → Chase → Attack)
+- `HealthSystem`, `EnemyLoot`, `LootSystem`
+- 8 EnemyData Assets: AshWolf, CorruptCultivator, PrisonGuard, RealmBoss, SpectralGuard, SpiritBeastT1, SpiritBeastT2, StoneSerpent
 
 ### Cultivation (vollständig ✅)
-- PillBuffSystem (Konsum, temporäre Buffs, Buff-Events)
-- BreakthroughSystem + BreakthroughController (Chance-Mechanik, UI)
-- RealmDefinition Assets (5 Stufen, spiritSenseRange)
+- `PillBuffSystem` (Konsum, temporäre Buffs, Buff-Events)
+- `BreakthroughSystem` + `BreakthroughController` (Chance-Mechanik, UI)
+- 5 Pill Assets: BasicPill, BreakthroughPill, BrewQiPill, QiGatheringPill, WarriorPill
+- Umfangreiche RealmDefinition Assets (QiRefinement I-IX, FoundationEstablishment, GoldenCore, NascentSoul, OriginReturning, ... bis DaoSource)
+- 5 Essence Assets (Earth, Fire, Iron, Lightning, Water)
+- 7 RawMaterial Assets (CopperOre, CrystalShard, IronOre, JadeFragment, SpiritGrass, SpiritHerb, SpiritStone)
 
-### UI (teilweise ✅)
-- HUDController + HUDDataSource (Qi/HP/Stamina Bars, Buff Icons, Breakthrough-Indikator)
-- BuildMenuController + BuildMenuDataSource
-- InventoryController + InventoryDisplay
-- DialogueUI (Typewriter-Effekt, Dynamic Choices)
-- PauseMenuController (Volume-Slider)
-- GameStateManager (Panel-Management, Cursor-Locking)
-- BreakthroughController (Confirmation + Result Panel)
-- CraftingController
+### NPC & Dialogue (Daten vorhanden, keine Runtime-Logik ⚠️)
+- `NPCData` ScriptableObject (Daten-Template vorhanden)
+- `DialogueNode` ScriptableObject (Dialogue-Baum-Knoten)
+- `DialogueUI` (UI-Component mit Typewriter-Effekt)
+- **Fehlt**: `NPCController` MonoBehaviour, `DialogueSystem` Controller, NPC-Assets
 
-### Data & Audio (vollständig ✅)
-- NPCData, DialogueNode (Dialogue-Baum)
-- OreVeinData (4 Typen konfiguriert)
-- MinorRealmConfig + RealmResourceEntry (Ressourcen-Spawning in Minor Realms)
-- SoundManager + SoundEventTrigger + SoundClip
-- SaveSystem (atomares JSON: write-to-temp, rename)
-- CSV Import Editor-Tool
+### Audio (vollständig ✅)
+- `SoundManager` (Singleton, AudioSource-Pool)
+- `SoundEventTrigger` (subscribed auf GameEvents)
+- `SoundClip` ScriptableObject
 
-### Tests (teilweise ✅)
-- MachineInventoryTests (12 Tests)
-- RecipeDataValidationTests + RecipeDatabaseLookupTests (22 Tests)
-- LootSystemTests
-- **Fehlen**: QiNetwork, BaseMachine, SaveSystem Tests
+### Save & Scene (vollständig ✅)
+- `SaveSystem` (atomares JSON: write-to-temp, rename)
+- `WorldState` (aggregierter Spielzustand)
+- `SceneTransitionData` (static Übergabe-Klasse)
+- `Portal`, `RealmPortal`, `SceneEntryPoint` (Scene-Übergänge funktional)
+- 4 Szenen: Universe (Overworld), Grotto (Workshop), MinorRealm, test
 
-### Sonstige Fixes ✅
-- Doppeltes Game.Tests.EditMode.asmdef entfernt
-- 36 fehlende .meta-Dateien generiert
-- Camera-Script GUIDs wiederhergestellt (CameraSystem, SpiritSenseCamera, BuildElevation)
+### Crafting (vollständig ✅)
+- `CraftingSystem` (Kern-Logik)
+- `CraftingStation` (Interaktable in Welt)
+- `CraftingController` UI + `CraftingDataSource`
+- 5 Recipe Assets + RecipeDatabase Asset
+
+### UI & HUD (vollständig ✅)
+- `HUDController` + `HUDDataSource` (Qi/HP/Stamina Bars)
+- `BuildMenuController` + `BuildMenuDataSource`
+- `InventoryController` + `InventoryDataSource`
+- `PauseMenuController`
+- `GameStateManager` (Panel-Management, Cursor-Locking)
+- `UIManager` (BroadcastMessage zu UI-Components)
+- `MachineUIController` + `MachineInspectUI`
+- `HealthBarUI` + `EnemyHealthBarUI`
+- `BreakthroughController`
+
+### Editor Tools (vollständig ✅)
+- `RecipeDatabaseWindow` (Validierung + Balance-Analyse)
+- `EssencePainterWindow` (Biome-Painted Essence Spawning)
+- `CsvImportWindow` (Bulk-Import von Items via CSV)
+- `MinorRealmConfigEditor` (Custom Inspector)
+
+### Unit Tests (teilweise ✅)
+- `MachineInventoryTests` (MachineInventory Coverage)
+- `RecipeDataValidationTests` (RecipeData-Felder + Constraints)
+- `RecipeDatabaseLookupTests` (GetRecipesForMachine, GetRecipesForItem)
+- `LootSystemTests` (Drop-Table Logik)
+- **Fehlen**: QiNetworkTests, BaseMachinePipelineTests, SaveSystemTests
