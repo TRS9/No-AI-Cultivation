@@ -231,6 +231,13 @@ namespace CultivationGame.Player
             // Re-enable Cinemachine — it picks up from the current transform
             cinemachineBrain.enabled = true;
 
+            // Always re-enable Cinemachine look input when returning to action mode.
+            // SetBuildMode checks _inSpiritSense (still true here) and skips the
+            // branch that would normally restore the input axis controller, so we
+            // must do it explicitly before the build-mode cleanup.
+            if (_inputAxisController != null)
+                _inputAxisController.enabled = true;
+
             // Disable build mode when leaving Spirit Sense
             if (_isBuildMode)
                 SetBuildMode(false);
