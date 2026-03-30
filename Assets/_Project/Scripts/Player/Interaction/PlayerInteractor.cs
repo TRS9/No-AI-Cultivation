@@ -13,18 +13,22 @@ namespace CultivationGame.Player
         [Tooltip("How often (in seconds) the nearby-interactable check runs. Lower = more responsive, higher = cheaper.")]
         public float checkInterval = 0.15f;
 
-        private Collider[] _nearbyColliders = System.Array.Empty<Collider>();
+        private const int MaxNearby = 10;
+        private readonly Collider[] _nearbyColliders = new Collider[MaxNearby];
+        private int _nearbyCount;
         private bool _promptVisible;
         private float _nextCheckTime;
 
         private void OnEnable()
         {
-            interactAction.action.performed += AttemptInteraction;
+            if (interactAction != null)
+                interactAction.action.performed += AttemptInteraction;
         }
 
         private void OnDisable()
         {
-            interactAction.action.performed -= AttemptInteraction;
+            if (interactAction != null)
+                interactAction.action.performed -= AttemptInteraction;
         }
 
         private void Update()
@@ -32,8 +36,8 @@ namespace CultivationGame.Player
             if (Time.time < _nextCheckTime) return;
             _nextCheckTime = Time.time + checkInterval;
 
-            _nearbyColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableLayer);
-            bool visible = _nearbyColliders.Length > 0;
+            _nearbyCount = Physics.OverlapSphereNonAlloc(transform.position, interactionRadius, _nearbyColliders, interactableLayer);
+            bool visible = _nearbyCount > 0;
 
             if (visible != _promptVisible)
             {
@@ -44,9 +48,9 @@ namespace CultivationGame.Player
 
         private void AttemptInteraction(InputAction.CallbackContext context)
         {
-            foreach (Collider hit in _nearbyColliders)
+            for (int i = 0; i < _nearbyCount; i++)
             {
-                var interactable = hit.GetComponent<IInteractable>();
+                var interactable = _nearbyColliders[i].GetComponent<IInteractable>();
                 if (interactable != null) { interactable.Interact(gameObject); break; }
             }
         }

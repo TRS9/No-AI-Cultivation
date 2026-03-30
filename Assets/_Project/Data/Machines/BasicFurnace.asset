@@ -16,13 +16,13 @@ MonoBehaviour:
   description: Smelts raw ores into refined ingots.
   icon: {fileID: 0}
   machineType: 1
-  prefab: {fileID: 0}
-  ghostPrefab: {fileID: 0}
+  prefab: {fileID: 9180888848757574115, guid: efd2c05fbb552e74db40dd721c633866, type: 3}
+  ghostPrefab: {fileID: 9033191218787604008, guid: f584da914f16c214c9163a4dc847a027, type: 3}
   gridSize: {x: 2, y: 2}
   buildCost:
   - item: {fileID: 11400000, guid: 98407529277e04a42886f1dc6beb7720, type: 2}
     amount: 5
-  - item: {fileID: 11400000, guid: 193ebf2b768b7f449bd8bc2e55dc5d2c, type: 2}
+  - item: {fileID: 0}
     amount: 1
   requiredCultivationRealm: {fileID: 0}
   processingSpeed: 1

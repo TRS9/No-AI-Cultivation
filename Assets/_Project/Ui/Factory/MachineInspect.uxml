@@ -1,0 +1,42 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../Global.uss"/>
+    <Style src="MachineInspect.uss"/>
+    <ui:VisualElement name="MachineInspectPanel" class="overlay-panel" style="display: none; position: absolute; width: 100%; height: 100%; align-items: center; justify-content: center;">
+        <ui:VisualElement class="panel-card" style="width: 420px; padding: 16px; background-color: rgba(20, 15, 30, 0.92); border-radius: 8px; border-width: 1px; border-color: rgba(180, 140, 50, 0.5);">
+            <!-- Header -->
+            <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <ui:Label text="Machine" name="InspectMachineName" style="font-size: 18px; color: rgb(212, 168, 74); -unity-font-style: bold;"/>
+                <ui:Button text="✕" name="InspectCloseButton" class="close-btn"/>
+            </ui:VisualElement>
+
+            <!-- Status -->
+            <ui:Label text="Status: ⬜ Bereit" name="InspectStatus" style="font-size: 13px; color: rgb(180, 180, 180); margin-bottom: 8px;"/>
+
+            <!-- Progress -->
+            <ui:ProgressBar value="0" title="Idle" name="InspectProgress" style="margin-bottom: 8px; height: 20px;"/>
+            <ui:Label text="Zeit: --" name="InspectTime" style="font-size: 12px; color: rgb(150, 150, 150); margin-bottom: 12px;"/>
+
+            <!-- Recipe -->
+            <ui:Label text="Rezept: ---" name="InspectRecipe" style="font-size: 13px; color: rgb(200, 200, 200); margin-bottom: 6px;"/>
+            <ui:DropdownField label="Rezept wählen" name="InspectRecipeDropdown" style="margin-bottom: 12px;"/>
+
+            <!-- Input / Output -->
+            <ui:VisualElement style="flex-direction: row; justify-content: space-between;">
+                <ui:VisualElement style="flex: 1; margin-right: 8px;">
+                    <ui:Label text="Input" style="font-size: 14px; color: rgb(120, 200, 120); -unity-font-style: bold; margin-bottom: 4px;"/>
+                    <ui:VisualElement name="InspectInputSlots" class="slot-container"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex: 1; margin-left: 8px;">
+                    <ui:Label text="Output" style="font-size: 14px; color: rgb(200, 120, 120); -unity-font-style: bold; margin-bottom: 4px;"/>
+                    <ui:VisualElement name="InspectOutputSlots" class="slot-container"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Transfer buttons -->
+            <ui:VisualElement style="flex-direction: row; justify-content: space-between; margin-top: 12px;">
+                <ui:Button text="+ Zuführen" name="InspectTransferIn" class="action-btn"/>
+                <ui:Button text="⤓ Leeren" name="InspectEmptyButton" class="action-btn"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

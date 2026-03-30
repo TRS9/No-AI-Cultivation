@@ -9,12 +9,14 @@
     border-width: 2px;
     border-color: rgba(160, 120, 40, 0.4);
     flex-direction: column;
-    max-width: 600px;
+    max-width: 80%;
+    max-height: 50%;
 }
 
 .build-grid {
     flex-direction: row;
     flex-wrap: wrap;
+    flex-shrink: 1;
 }
 
 .build-slot {
@@ -28,13 +30,22 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition-property: background-color, border-color;
+    transition-property: background-color, border-color, opacity;
     transition-duration: 0.15s;
 }
 
 .build-slot:hover {
     background-color: rgba(160, 120, 40, 0.2);
     border-color: rgba(212, 168, 74, 0.6);
+}
+
+.build-slot--locked {
+    opacity: 0.4;
+}
+
+.build-slot--locked:hover {
+    background-color: rgba(80, 30, 30, 0.25);
+    border-color: rgba(200, 80, 50, 0.5);
 }
 
 .build-slot__icon {
@@ -49,6 +60,14 @@
     -unity-text-align: middle-center;
 }
 
+.build-slot__cost {
+    font-size: 9px;
+    color: rgb(200, 80, 60);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    max-width: 76px;
+}
+
 /* Compact left-aligned overlay for 3rd-person camera mode */
 .build-menu--third-person {
     left: 20px;
@@ -56,5 +75,6 @@
     bottom: auto;
     translate: 0 -50%;
     max-width: 200px;
+    max-height: 70%;
     background-color: rgba(9, 21, 11, 0.7);
 }

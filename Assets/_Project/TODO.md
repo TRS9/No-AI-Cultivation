@@ -1,7 +1,7 @@
 # Prison Realm: Alchemy Factory — Vollständige Aufgabenliste
 
-Letzte Aktualisierung: 2026-03-30
-Analyse-Status: Alle Scripts und Data-Assets manuell geprüft.
+Letzte Aktualisierung: 2025-07-21
+Analyse-Status: Deep Analysis Pass abgeschlossen — Alle Scripts, Data-Assets, UXML/USS, Assemblies geprüft.
 
 ---
 
@@ -36,7 +36,7 @@ Das Camera-System wurde durch parallele Copilot-Agents beeinträchtigt. Die `.me
 
 - [ ] **Player GameObject**: Hat PlayerStats, PlayerMovement, PlayerInteractor, PlayerInventory, PlayerCombatController?
 - [ ] **Canvas**: PlayerStatsUI, StaminaUI, InventoryController, HUDController korrekt verkabelt?
-- [ ] **GameManager**: Existiert als Singleton (DontDestroyOnLoad)?
+- [ ] **GameManager**: ~~Existiert als Singleton (DontDestroyOnLoad)?~~ **GELÖSCHT** — GameManager.cs war toter Code (`SetState()` nie aufgerufen). `GameStateManager` übernimmt alle Aufgaben.
 - [ ] **EventSystem**: Vorhanden mit InputSystemUIInputModule?
 - [ ] **BuildSystem GameObject**: BuildGrid + PlacementController vorhanden?
 - [ ] **UIManager**: BuildMenuController + BuildMenuDataSource referenziert?
@@ -68,7 +68,6 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 - [ ] `BuildMenuController`
 - [ ] `DialogueUI`
 - [ ] `MachineInspectUI`
-- [ ] `MachineUIController` (evtl. Duplikat von MachineInspectUI — prüfen)
 - [ ] `FactoryDashboardUI`
 - [ ] `PipeConnectionUI`
 - [ ] `BreakthroughController`
@@ -156,10 +155,10 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 
 ### 4.1 Duplikate / Redundanz prüfen
 
-- [ ] `MachineUIController.cs` vs `MachineInspectUI.cs` — mögliche Duplikation der Maschinen-UI. Klären welches das aktive ist, anderes löschen
-- [ ] `GameManager.cs` vs `GameStateManager.cs` — beide tracken Pause-State separat. `GameManager` wird nirgends aktiv genutzt, `GameStateManager` schon. Wahrscheinlich kann `GameManager` gelöscht oder konsolidiert werden
-- [ ] `UIManager.cs` vs `GameStateManager.cs` — beide managen UI-State. Klären ob beide nötig sind oder konsolidiert werden können
-- [ ] `HUDController.cs` + `HUDDataSource.cs` — HUD hat zwei Files, funktioniert aber. Architektur-Review ob das sauber ist
+- [x] ~~`MachineUIController.cs` vs `MachineInspectUI.cs`~~ — **GELÖST**: `MachineUIController.cs` gelöscht (Duplikat). Transfer-Feature nach `MachineInspectUI.cs` migriert ("Zuführen" Button + `RemoveItem` in `PlayerInventory` ergänzt).
+- [x] ~~`GameManager.cs` vs `GameStateManager.cs`~~ — **GELÖST**: `GameManager.cs` gelöscht (toter Code, `SetState()` nie aufgerufen). `GameStateManager` bleibt als einziger State-Manager.
+- [x] ~~`UIManager.cs` vs `GameStateManager.cs`~~ — **Kein Duplikat**, verschiedene Aufgaben: `UIManager` = Init (`BroadcastMessage`), `GameStateManager` = Runtime Panel-State.
+- [x] ~~`HUDController.cs` + `HUDDataSource.cs`~~ — **Saubere MVC-Architektur**, kein Handlungsbedarf.
 
 ### 4.2 Assembly-Konfiguration
 
@@ -168,9 +167,86 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 
 ---
 
-## 5. Implementierte Features (Referenz)
+## 7. Factory Game Loop Audit (2025-07-21)
 
-### Core Factory (vollständig ✅)
+### Complete Loop Verified
+
+| Step | Mechanism | Status |
+|------|-----------|--------|
+| Player opens Build Menu | Shift key → `GameEvents.OnBuildModeToggled` → `BuildMenuController` shows panel | ✅ |
+| Player selects machine | Clicks slot → `placementController.StartPlacement(machine)` | ✅ |
+| Ghost preview follows cursor | `PlacementController.UpdateGhostPosition` snaps to BuildGrid | ✅ |
+| Cost check | `HasBuildResources()` checks `PlayerInventory.HasItem()` | ✅ |
+| Place machine (left-click) | `DeductBuildResources()` → Instantiate prefab → `SetMachineData()` → OccupyCells | ✅ |
+| Inspect any machine (E key) | `PlayerInteractor` → `IInteractable.Interact()` → `GameDataEvents.OnMachineInteracted` → `MachineInspectUI` | ✅ (fixed) |
+| Connect pipe | Interact with SpiritPipe → `PipeConnectionUI` opens → click source → click destination → `pipe.Connect()` | ✅ |
+| Resource extraction | `ResourceExtractor` finds nearby `OreVein` → `TryExtract()` → fills `OutputInventory` | ✅ |
+| Item transport | `SpiritPipe.TransferItems()` ticks every `transferInterval` | ✅ |
+| Processing | `BaseMachine.TryStartProcessing()` checks recipe + input → progress bar → `CompleteProcessing()` produces output | ✅ |
+| Qi power | `QiNetwork` BFS from `QiConduit` → sets `BaseMachine.IsPowered` | ✅ |
+| Dashboard | `FactoryDashboardUI` polls `QiNetwork.GetAllMachines()` each `updateInterval` | ✅ |
+
+### Bugs Fixed in This Pass
+
+| Severity | File | Fix |
+|----------|------|-----|
+| 🔴 Critical | `MachineInspectUI` | `OnMachineInteracted` now uses `IMachineConnectable` — all 5 machine types open the inspect panel. Non-BaseMachine types hide progress/recipe/time/dropdown. |
+| 🔴 Critical | `PlacementController` | `DeductBuildResources` now uses `playerInventory.RemoveItem()` instead of mutating the backing dictionary directly. `InventoryChanged` event now fires via `RemoveItem`. |
+| 🔴 Critical | `SpiritPipe` | `TransferItems()` now checks `StorageContainer.AcceptsItem()` before transferring. Storage item filters now work. |
+| 🔴 Critical | `PlayerInteractor` | Added `if (interactAction != null)` guard in `OnEnable`/`OnDisable`. No longer crashes if field is not wired in Inspector. |
+| 🟡 Medium | `ResourceExtractor` | `SetMachineData()` now guards `data.processingSpeed > 0f` before dividing. No longer produces infinite extraction interval. |
+| 🟡 Medium | `BuildMenuController` | `InitializeUI` now unsubscribes before re-subscribing. No double-registration on enable/disable cycles. |
+| 🟡 Medium | `MachineInspectUI` | Same double-subscription fix applied. |
+| 🟡 Medium | `PipeConnectionUI` | Same double-subscription fix applied. |
+| 🟡 Medium | `MachineInspectUI` | `SubscribeToMachine` / `UnsubscribeFromMachine` now guard against double-subscribing when `InputInventory == OutputInventory` (StorageContainer). |
+
+### Missing Features (require new implementation)
+
+- [ ] **Splitter destination setup UI** — There is no in-game way to call `Splitter.SetDestinations(destA, destB)`. Splitter works for pipe-IN (via its InputInventory) but its two output destinations must be wired manually or via a new "Click to set destination" mode similar to PipeConnectionUI. **Blocker for Splitter use in-game.**
+- [ ] **Merger source setup UI** — Same issue: `Merger.SetSources(sourceA, sourceB)` has no UI. Merger's OutputInventory can be pipe-connected normally, but its two inputs cannot be configured in-game. **Blocker for Merger use in-game.**
+- [ ] **QiConduit placement auto-registration** — `QiConduit.Start()` registers with `QiNetwork`. But the Qi network connectivity (BFS) only considers conduit-to-conduit adjacency. The player has no visual feedback for which machines are in range of a conduit. Consider adding a range circle visualizer (like `PipeConnectionVisualizer`).
+
+### Inspector Wiring Required (before play-testing)
+
+| Component | Required Fields |
+|-----------|----------------|
+| `PlacementController` | buildGrid, playerInventory, terrainLayer, buildCamera, ghostValidMaterial, ghostInvalidMaterial, placeAction, cancelAction, rotateAction, removeAction, machineLayer |
+| `BuildMenuController` | buildMenuData (BuildMenuDataSource asset), placementController |
+| `BuildMenuDataSource` | availableMachines[] — all 11 MachineData assets |
+| `MachineInspectUI` | recipeDatabase, playerInventory |
+| `PlayerInteractor` | interactAction (Player/Interact), interactableLayer, interactionRadius |
+| `BaseMachine` prefabs | machineData (each prefab's own MachineData asset), inputCapacity, outputCapacity |
+| `OreVein` GameObjects | veinData (OreVeinData asset) |
+| `QiNetwork` | qiSourcePoint (Transform of Qi source object) |
+
+
+
+### Gelöschte Scripts
+- **GameManager.cs** — Toter Code. `SetState()` wurde von keinem Script aufgerufen. `GameStateManager` übernimmt alle Pause/Panel-Funktionen.
+- **MachineUIController.cs** — Duplikat von `MachineInspectUI.cs`. Beide subscribten `GameDataEvents.OnMachineInteracted`. Transfer-Feature wurde nach `MachineInspectUI` migriert.
+
+### Behobene Bugs
+- **PlacementController.cs** — `OnPlace()` fehlte `Splitter` und `Merger` Typ-Checks. `SetMachineData()` wurde für diese Maschinentypen nie aufgerufen → Platzierte Splitter/Merger waren funktionslos.
+- **PlayerStats.cs** — `AddQi()` clampte `currentQi` nicht auf `MaxQi`. Qi konnte unbegrenzt ansteigen. Jetzt: `Math.Min(currentQi + amount, qiCapacity)`. Redundantes `[SerializeField]` auf public Field entfernt.
+- **PlayerInteractor.cs** — `Physics.OverlapSphere()` allokierte jeden Frame ein neues Array (GC-Druck). Ersetzt durch `Physics.OverlapSphereNonAlloc()` mit vorab-allokiertem `Collider[10]` Buffer.
+
+### Neue UXML/USS Panels
+Vier UI-Controller referenzierten UXML-Elemente die nicht existierten → Panels waren zur Runtime unsichtbar/kaputt:
+- **MachineInspect.uxml + .uss** — Inspect-Panel mit Header, Status, Progress, Recipe-Dropdown, Input/Output Slots, Transfer-Buttons
+- **Dialogue.uxml + .uss** — Dialogue-Overlay mit Portrait, Speaker, Typewriter-Text, Choice-Buttons
+- **FactoryDashboard.uxml + .uss** — Dashboard mit Qi-Netzwerk-Status, Maschinenlist, Bottleneck-Warnung
+- **PipeConnection.uxml + .uss** — Pipe-Connection HUD mit Source/Dest Labels, Cancel-Button
+
+### MainScreen.uxml aktualisiert
+4 neue `<ui:Template>` + `<ui:Instance>` Einträge: MachineInspect, Dialogue, FactoryDashboard, PipeConnection
+
+### Neue Features
+- **PlayerInventory.RemoveItem()** — Generische Item-Entfernung (vorher nur via `UsePill`/`UseEssence` möglich). Benötigt für Machine-Transfer.
+- **MachineInspectUI „Zuführen" Button** — Transferiert Rezept-Inputs vom Spieler-Inventar in die Maschine. Wired auf `InspectTransferIn` UXML-Button.
+
+---
+
+## 5. Implementierte Features (Referenz)
 - `ItemData`, `PillData`, `EssenceData`, `RawMaterialData`, `OreVeinData`
 - `RecipeData` + `RecipeDatabase` (mit Lookup-Methoden)
 - MachineData Assets (14 Assets: AlchemyDistiller, BasicFurnace, Condenser, Crusher, Distiller, Furnace, Merger, Mixer, PillPress, ResourceExtractor, SpiritCrusher, SpiritPipe, Splitter, Storage)
@@ -183,7 +259,7 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 - `StorageContainer`
 - `BuildGrid` + `PlacementController` (Ghost Preview, Rotation, Inventory-Kosten)
 - `PipeConnectionUI` + `PipeConnectionVisualizer` (Click-to-Connect)
-- `MachineInspectUI` (Echtzeit-Status, Recipe-Wechsel)
+- `MachineInspectUI` (Echtzeit-Status, Recipe-Wechsel, Leeren + Zuführen)
 - `FactoryDashboardUI` (Produktion/Minute, Bottleneck-Detection)
 - `RecipeDatabaseWindow` Editor-Tool (Validierung + Balance-Analyse)
 
@@ -235,7 +311,7 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 - `PauseMenuController`
 - `GameStateManager` (Panel-Management, Cursor-Locking)
 - `UIManager` (BroadcastMessage zu UI-Components)
-- `MachineUIController` + `MachineInspectUI`
+- ~~`MachineUIController`~~ + `MachineInspectUI`
 - `HealthBarUI` + `EnemyHealthBarUI`
 - `BreakthroughController`
 

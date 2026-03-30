@@ -506,7 +506,7 @@
                 {
                     "name": "",
                     "id": "f0a1b2c3-0001-4000-8000-000000000001",
-                    "path": "<Keyboard>/leftShift",
+                    "path": "<Keyboard>/b",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",

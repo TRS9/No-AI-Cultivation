@@ -211,6 +211,10 @@ namespace CultivationGame.Systems
                 sc.SetMachineData(_selectedMachine);
             else if (placed.GetComponent<QiConduit>() is QiConduit conduit)
                 conduit.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<Splitter>() is Splitter splitter)
+                splitter.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<Merger>() is Merger merger)
+                merger.SetMachineData(_selectedMachine);
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
@@ -305,17 +309,11 @@ namespace CultivationGame.Systems
         {
             if (machine.buildCost == null || playerInventory == null) return;
 
-            var items = playerInventory.GetItems();
             foreach (var cost in machine.buildCost)
             {
                 if (cost.item == null) continue;
-                if (items.ContainsKey(cost.item))
-                {
-                    items[cost.item] -= cost.amount;
-                    if (items[cost.item] <= 0) items.Remove(cost.item);
-                }
+                playerInventory.RemoveItem(cost.item, cost.amount);
             }
-            GameEvents.RaiseInventoryChanged();
         }
     }
 }

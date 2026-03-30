@@ -88,6 +88,9 @@ namespace CultivationGame.Systems
 
             if (sourceOutput == null || destInput == null) return;
 
+            // Respect destination filter (e.g. StorageContainer.AcceptsItem)
+            StorageContainer destStorage = _destination as StorageContainer;
+
             for (int i = 0; i < itemsPerTransfer; i++)
             {
                 ItemData itemToTransfer;
@@ -104,6 +107,9 @@ namespace CultivationGame.Systems
                 }
 
                 if (!destInput.HasSpace()) return;
+
+                // Check destination storage filter before transferring
+                if (destStorage != null && !destStorage.AcceptsItem(itemToTransfer)) return;
 
                 int removed = sourceOutput.TryRemove(itemToTransfer, 1);
                 if (removed > 0)

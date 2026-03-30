@@ -1,0 +1,70 @@
+.overlay-panel {
+}
+
+.panel-card {
+}
+
+.close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    background-color: rgba(200, 50, 50, 0.6);
+    color: white;
+    border-width: 0;
+    border-radius: 4px;
+}
+
+.close-btn:hover {
+    background-color: rgba(220, 70, 70, 0.8);
+}
+
+.slot-container {
+    min-height: 40px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.inspect-slot {
+    flex-direction: row;
+    align-items: center;
+    padding: 4px;
+    margin-bottom: 2px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.inspect-slot__icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+}
+
+.inspect-slot__label {
+    font-size: 12px;
+    color: rgb(200, 200, 200);
+}
+
+.inspect-slot__empty {
+    font-size: 12px;
+    color: rgb(100, 100, 100);
+    -unity-text-align: middle-center;
+    padding: 8px;
+}
+
+.action-btn {
+    flex: 1;
+    height: 30px;
+    margin: 0 4px;
+    background-color: rgba(60, 50, 80, 0.8);
+    color: rgb(200, 200, 200);
+    border-width: 1px;
+    border-color: rgba(180, 140, 50, 0.3);
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.action-btn:hover {
+    background-color: rgba(80, 70, 110, 0.9);
+    border-color: rgba(212, 168, 74, 0.6);
+}

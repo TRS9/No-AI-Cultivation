@@ -65,6 +65,8 @@ namespace CultivationGame.UI
         public void InitializeUI(VisualElement root)
         {
             BuildPanel(root);
+            // Unsubscribe first to prevent double-registration if InitializeUI is called again
+            GameDataEvents.OnPipeInteracted -= OnPipeInteracted;
             GameDataEvents.OnPipeInteracted += OnPipeInteracted;
         }
 

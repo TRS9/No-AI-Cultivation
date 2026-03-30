@@ -67,7 +67,7 @@ namespace CultivationGame.Systems
         public void SetMachineData(MachineData data)
         {
             machineData = data;
-            if (data != null)
+            if (data != null && data.processingSpeed > 0f)
             {
                 extractionInterval = Mathf.Max(0.5f, extractionInterval / data.processingSpeed);
             }

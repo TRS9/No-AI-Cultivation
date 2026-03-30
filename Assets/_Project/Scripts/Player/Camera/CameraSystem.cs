@@ -69,6 +69,7 @@ namespace CultivationGame.Player
         private void OnEnable()
         {
             GameEvents.OnMeditationToggled += HandleMeditationToggled;
+            GameEvents.OnPanelStateChanged += HandlePanelOpened;
 
             if (_buildToggleAction != null)
                 _buildToggleAction.performed += OnBuildTogglePerformed;
@@ -77,19 +78,29 @@ namespace CultivationGame.Player
         private void OnDisable()
         {
             GameEvents.OnMeditationToggled -= HandleMeditationToggled;
+            GameEvents.OnPanelStateChanged -= HandlePanelOpened;
 
             if (_buildToggleAction != null)
                 _buildToggleAction.performed -= OnBuildTogglePerformed;
         }
 
         // ------------------------------------------------------------------ //
-        //  Build Mode Toggle (Shift key — works in any camera perspective)
+        //  Build Mode Toggle (B key — works in any camera perspective)
         // ------------------------------------------------------------------ //
 
         private void OnBuildTogglePerformed(InputAction.CallbackContext ctx)
         {
             if (_isTransitioning) return;
             SetBuildMode(!_isBuildMode);
+        }
+
+        /// <summary>
+        /// Force-exit build mode when a UI panel opens (Inventory, MachineInspect, etc.).
+        /// </summary>
+        private void HandlePanelOpened(string panelId, bool isOpen)
+        {
+            if (isOpen && _isBuildMode)
+                SetBuildMode(false);
         }
 
         private void SetBuildMode(bool enabled)

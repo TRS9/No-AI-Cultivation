@@ -14,7 +14,7 @@ namespace CultivationGame.Player
         [Header("Cultivation")]
         public bool isMeditating;
         public float meditationQiRate = 1f;
-        [SerializeField] public float meditationEssenceMultiplier = 1.2f;
+        public float meditationEssenceMultiplier = 1.2f;
 
         [Header("Input References")]
         public InputActionReference meditate;
@@ -61,7 +61,7 @@ namespace CultivationGame.Player
         public void AddQi(double amount)
         {
             if (currentRealm == null) return;
-            currentQi = currentQi + amount;
+            currentQi = System.Math.Min(currentQi + amount, currentRealm.qiCapacity);
             GameEvents.RaiseQiChanged(currentQi, MaxQi);
 
             if (currentQi >= currentRealm.qiCapacity)

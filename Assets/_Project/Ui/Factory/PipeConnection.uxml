@@ -1,0 +1,14 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="../Global.uss"/>
+    <Style src="PipeConnection.uss"/>
+    <ui:VisualElement name="PipeConnectionPanel" style="display: none; position: absolute; bottom: 60px; left: 50%; translate: -50% 0; padding: 12px 20px; background-color: rgba(20, 15, 30, 0.92); border-radius: 8px; border-width: 1px; border-color: rgba(100, 180, 220, 0.5);">
+        <ui:Label text="🔗 Pipe verbinden" name="PipeConnectionTitle" style="font-size: 15px; color: rgb(100, 180, 220); -unity-font-style: bold; margin-bottom: 6px; -unity-text-align: middle-center;"/>
+        <ui:Label text="Klicke auf eine Maschine zum Verbinden" name="PipeConnectionHint" style="font-size: 12px; color: rgb(180, 180, 180); -unity-text-align: middle-center; margin-bottom: 8px;"/>
+        <ui:VisualElement style="flex-direction: row; justify-content: center;">
+            <ui:Label text="Quelle: ---" name="PipeSourceLabel" style="font-size: 12px; color: rgb(120, 200, 120); margin-right: 16px;"/>
+            <ui:Label text="→" style="font-size: 14px; color: rgb(180, 180, 180);"/>
+            <ui:Label text="Ziel: ---" name="PipeDestLabel" style="font-size: 12px; color: rgb(200, 120, 120); margin-left: 16px;"/>
+        </ui:VisualElement>
+        <ui:Button text="Abbrechen [Esc]" name="PipeCancelButton" style="margin-top: 8px; height: 26px; background-color: rgba(200, 50, 50, 0.5); color: rgb(200, 200, 200); border-width: 0; border-radius: 4px; font-size: 12px;"/>
+    </ui:VisualElement>
+</ui:UXML>

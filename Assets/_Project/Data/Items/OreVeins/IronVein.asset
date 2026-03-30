@@ -21,5 +21,5 @@ MonoBehaviour:
   yieldPerExtraction: 5
   canRespawn: 1
   respawnTimeSeconds: 600
-  prefab: {fileID: 0}
-  requiredRealm: {fileID: 0}
+  prefab: {fileID: 5408596954486789598, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
+  requiredRealm: {fileID: 11400000, guid: efb29ca98e5dd554e9c07598585fd7a4, type: 2}

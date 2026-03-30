@@ -67,6 +67,21 @@ namespace CultivationGame.Player
             return items.TryGetValue(item, out int count) && count >= amount;
         }
 
+        public bool RemoveItem(ItemData item, int amount = 1)
+        {
+            if (item == null || amount <= 0) return false;
+            if (!items.TryGetValue(item, out int count) || count < amount) return false;
+
+            count -= amount;
+            if (count <= 0)
+                items.Remove(item);
+            else
+                items[item] = count;
+
+            GameEvents.RaiseInventoryChanged();
+            return true;
+        }
+
         public void LoadInventory(Dictionary<ItemData, int> loaded)
         {
             items = new Dictionary<ItemData, int>(loaded);

@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5174173729373874319
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 331.30396
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.22
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 266.7546
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 86abff03d37c49b43af275087c40bc8f, type: 2}
+    - target: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      propertyPath: m_Name
+      value: Iron Ore Vein
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1641307324088301414}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5032318070449097571}
+  m_SourcePrefab: {fileID: 100100000, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+--- !u!1 &5408596954486789598 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+  m_PrefabInstance: {fileID: 5174173729373874319}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1641307324088301414
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5408596954486789598}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5461320835613783329, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
+--- !u!114 &5032318070449097571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5408596954486789598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 243f3e0aa8cb4a0997148e0417c87dbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Systems::CultivationGame.Systems.OreVein
+  veinData: {fileID: 11400000, guid: bd64461442d1cf641be33c6b470c57b2, type: 2}
+  uniqueId: acb00cc1-f9d4-4a92-9679-0c2d9c9c4e17

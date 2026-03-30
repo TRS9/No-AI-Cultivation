@@ -32,10 +32,12 @@ namespace CultivationGame.UI
         private VisualElement _outputContainer;
         private DropdownField _recipeDropdown;
         private Button _emptyButton;
+        private Button _transferInButton;
         private Button _closeButton;
 
         // --- State ---
-        private BaseMachine _currentMachine;
+        private IMachineConnectable _currentConnectable;   // any machine type
+        private BaseMachine _currentMachine;               // null for non-BaseMachine types
         private List<RecipeData> _availableRecipes = new();
         private bool _slotsDirty;
 
@@ -57,6 +59,7 @@ namespace CultivationGame.UI
             _outputContainer = _panel.Q<VisualElement>("InspectOutputSlots");
             _recipeDropdown = _panel.Q<DropdownField>("InspectRecipeDropdown");
             _emptyButton = _panel.Q<Button>("InspectEmptyButton");
+            _transferInButton = _panel.Q<Button>("InspectTransferIn");
             _closeButton = _panel.Q<Button>("InspectCloseButton");
 
             _panel.style.display = DisplayStyle.None;
@@ -67,9 +70,15 @@ namespace CultivationGame.UI
             if (_emptyButton != null)
                 _emptyButton.clicked += EmptyAllToPlayer;
 
+            if (_transferInButton != null)
+                _transferInButton.clicked += TransferFromPlayer;
+
             if (_recipeDropdown != null)
                 _recipeDropdown.RegisterValueChangedCallback(OnRecipeSelected);
 
+            // Unsubscribe first to prevent double-registration if InitializeUI is called again
+            GameDataEvents.OnMachineInteracted -= OnMachineInteracted;
+            GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
             GameDataEvents.OnMachineInteracted += OnMachineInteracted;
             GameEvents.OnPanelStateChanged += OnPanelStateChanged;
         }
@@ -83,12 +92,15 @@ namespace CultivationGame.UI
 
         private void Update()
         {
-            if (_currentMachine == null || _panel == null) return;
+            if (_currentConnectable == null || _panel == null) return;
             if (_panel.style.display == DisplayStyle.None) return;
 
             UpdateStatus();
-            UpdateProgress();
-            UpdateTime();
+            if (_currentMachine != null)
+            {
+                UpdateProgress();
+                UpdateTime();
+            }
 
             if (_slotsDirty)
             {
@@ -103,9 +115,10 @@ namespace CultivationGame.UI
 
         private void OnMachineInteracted(MonoBehaviour machine)
         {
-            if (machine is BaseMachine baseMachine)
+            if (machine is IMachineConnectable connectable)
             {
-                _currentMachine = baseMachine;
+                _currentConnectable = connectable;
+                _currentMachine = machine as BaseMachine; // null for Splitter, Merger, etc.
                 GameStateManager.Instance?.OpenPanel(PanelId);
             }
         }
@@ -140,22 +153,32 @@ namespace CultivationGame.UI
 
         private void Open()
         {
-            if (_panel == null || _currentMachine == null) return;
+            if (_panel == null || _currentConnectable == null) return;
 
             _panel.style.display = DisplayStyle.Flex;
 
-            // Machine header
             if (_machineNameLabel != null)
             {
-                string name = _currentMachine.MachineData != null
-                    ? _currentMachine.MachineData.machineName
+                string name = _currentConnectable.MachineData != null
+                    ? _currentConnectable.MachineData.machineName
                     : "Machine";
                 _machineNameLabel.text = name;
             }
 
+            // Processing UI is only meaningful for BaseMachine
+            bool isBaseMachine = _currentMachine != null;
+            if (_progressBar != null)    _progressBar.style.display    = isBaseMachine ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_recipeLabel != null)    _recipeLabel.style.display    = isBaseMachine ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_timeLabel != null)      _timeLabel.style.display      = isBaseMachine ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_recipeDropdown != null) _recipeDropdown.style.display = isBaseMachine ? DisplayStyle.Flex : DisplayStyle.None;
+            if (_transferInButton != null) _transferInButton.style.display = isBaseMachine ? DisplayStyle.Flex : DisplayStyle.None;
+
             SubscribeToMachine();
-            PopulateRecipes();
-            UpdateRecipeLabel();
+            if (isBaseMachine)
+            {
+                PopulateRecipes();
+                UpdateRecipeLabel();
+            }
             UpdateStatus();
             UpdateProgress();
             UpdateTime();
@@ -172,6 +195,7 @@ namespace CultivationGame.UI
             if (_panel != null)
                 _panel.style.display = DisplayStyle.None;
 
+            _currentConnectable = null;
             _currentMachine = null;
         }
 
@@ -182,20 +206,23 @@ namespace CultivationGame.UI
 
         private void SubscribeToMachine()
         {
-            if (_currentMachine == null) return;
-            if (_currentMachine.InputInventory != null)
-                _currentMachine.InputInventory.OnChanged += MarkSlotsDirty;
-            if (_currentMachine.OutputInventory != null)
-                _currentMachine.OutputInventory.OnChanged += MarkSlotsDirty;
+            if (_currentConnectable == null) return;
+            if (_currentConnectable.InputInventory != null)
+                _currentConnectable.InputInventory.OnChanged += MarkSlotsDirty;
+            // Avoid double-subscribe when InputInventory and OutputInventory are the same object (StorageContainer)
+            if (_currentConnectable.OutputInventory != null
+                && _currentConnectable.OutputInventory != _currentConnectable.InputInventory)
+                _currentConnectable.OutputInventory.OnChanged += MarkSlotsDirty;
         }
 
         private void UnsubscribeFromMachine()
         {
-            if (_currentMachine == null) return;
-            if (_currentMachine.InputInventory != null)
-                _currentMachine.InputInventory.OnChanged -= MarkSlotsDirty;
-            if (_currentMachine.OutputInventory != null)
-                _currentMachine.OutputInventory.OnChanged -= MarkSlotsDirty;
+            if (_currentConnectable == null) return;
+            if (_currentConnectable.InputInventory != null)
+                _currentConnectable.InputInventory.OnChanged -= MarkSlotsDirty;
+            if (_currentConnectable.OutputInventory != null
+                && _currentConnectable.OutputInventory != _currentConnectable.InputInventory)
+                _currentConnectable.OutputInventory.OnChanged -= MarkSlotsDirty;
         }
 
         // ------------------------------------------------------------------ //
@@ -204,16 +231,26 @@ namespace CultivationGame.UI
 
         private void UpdateStatus()
         {
-            if (_statusLabel == null || _currentMachine == null) return;
+            if (_statusLabel == null || _currentConnectable == null) return;
 
-            string powerIcon = _currentMachine.IsPowered ? "\u26A1" : "\u2B1C";
-
-            if (_currentMachine.IsProcessing)
-                _statusLabel.text = $"Status: {powerIcon} Verarbeitet...";
-            else if (!_currentMachine.IsPowered)
-                _statusLabel.text = $"Status: {powerIcon} Kein Strom";
+            if (_currentMachine != null)
+            {
+                string powerIcon = _currentMachine.IsPowered ? "\u26A1" : "\u2B1C";
+                if (_currentMachine.IsProcessing)
+                    _statusLabel.text = $"Status: {powerIcon} Verarbeitet...";
+                else if (!_currentMachine.IsPowered)
+                    _statusLabel.text = $"Status: {powerIcon} Kein Strom";
+                else
+                    _statusLabel.text = $"Status: {powerIcon} Bereit";
+            }
+            else if (_currentConnectable is ResourceExtractor ext)
+            {
+                _statusLabel.text = ext.HasTarget ? "Status: \u26cf Extrahiert" : "Status: \u2B1C Kein Vorkommen";
+            }
             else
-                _statusLabel.text = $"Status: {powerIcon} Bereit";
+            {
+                _statusLabel.text = "Status: \u2713 Aktiv";
+            }
         }
 
         private void UpdateProgress()
@@ -314,9 +351,9 @@ namespace CultivationGame.UI
 
         private void UpdateSlots()
         {
-            if (_currentMachine == null) return;
-            RebuildSlotContainer(_inputContainer, _currentMachine.InputInventory);
-            RebuildSlotContainer(_outputContainer, _currentMachine.OutputInventory);
+            if (_currentConnectable == null) return;
+            RebuildSlotContainer(_inputContainer, _currentConnectable.InputInventory);
+            RebuildSlotContainer(_outputContainer, _currentConnectable.OutputInventory);
         }
 
         private void RebuildSlotContainer(VisualElement container, MachineInventory inventory)
@@ -368,10 +405,45 @@ namespace CultivationGame.UI
         /// </summary>
         private void EmptyAllToPlayer()
         {
+            if (_currentConnectable == null || playerInventory == null) return;
+
+            var inputInv  = _currentConnectable.InputInventory;
+            var outputInv = _currentConnectable.OutputInventory;
+            TransferAllFromInventory(inputInv);
+            // Skip outputInv if it is the same object as inputInv (StorageContainer)
+            if (outputInv != null && outputInv != inputInv)
+                TransferAllFromInventory(outputInv);
+
+            GameEvents.RaiseInventoryChanged();
+            if (_currentConnectable is MonoBehaviour mb)
+                GameDataEvents.RaiseMachineInventoryChanged(mb);
+        }
+
+        // ------------------------------------------------------------------ //
+        //  "Zuführen" – transfer recipe inputs from player to machine
+        // ------------------------------------------------------------------ //
+
+        /// <summary>
+        /// Transfers one batch of recipe-required items from the player into the machine input.
+        /// </summary>
+        private void TransferFromPlayer()
+        {
             if (_currentMachine == null || playerInventory == null) return;
 
-            TransferAllFromInventory(_currentMachine.InputInventory);
-            TransferAllFromInventory(_currentMachine.OutputInventory);
+            var recipe = _currentMachine.CurrentRecipe;
+            if (recipe == null || recipe.inputs == null) return;
+
+            foreach (var ingredient in recipe.inputs)
+            {
+                if (ingredient.item == null) continue;
+
+                int needed = ingredient.amount;
+                if (!playerInventory.HasItem(ingredient.item, needed)) continue;
+
+                int added = _currentMachine.InputInventory.TryAdd(ingredient.item, needed);
+                if (added > 0)
+                    playerInventory.RemoveItem(ingredient.item, added);
+            }
 
             GameEvents.RaiseInventoryChanged();
             GameDataEvents.RaiseMachineInventoryChanged(_currentMachine);
