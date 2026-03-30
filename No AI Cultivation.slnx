@@ -4,7 +4,7 @@
   <Project Path="Game.Player.csproj" />
   <Project Path="Game.Data.csproj" />
   <Project Path="Game.Core.csproj" />
+  <Project Path="Game.Editor.csproj" />
   <Project Path="Game.UI.csproj" />
   <Project Path="Game.Tests.csproj" />
-  <Project Path="Game.Editor.csproj" />
 </Solution>

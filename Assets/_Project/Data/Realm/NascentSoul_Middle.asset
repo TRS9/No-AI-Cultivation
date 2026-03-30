@@ -22,4 +22,4 @@ MonoBehaviour:
   subStage: 2
   baseDamage: 105
   baseDefense: 40
-  nextRealm: {fileID: 0}
+  nextRealm: {fileID: 11400000, guid: 5e242d45da2be18479e5e411faf69e51, type: 2}

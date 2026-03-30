@@ -1,7 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/_Project/Ui/Global.uss?fileID=7433441132597879392&amp;guid=66663ddfe2286c0489fa5da53cc122c8&amp;type=3#Global"/>
     <Style src="project://database/Assets/_Project/Ui/Factory/FactoryDashboard.uss?fileID=7433441132597879392&amp;guid=bc60f341119b76d439bbffda53caa180&amp;type=3#FactoryDashboard"/>
-    <ui:VisualElement name="FactoryDashboardPanel" style="display: flex; position: absolute; top: 10px; right: 10px; width: 320px; padding: 12px; background-color: rgba(20, 15, 30, 0.88); border-radius: 8px; border-width: 1px; border-color: rgba(180, 140, 50, 0.4);">
+    <ui:VisualElement name="FactoryDashboardPanel" style="display: none; position: absolute; top: 10px; right: 10px; width: 320px; padding: 12px; background-color: rgba(20, 15, 30, 0.88); border-radius: 8px; border-width: 1px; border-color: rgba(180, 140, 50, 0.4);">
         <ui:Label text="⚙ Fabrik-Übersicht" name="DashboardTitle" style="font-size: 16px; color: rgb(212, 168, 74); -unity-font-style: bold; margin-bottom: 8px;"/>
         <ui:VisualElement style="margin-bottom: 8px;">
             <ui:Label text="Qi-Netzwerk" style="font-size: 13px; color: rgb(180, 140, 50); -unity-font-style: bold; margin-bottom: 4px;"/>
