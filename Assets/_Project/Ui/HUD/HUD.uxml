@@ -24,6 +24,10 @@
         <ui:VisualElement name="BuffContainer" class="buff-container"/>
     </ui:VisualElement>
     <ui:Label text="" name="MeditationBonusLabel" class="meditation-bonus"/>
+    <ui:VisualElement name="Crosshair" class="crosshair">
+        <ui:VisualElement class="crosshair__h"/>
+        <ui:VisualElement class="crosshair__v"/>
+    </ui:VisualElement>
     <ui:Label text="Press E to Interact" name="InteractPrompt" class="interact-prompt" style="display: none;"/>
     <ui:VisualElement name="ResourcePickupContainer" class="resource-pickup-container"/>
 </ui:UXML>

@@ -12,7 +12,7 @@ namespace CultivationGame.Player
         [SerializeField] private CinemachineBrain cinemachineBrain;
         [SerializeField] private CinemachineCamera cinemachineVCam;
 
-        [Header("Spirit Sense (Build Mode)")]
+        [Header("Spirit Sense (Free Camera)")]
         [SerializeField] private SpiritSenseCamera spiritSenseCamera;
 
         [Header("Player")]
@@ -108,23 +108,34 @@ namespace CultivationGame.Player
             if (_isBuildMode == enabled) return;
             _isBuildMode = enabled;
 
-            if (_isBuildMode && !_inSpiritSense)
+            if (_isBuildMode)
             {
-                // In 3rd person: enable BuildMode map additively so Place/Cancel/Rotate work
+                // Enable BuildMode map (may already be enabled in Spirit Sense for camera controls)
                 _buildModeMap?.Enable();
-                // Disable Cinemachine look input so mouse controls the cursor, not the camera
-                if (_inputAxisController != null)
-                    _inputAxisController.enabled = false;
+
+                if (!_inSpiritSense)
+                {
+                    // In 3rd person: disable Cinemachine look input so mouse controls the cursor
+                    if (_inputAxisController != null)
+                        _inputAxisController.enabled = false;
+                }
+
+                // Show cursor so the player can interact with the build menu
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
-            else if (!_isBuildMode && !_inSpiritSense)
+            else
             {
-                // Back to pure 3rd person
-                _buildModeMap?.Disable();
-                // Re-enable Cinemachine look input for normal camera control
-                if (_inputAxisController != null)
-                    _inputAxisController.enabled = true;
+                if (!_inSpiritSense)
+                {
+                    // Back to pure 3rd person — disable BuildMode map
+                    _buildModeMap?.Disable();
+                    // Re-enable Cinemachine look input for normal camera control
+                    if (_inputAxisController != null)
+                        _inputAxisController.enabled = true;
+                }
+                // else: in Spirit Sense, keep BuildMode map enabled for camera controls
+
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
@@ -183,19 +194,15 @@ namespace CultivationGame.Player
             // Spirit sense takes over driving the main camera
             spiritSenseCamera.SetEnabled(true);
 
-            // Auto-enable build mode when entering Spirit Sense
-            if (!_isBuildMode)
-                SetBuildMode(true);
-
-            // Input: disable Player map, re-enable Meditate, enable BuildMode
+            // Input: disable Player map, re-enable Meditate and BuildToggle,
+            // enable BuildMode map for camera controls (Pan/Orbit/Zoom)
             _playerMap?.Disable();
             _meditateAction?.Enable();
-            // Keep BuildToggle available in Spirit Sense
             _buildToggleAction?.Enable();
             _buildModeMap?.Enable();
 
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            // Spirit sense does NOT enable the mouse — cursor stays locked.
+            // The crosshair at screen centre shows where placement / interaction occurs.
         }
 
         private IEnumerator TransitionToAction()
@@ -231,23 +238,27 @@ namespace CultivationGame.Player
             // Re-enable Cinemachine — it picks up from the current transform
             cinemachineBrain.enabled = true;
 
-            // Always re-enable Cinemachine look input when returning to action mode.
-            // SetBuildMode checks _inSpiritSense (still true here) and skips the
-            // branch that would normally restore the input axis controller, so we
-            // must do it explicitly before the build-mode cleanup.
-            if (_inputAxisController != null)
-                _inputAxisController.enabled = true;
-
-            // Disable build mode when leaving Spirit Sense
-            if (_isBuildMode)
-                SetBuildMode(false);
-
-            // Input: disable BuildMode, enable full Player map
-            _buildModeMap?.Disable();
+            // Re-enable full Player map
             _playerMap?.Enable();
 
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            if (_isBuildMode)
+            {
+                // Returning to 3rd person while build mode is active:
+                // keep BuildMode map enabled, disable Cinemachine look, show cursor
+                if (_inputAxisController != null)
+                    _inputAxisController.enabled = false;
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                // No build mode — disable BuildMode map, restore normal camera
+                _buildModeMap?.Disable();
+                if (_inputAxisController != null)
+                    _inputAxisController.enabled = true;
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
 
         private IEnumerator AnimateCamera(Transform cam, Vector3 startPos, Quaternion startRot,

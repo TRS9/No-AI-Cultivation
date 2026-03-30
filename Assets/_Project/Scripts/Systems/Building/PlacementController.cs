@@ -9,7 +9,7 @@ namespace CultivationGame.Systems
     /// <summary>
     /// Manages the ghost-build placement flow:
     ///   1. Player selects a machine from the Build Menu → StartPlacement()
-    ///   2. A semi-transparent ghost follows the cursor, snapped to the grid
+    ///   2. A semi-transparent ghost follows the screen-centre crosshair, snapped to the grid
     ///   3. Left-click confirms placement; right-click / Escape cancels
     ///   4. R key rotates the ghost in 90° steps
     /// Also handles machine removal when not in placement mode.
@@ -44,6 +44,8 @@ namespace CultivationGame.Systems
         private int _rotation; // 0, 1, 2, 3 → 0°, 90°, 180°, 270°
 
         public bool IsPlacing => _isPlacing;
+
+        private static Vector3 ScreenCenter => new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
 
         // ------------------------------------------------------------------ //
         //  Input wiring
@@ -105,10 +107,6 @@ namespace CultivationGame.Systems
             _rotation = 0;
             _isPlacing = true;
 
-            // Ensure cursor is visible and free for placement interaction
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-
             // Instantiate ghost preview (prefer dedicated ghost prefab, fall back to real prefab)
             GameObject ghostPrefab = machine.ghostPrefab != null ? machine.ghostPrefab : machine.prefab;
             _ghostInstance = Instantiate(ghostPrefab);
@@ -162,7 +160,8 @@ namespace CultivationGame.Systems
             Camera cam = buildCamera != null ? buildCamera : Camera.main;
             if (cam == null) return;
 
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            // Raycast from screen centre (the crosshair) instead of the mouse cursor
+            Ray ray = cam.ScreenPointToRay(ScreenCenter);
             if (!Physics.Raycast(ray, out RaycastHit hit, 500f, terrainLayer))
             {
                 _ghostInstance.SetActive(false);
@@ -238,7 +237,7 @@ namespace CultivationGame.Systems
         }
 
         /// <summary>
-        /// Removes a placed machine under the cursor (when not in placement mode).
+        /// Removes a placed machine under the crosshair (when not in placement mode).
         /// Frees the grid cells and destroys the machine GameObject.
         /// </summary>
         private void OnRemove(InputAction.CallbackContext ctx)
@@ -248,7 +247,8 @@ namespace CultivationGame.Systems
             Camera cam = buildCamera != null ? buildCamera : Camera.main;
             if (cam == null) return;
 
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            // Raycast from screen centre (the crosshair)
+            Ray ray = cam.ScreenPointToRay(ScreenCenter);
             if (!Physics.Raycast(ray, out RaycastHit hit, 500f, machineLayer)) return;
 
             // Try to find a machine component on the hit object
