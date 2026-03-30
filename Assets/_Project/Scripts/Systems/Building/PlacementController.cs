@@ -45,6 +45,8 @@ namespace CultivationGame.Systems
 
         public bool IsPlacing => _isPlacing;
 
+        private static Vector3 ScreenCenter => new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
+
         // ------------------------------------------------------------------ //
         //  Input wiring
         // ------------------------------------------------------------------ //
@@ -159,8 +161,7 @@ namespace CultivationGame.Systems
             if (cam == null) return;
 
             // Raycast from screen centre (the crosshair) instead of the mouse cursor
-            Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
-            Ray ray = cam.ScreenPointToRay(screenCenter);
+            Ray ray = cam.ScreenPointToRay(ScreenCenter);
             if (!Physics.Raycast(ray, out RaycastHit hit, 500f, terrainLayer))
             {
                 _ghostInstance.SetActive(false);
@@ -247,8 +248,7 @@ namespace CultivationGame.Systems
             if (cam == null) return;
 
             // Raycast from screen centre (the crosshair)
-            Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
-            Ray ray = cam.ScreenPointToRay(screenCenter);
+            Ray ray = cam.ScreenPointToRay(ScreenCenter);
             if (!Physics.Raycast(ray, out RaycastHit hit, 500f, machineLayer)) return;
 
             // Try to find a machine component on the hit object
