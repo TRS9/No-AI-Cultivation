@@ -99,6 +99,11 @@ namespace CultivationGame.Systems
         public void StartPlacement(MachineData machine)
         {
             if (machine == null) return;
+            if (machine.prefab == null && machine.ghostPrefab == null)
+            {
+                Debug.LogWarning($"[PlacementController] '{machine.machineName}' has no prefab assigned — cannot place.");
+                return;
+            }
 
             // Cancel any existing placement first
             if (_isPlacing) CancelPlacement();

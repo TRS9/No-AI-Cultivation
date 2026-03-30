@@ -38,7 +38,8 @@
       "Bash(for f:*)",
       "Bash(do)",
       "Read(//c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Data/Generated/**)",
-      "Bash(grep -r 5a2473de51614a5aa641fe17791a8324 'c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/' --include=*.meta -l)"
+      "Bash(grep -r 5a2473de51614a5aa641fe17791a8324 'c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/' --include=*.meta -l)",
+      "Bash(grep -h \"m_Name\\\\|prefab\" \"c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Data/Machines/\"*.asset)"
     ]
   }
 }
