@@ -95,6 +95,9 @@ namespace CultivationGame.Systems
 
             _remainingYield -= amount;
 
+            if (amount > 0)
+                GameDataEvents.RaiseResourceExtracted(veinData.resource, amount);
+
             if (_remainingYield <= 0)
                 Deplete();
         }

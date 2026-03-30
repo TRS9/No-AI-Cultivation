@@ -25,4 +25,5 @@
     </ui:VisualElement>
     <ui:Label text="" name="MeditationBonusLabel" class="meditation-bonus"/>
     <ui:Label text="Press E to Interact" name="InteractPrompt" class="interact-prompt" style="display: none;"/>
+    <ui:VisualElement name="ResourcePickupContainer" class="resource-pickup-container"/>
 </ui:UXML>
