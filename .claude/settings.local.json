@@ -15,7 +15,26 @@
       "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Scripts/Ui' -type f -name *.cs)",
       "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets' -type f -name *.uss -o -name *theme* -o -name *Theme*)",
       "Bash(xargs grep:*)",
-      "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project' -name *.prefab)"
+      "Bash(find '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project' -name *.prefab)",
+      "Bash(powershell -Command \"Remove-Item -Force ''C:\\\\Users\\\\trs13\\\\OneDrive\\\\Dokumente\\\\Cultivation Games\\\\Unity\\\\No AI Cultivation\\\\.git\\\\worktrees\\\\dazzling-lehmann\\\\index.lock'' -ErrorAction SilentlyContinue; exit 0\")",
+      "Bash(powershell -Command \"Get-Process | Where-Object { $_Name -match ''git|unity|sourcetree|gitkraken|fork|tower'' } | Select-Object Id, Name, MainWindowTitle\")",
+      "Bash(powershell -Command \"Get-Process | Where-Object { $_Name -match ''git'' } | Format-Table Id, Name -AutoSize\")",
+      "Bash(cmd /c \"del /f \"\"C:\\\\Users\\\\trs13\\\\OneDrive\\\\Dokumente\\\\Cultivation Games\\\\Unity\\\\No AI Cultivation\\\\.git\\\\worktrees\\\\dazzling-lehmann\\\\index.lock\"\"\")",
+      "Bash(cmd /c \"openfiles /query /fo csv 2>&1 | findstr /i \"\"index.lock\"\"\")",
+      "Bash(cmd /c \"tasklist /fi \"\"imagename eq git.exe\"\" 2>&1\")",
+      "Bash(cmd /c \"attrib \"\"C:\\\\Users\\\\trs13\\\\OneDrive\\\\Dokumente\\\\Cultivation Games\\\\Unity\\\\No AI Cultivation\\\\.git\\\\worktrees\\\\dazzling-lehmann\\\\index.lock\"\"\")",
+      "Bash(xxd)",
+      "Bash(cmd /c \"dir \"\"C:\\\\Users\\\\trs13\\\\OneDrive\\\\Dokumente\\\\Cultivation Games\\\\Unity\\\\No AI Cultivation\\\\.git\\\\worktrees\\\\dazzling-lehmann\\\\index.lock\"\"\")",
+      "Bash(cmd /c \"dir /a \"\"C:\\\\Users\\\\trs13\\\\OneDrive\\\\Dokumente\\\\Cultivation Games\\\\Unity\\\\No AI Cultivation\\\\.git\\\\worktrees\\\\dazzling-lehmann\"\"\")",
+      "Bash(fuser '/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/.git/worktrees/dazzling-lehmann/index.lock')",
+      "Bash(cmd /c \"handle64.exe \"\"index.lock\"\" 2>nul || handle.exe \"\"index.lock\"\" 2>nul || echo handle_not_available\")",
+      "Bash(git --git-dir='/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/.git/worktrees/dazzling-lehmann' --work-tree='/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/.claude/worktrees/dazzling-lehmann' add 'Assets/_Project/Data/import_template.csv')",
+      "Bash(git --git-dir='/c/Users/trs13/OneDrive/Dokumente/Cultivation:*)",
+      "Bash(git --git-dir='/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/.git/worktrees/dazzling-lehmann' --work-tree='/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/.claude/worktrees/dazzling-lehmann' push -u origin claude/dazzling-lehmann)",
+      "Bash(gh pr:*)",
+      "Bash(cmd /c \"gh pr create --title \"\"Add CSV SO Importer template\"\" --body \"\"## Summary\\\\n- Adds Assets/_Project/Data/import_template.csv — ready-to-use template for Tools > CSV ScriptableObject Importer\\\\n- Covers all 8 SO types: RealmDefinition, RawMaterialData, EssenceData, PillData, MachineData, RecipeData, OreVeinData, EnemyData\\\\n- Includes sample rows with correct field names and format\\\\n\\\\n## Test plan\\\\n- [ ] Open Unity > Tools > CSV ScriptableObject Importer\\\\n- [ ] Select import_template.csv, output folder Assets/_Project/Data/Generated\\\\n- [ ] Click Parse CSV and verify no errors\\\\n- [ ] Click Generate Assets and verify .asset files are created\\\\n\\\\n Generated with Claude Code\"\" --base master --head claude/dazzling-lehmann 2>&1\")",
+      "Bash(where gh:*)",
+      "Bash(cmd /c \"where gh 2>&1\")"
     ]
   }
 }

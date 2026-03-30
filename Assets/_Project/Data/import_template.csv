@@ -8,7 +8,85 @@
 
 #Type,RealmDefinition
 _assetName,realmName,realmIndex,description,qiCapacity,baseQiRate,breakthroughSuccessRate,spiritSenseRange,subStage,baseDamage,baseDefense,nextRealm
-QiCondensing_1,"Qi Condensing Stage 1",0,"The first step on the path of cultivation.",100,1,1,30,1,5,0,QiCondensing_2
+Mortal,Mortal,0,,100,1.0,1.0,30,0,5,0,QiRefinement_I
+QiRefinement_I,Qi Refinement I,1,Basic qi accumulation.,110,1.2,1.0,32,1,10,2,QiRefinement_II
+QiRefinement_II,Qi Refinement II,2,Basic qi accumulation.,120,1.4,1.0,34,2,15,4,QiRefinement_III
+QiRefinement_III,Qi Refinement III,3,Basic qi accumulation.,130,1.6,1.0,36,3,20,6,QiRefinement_IV
+QiRefinement_IV,Qi Refinement IV,4,Basic qi accumulation.,140,1.8,1.0,38,4,25,8,QiRefinement_V
+QiRefinement_V,Qi Refinement V,5,Basic qi accumulation.,150,2.0,1.0,40,5,30,10,QiRefinement_VI
+QiRefinement_VI,Qi Refinement VI,6,Basic qi accumulation.,160,2.2,1.0,42,6,35,12,QiRefinement_VII
+QiRefinement_VII,Qi Refinement VII,7,Basic qi accumulation.,170,2.4,1.0,44,7,40,14,QiRefinement_VIII
+QiRefinement_VIII,Qi Refinement VIII,8,Basic qi accumulation.,190,2.6,1.0,46,8,45,16,QiRefinement_IX
+QiRefinement_IX,Qi Refinement IX,9,Basic qi accumulation.,200,2.8,1.0,48,9,50,18,FoundationEstablishment_Initial
+FoundationEstablishment_Initial,Foundation Establishment Initial,10,Locking in meridian purity and future potential.,220,3.0,0.97,50,1,55,20,FoundationEstablishment_Middle
+FoundationEstablishment_Middle,Foundation Establishment Middle,11,Locking in meridian purity and future potential.,230,3.2,0.95,52,2,60,22,FoundationEstablishment_Peak
+FoundationEstablishment_Peak,Foundation Establishment Peak,12,Locking in meridian purity and future potential.,250,3.4,0.92,54,3,65,24,QiFusion_Initial
+QiFusion_Initial,Qi Fusion Initial,13,Unifying body and qi.,270,3.6,0.90,56,1,70,26,QiFusion_Middle
+QiFusion_Middle,Qi Fusion Middle,14,Unifying body and qi.,290,3.8,0.87,58,2,75,28,QiFusion_Peak
+QiFusion_Peak,Qi Fusion Peak,15,Unifying body and qi.,320,4.0,0.85,60,3,80,30,GoldenCore_Initial
+GoldenCore_Initial,Golden Core Initial,16,Compression of power; the core acts as a future inner-world hub.,340,4.2,0.82,62,1,85,32,GoldenCore_Middle
+GoldenCore_Middle,Golden Core Middle,17,Compression of power; the core acts as a future inner-world hub.,370,4.4,0.80,64,2,90,34,GoldenCore_Peak
+GoldenCore_Peak,Golden Core Peak,18,Compression of power; the core acts as a future inner-world hub.,400,4.6,0.77,66,3,95,36,NascentSoul_Initial
+NascentSoul_Initial,Nascent Soul Initial,19,Soul autonomy and the beginning of true immortality.,430,4.8,0.75,68,1,100,38,NascentSoul_Middle
+NascentSoul_Middle,Nascent Soul Middle,20,Soul autonomy and the beginning of true immortality.,470,5.0,0.72,70,2,105,40,NascentSoul_Peak
+NascentSoul_Peak,Nascent Soul Peak,21,Soul autonomy and the beginning of true immortality.,500,5.2,0.70,72,3,110,42,DivineSea_Initial
+DivineSea_Initial,Divine Sea Initial,22,True essence liquifies into a sea; the seed of the internal world is planted.,540,5.4,0.67,74,1,115,44,DivineSea_Middle
+DivineSea_Middle,Divine Sea Middle,23,True essence liquifies into a sea; the seed of the internal world is planted.,590,5.6,0.65,76,2,120,46,DivineSea_Peak
+DivineSea_Peak,Divine Sea Peak,24,True essence liquifies into a sea; the seed of the internal world is planted.,640,5.8,0.62,78,3,125,48,DivineTransformation_Initial
+DivineTransformation_Initial,Divine Transformation Initial,25,The inner world terrain begins to form based on Dao comprehension.,690,6.0,0.60,80,1,130,50,DivineTransformation_Middle
+DivineTransformation_Middle,Divine Transformation Middle,26,The inner world terrain begins to form based on Dao comprehension.,740,6.2,0.57,82,2,135,52,DivineTransformation_Peak
+DivineTransformation_Peak,Divine Transformation Peak,27,The inner world terrain begins to form based on Dao comprehension.,800,6.4,0.55,84,3,140,54,HeavenlyBeing_Initial
+HeavenlyBeing_Initial,Heavenly Being Initial,28,Recognition by Heaven; the inner world becomes a consciously accessible space.,860,6.6,0.52,86,1,145,56,HeavenlyBeing_Middle
+HeavenlyBeing_Middle,Heavenly Being Middle,29,Recognition by Heaven; the inner world becomes a consciously accessible space.,930,6.8,0.50,88,2,150,58,HeavenlyBeing_Peak
+HeavenlyBeing_Peak,Heavenly Being Peak,30,Recognition by Heaven; the inner world becomes a consciously accessible space.,1010,7.0,0.47,90,3,155,60,FourAxis_Initial
+FourAxis_Initial,Four Axis Initial,31,"Establishing anchors (Body, Soul, Power, Will) to stabilize the internal cosmos.",1090,7.2,0.45,92,1,160,62,FourAxis_Middle
+FourAxis_Middle,Four Axis Middle,32,"Establishing anchors (Body, Soul, Power, Will) to stabilize the internal cosmos.",1180,7.4,0.42,94,2,165,64,FourAxis_Peak
+FourAxis_Peak,Four Axis Peak,33,"Establishing anchors (Body, Soul, Power, Will) to stabilize the internal cosmos.",1270,7.6,0.40,96,3,170,66,Saint_Initial
+Saint_Initial,Saint Initial,34,External manifestation of Dao Domains.,1370,7.8,0.37,98,1,175,68,Saint_Middle
+Saint_Middle,Saint Middle,35,External manifestation of Dao Domains.,1480,8.0,0.35,100,2,180,70,Saint_Peak
+Saint_Peak,Saint Peak,36,External manifestation of Dao Domains.,1600,8.2,0.32,102,3,185,72,SaintKing_Initial
+SaintKing_Initial,Saint King Initial,37,Territorial dominance; the domain becomes stable and vast.,1730,8.4,0.30,104,1,190,74,SaintKing_Middle
+SaintKing_Middle,Saint King Middle,38,Territorial dominance; the domain becomes stable and vast.,1870,8.6,0.27,106,2,195,76,SaintKing_Peak
+SaintKing_Peak,Saint King Peak,39,Territorial dominance; the domain becomes stable and vast.,2020,8.8,0.25,108,3,200,78,OriginReturning_Initial
+OriginReturning_Initial,Origin Returning Initial,40,Internalizing power; the domain collapses into a highly efficient self.,2180,9.0,0.22,110,1,210,80,OriginReturning_Middle
+OriginReturning_Middle,Origin Returning Middle,41,Internalizing power; the domain collapses into a highly efficient self.,2350,9.2,0.20,112,2,220,82,OriginReturning_Peak
+OriginReturning_Peak,Origin Returning Peak,42,Internalizing power; the domain collapses into a highly efficient self.,2540,9.4,0.17,114,3,230,84,OriginKing_Initial
+OriginKing_Initial,Origin King Initial,43,Absolute self-mastery; no waste of movement or energy.,2740,9.6,0.15,116,1,240,86,OriginKing_Middle
+OriginKing_Middle,Origin King Middle,44,Absolute self-mastery; no waste of movement or energy.,2960,9.8,0.12,118,2,250,88,OriginKing_Peak
+OriginKing_Peak,Origin King Peak,45,Absolute self-mastery; no waste of movement or energy.,3200,10.0,0.10,120,3,260,90,DaoSource_Initial
+DaoSource_Initial,Dao Source Initial,46,Dao crystallizes into a tangible source of authority.,3460,10.2,0.09,122,1,270,92,DaoSource_Middle
+DaoSource_Middle,Dao Source Middle,47,Dao crystallizes into a tangible source of authority.,3730,10.4,0.09,124,2,280,94,DaoSource_Peak
+DaoSource_Peak,Dao Source Peak,48,Dao crystallizes into a tangible source of authority.,4030,10.6,0.08,126,3,290,96,Emperor_Initial
+Emperor_Initial,Emperor Initial,49,The Dao Domain expands into rulership; the inner world hosts full ecosystems.,4350,10.8,0.08,128,1,300,98,Emperor_Middle
+Emperor_Middle,Emperor Middle,50,The Dao Domain expands into rulership; the inner world hosts full ecosystems.,4700,11.0,0.07,130,2,310,100,Emperor_Peak
+Emperor_Peak,Emperor Peak,51,The Dao Domain expands into rulership; the inner world hosts full ecosystems.,5080,11.2,0.07,132,3,320,102,DivineEmperor_Initial
+DivineEmperor_Initial,Divine Emperor Initial,52,Natural laws bend subtly around the cultivator's presence.,5490,11.4,0.06,134,1,330,104,DivineEmperor_Middle
+DivineEmperor_Middle,Divine Emperor Middle,53,Natural laws bend subtly around the cultivator's presence.,5930,11.6,0.06,136,2,340,106,DivineEmperor_Peak
+DivineEmperor_Peak,Divine Emperor Peak,54,Natural laws bend subtly around the cultivator's presence.,6400,11.8,0.06,138,3,350,108,AncientEmperor_Initial
+AncientEmperor_Initial,Ancient Emperor Initial,55,Timelessness; power is unaffected by the flow of eras.,6910,12.0,0.05,140,1,360,110,AncientEmperor_Middle
+AncientEmperor_Middle,Ancient Emperor Middle,56,Timelessness; power is unaffected by the flow of eras.,7470,12.2,0.05,142,2,370,112,AncientEmperor_Peak
+AncientEmperor_Peak,Ancient Emperor Peak,57,Timelessness; power is unaffected by the flow of eras.,8060,12.4,0.05,144,3,380,114,DaoSeal_Initial
+DaoSeal_Initial,Dao Seal Initial,58,The Dao is permanently inscribed; the inner-world blueprint becomes immutable.,8710,12.6,0.05,146,1,390,116,DaoSeal_Middle
+DaoSeal_Middle,Dao Seal Middle,59,The Dao is permanently inscribed; the inner-world blueprint becomes immutable.,9410,12.8,0.04,148,2,400,118,DaoSeal_Peak
+DaoSeal_Peak,Dao Seal Peak,60,The Dao is permanently inscribed; the inner-world blueprint becomes immutable.,10160,13.0,0.04,150,3,410,120,CelestialKing_Initial
+CelestialKing_Initial,Celestial King Initial,61,The inner world awakens; generating independent World Power.,10970,13.2,0.04,152,1,420,122,CelestialKing_Middle
+CelestialKing_Middle,Celestial King Middle,62,The inner world awakens; generating independent World Power.,11860,13.4,0.04,154,2,430,124,CelestialKing_Peak
+CelestialKing_Peak,Celestial King Peak,63,The inner world awakens; generating independent World Power.,12800,13.6,0.03,156,3,440,126,CelestialEmperor_Initial
+CelestialEmperor_Initial,Celestial Emperor Initial,64,Massive expansion into an internal cosmos.,13820,13.8,0.03,158,1,450,128,CelestialEmperor_Middle
+CelestialEmperor_Middle,Celestial Emperor Middle,65,Massive expansion into an internal cosmos.,14930,14.0,0.03,160,2,460,130,CelestialEmperor_Peak
+CelestialEmperor_Peak,Celestial Emperor Peak,66,Massive expansion into an internal cosmos.,16130,14.2,0.03,162,3,470,132,CelestialGod_Initial
+CelestialGod_Initial,Celestial God Initial,67,The inner world is a self-sustaining universe.,17420,14.4,0.03,164,1,480,134,CelestialGod_Middle
+CelestialGod_Middle,Celestial God Middle,68,The inner world is a self-sustaining universe.,18820,14.6,0.02,166,2,490,136,CelestialGod_Peak
+CelestialGod_Peak,Celestial God Peak,69,The inner world is a self-sustaining universe.,20320,14.8,0.02,168,3,500,138,OpenHeaven_I
+OpenHeaven_I,Open Heaven I,70,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,21950,15.0,0.02,170,1,520,140,OpenHeaven_II
+OpenHeaven_II,Open Heaven II,71,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,23710,15.2,0.02,172,2,540,142,OpenHeaven_III
+OpenHeaven_III,Open Heaven III,72,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,25600,15.4,0.02,174,3,560,144,OpenHeaven_IV
+OpenHeaven_IV,Open Heaven IV,73,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,27650,15.6,0.02,176,4,580,146,OpenHeaven_V
+OpenHeaven_V,Open Heaven V,74,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,29860,15.8,0.01,178,5,600,148,OpenHeaven_VI
+OpenHeaven_VI,Open Heaven VI,75,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,32250,16.0,0.01,180,6,620,150,OpenHeaven_VII
+OpenHeaven_VII,Open Heaven VII,76,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,34840,16.2,0.01,182,7,640,152,OpenHeaven_VIII
+OpenHeaven_VIII,Open Heaven VIII,77,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,37640,16.4,0.01,184,8,660,154,OpenHeaven_IX
+OpenHeaven_IX,Open Heaven IX,78,Ultimate transcendence. The inner world interfaces directly with the Greater Heaven.,40640,16.6,0.01,186,9,680,156,
 
 #Type,RawMaterialData
 _assetName,itemId,description,qiValue,itemType,materialName,materialColor
