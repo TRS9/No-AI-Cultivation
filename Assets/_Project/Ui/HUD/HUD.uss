@@ -226,6 +226,32 @@
     transition-timing-function: ease-out;
 }
 
+/* ===== Crosshair ===== */
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.crosshair__h {
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background-color: rgba(200, 200, 200, 0.7);
+}
+
+.crosshair__v {
+    position: absolute;
+    width: 2px;
+    height: 16px;
+    background-color: rgba(200, 200, 200, 0.7);
+}
+
 .resource-pickup--visible {
     opacity: 1;
     translate: 0 0;
