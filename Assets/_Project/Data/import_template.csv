@@ -1,0 +1,53 @@
+# ============================================================
+# CSV SO Importer Template
+# Usage: Tools → CSV ScriptableObject Importer
+# _assetName = required (becomes .asset filename)
+# _assetPath = optional subfolder inside the output folder
+# Leave asset-ref fields blank if asset doesn't exist yet
+# ============================================================
+
+#Type,RealmDefinition
+_assetName,realmName,realmIndex,description,qiCapacity,baseQiRate,breakthroughSuccessRate,spiritSenseRange,subStage,baseDamage,baseDefense,nextRealm
+QiCondensing_1,"Qi Condensing Stage 1",0,"The first step on the path of cultivation.",100,1,1,30,1,5,0,QiCondensing_2
+
+#Type,RawMaterialData
+_assetName,itemId,description,qiValue,itemType,materialName,materialColor
+IronOre,iron_ore,"A dense grey mineral found in stone veins.",10,RawMaterial,Iron,#808080
+CopperOre,copper_ore,"A reddish ore with a warm glow.",15,RawMaterial,Copper,#B87333
+SpiritStone,spirit_stone,"A crystal humming with ambient Qi.",50,RawMaterial,Spirit Stone,#A0C8FF
+
+#Type,EssenceData
+_assetName,itemId,description,qiValue,itemType,essenceName,essenceColor
+FireEssence,fire_essence,"Distilled essence of flame energy.",30,Essence,Fire Essence,#FF4400
+WaterEssence,water_essence,"Fluid essence drawn from still pools.",30,Essence,Water Essence,#0088FF
+EarthEssence,earth_essence,"Dense essence of stabilizing earth.",25,Essence,Earth Essence,#886644
+
+#Type,PillData
+_assetName,itemId,description,qiValue,itemType,pillName,pillColor,grade,pillTier,qiBoost,cultivationSpeedMultiplier,breakthroughBonus,buffDuration,damageBoost,defenseBoost,speedBoost,maxDailyUses,sideEffects
+QiGatheringPill,qi_gathering_pill,"A basic pill that aids Qi accumulation.",20,Pill,Qi Gathering Pill,#88FFAA,Mortal,1,50,1.5,0,60,0,0,0,3,"May cause mild dizziness."
+BreakthroughPill,breakthrough_pill,"Increases breakthrough success rate.",100,Pill,Breakthrough Pill,#FFDD44,Earth,2,0,1,0.15,120,0,0,0,1,"Unstable if taken twice in one day."
+WarriorPill,warrior_pill,"Temporarily boosts combat ability.",50,Pill,Warrior Pill,#FF6622,Earth,2,0,1,0,90,0.2,0.1,0.1,2,"Leaves cultivator exhausted afterwards."
+
+#Type,MachineData
+_assetName,machineName,description,machineType,gridSize,processingSpeed,inputSlots,outputSlots,qiConsumptionRate,buildCost
+BasicFurnace,Basic Furnace,"Smelts raw ores into refined ingots.",Furnace,2;2,1,1,1,0.5,IronOre:5|SpiritStone:1
+SpiritCrusher,Spirit Crusher,"Grinds materials into powders.",Crusher,2;1,1.5,1,1,0.8,IronOre:8|CopperOre:3
+AlchemyDistiller,Alchemy Distiller,"Distills essences for pill-making.",Distiller,3;3,0.8,2,2,1.2,SpiritStone:5|CopperOre:2
+
+#Type,RecipeData
+_assetName,recipeName,description,inputs,outputs,craftingDuration,requiredMachine,successRate,qiCost
+SmeltIron,Iron Smelting,"Smelt raw iron ore into usable iron.",IronOre:2,IronIngot:1,5,Furnace,1,0
+SmeltCopper,Copper Smelting,"Smelt raw copper ore into usable copper.",CopperOre:2,CopperIngot:1,5,Furnace,1,0
+BrewQiPill,Brew Qi Gathering Pill,"Combine essences to brew a Qi Gathering Pill.",FireEssence:2|EarthEssence:1,QiGatheringPill:1,30,PillPress,0.85,10
+
+#Type,OreVeinData
+_assetName,veinName,description,veinColor,resource,totalYield,yieldPerExtraction,canRespawn,respawnTimeSeconds
+IronVein,Iron Vein,"A rich deposit of iron ore.",#666666,IronOre,200,5,true,600
+CopperVein,Copper Vein,"A vein of copper running through granite.",#AA6633,CopperOre,150,4,true,480
+SpiritStoneVein,Spirit Stone Vein,"A glittering cluster of spirit stones.",#88AAFF,SpiritStone,50,1,true,1800
+
+#Type,EnemyData
+_assetName,enemyName,description,maxHealth,damage,attackCooldown,moveSpeed,detectionRange,attackRange,patrolRadius,leashRange,minimumRealm,lootTable
+StoneSerpent,Stone Serpent,"A territorial reptile encrusted with ore.",80,12,1.5,3,10,2,5,20,QiCondensing_1,IronOre:1:3:0.8|CopperOre:1:2:0.4
+AshWolf,Ash Wolf,"A pack predator from volcanic regions.",60,8,1.2,5,12,1.8,8,25,QiCondensing_1,FireEssence:1:1:0.3
+SpectralGuard,Spectral Guard,"An ancient cultivator's spirit bound to protect its tomb.",300,25,2,4,15,3,3,30,QiCondensing_1,SpiritStone:1:2:0.5|BreakthroughPill:1:1:0.05
