@@ -220,6 +220,9 @@ namespace CultivationGame.Systems
             else if (placed.GetComponent<Merger>() is Merger merger)
                 merger.SetMachineData(_selectedMachine);
 
+            // Set the layer so the machine is detectable for interaction and removal
+            LayerHelper.SetLayerRecursive(placed, LayerHelper.GetLayerFromMask(machineLayer));
+
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
 

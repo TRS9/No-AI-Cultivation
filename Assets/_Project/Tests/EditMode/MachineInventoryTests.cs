@@ -227,5 +227,72 @@ namespace CultivationGame.Tests
             Assert.AreEqual(0, inv.TotalCount());
             Assert.IsEmpty(inv.Items);
         }
+
+        // ── Snapshot / LoadFrom (Save & Load) ───────────────────────
+
+        [Test]
+        public void GetSnapshot_ReturnsIndependentCopy()
+        {
+            var inv = new MachineInventory(100);
+            inv.TryAdd(_itemA, 5);
+            inv.TryAdd(_itemB, 3);
+
+            var snapshot = inv.GetSnapshot();
+
+            Assert.AreEqual(5, snapshot[_itemA]);
+            Assert.AreEqual(3, snapshot[_itemB]);
+
+            // Mutating the snapshot must not affect the original inventory
+            snapshot[_itemA] = 999;
+            Assert.AreEqual(5, inv.Items[_itemA]);
+        }
+
+        [Test]
+        public void LoadFrom_RestoresInventoryState()
+        {
+            var inv = new MachineInventory(100);
+            inv.TryAdd(_itemA, 10);
+
+            var newData = new System.Collections.Generic.Dictionary<ItemData, int>
+            {
+                { _itemA, 2 },
+                { _itemB, 7 }
+            };
+
+            inv.LoadFrom(newData);
+
+            Assert.AreEqual(2, inv.Items[_itemA]);
+            Assert.AreEqual(7, inv.Items[_itemB]);
+            Assert.AreEqual(9, inv.TotalCount());
+        }
+
+        [Test]
+        public void GetSnapshot_ThenLoadFrom_RoundTrip_PreservesData()
+        {
+            var source = new MachineInventory(100);
+            source.TryAdd(_itemA, 4);
+            source.TryAdd(_itemB, 6);
+
+            var snapshot = source.GetSnapshot();
+
+            var target = new MachineInventory(100);
+            target.LoadFrom(snapshot);
+
+            Assert.AreEqual(4, target.Items[_itemA]);
+            Assert.AreEqual(6, target.Items[_itemB]);
+            Assert.AreEqual(10, target.TotalCount());
+        }
+
+        [Test]
+        public void LoadFrom_OnEmptyData_ClearsPreviousContent()
+        {
+            var inv = new MachineInventory(100);
+            inv.TryAdd(_itemA, 5);
+
+            inv.LoadFrom(new System.Collections.Generic.Dictionary<ItemData, int>());
+
+            Assert.AreEqual(0, inv.TotalCount());
+            Assert.IsEmpty(inv.Items);
+        }
     }
 }
