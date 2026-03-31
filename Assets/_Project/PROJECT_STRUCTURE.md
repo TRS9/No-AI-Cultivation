@@ -455,7 +455,7 @@ PillData (defines tier, qiBoost, buffs, duration)
 ### Essence Collection (original flow)
 ```
 SpiritEssence (world object)
-    → IQiReceiver.AddQi()        → PlayerStats fires OnQiChanged      → PlayerStatsUI updates
+    → IQiReceiver.AddQi()        → PlayerStats fires OnQiChanged      → HUDController updates
     → IInventory.AddItem()        → PlayerInventory fires OnInventoryChanged
     → Destroy self
 

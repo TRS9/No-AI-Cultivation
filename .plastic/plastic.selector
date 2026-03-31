@@ -1,4 +1,0 @@
-repository "No AI Cultivation/No AI Cultivation@9072348685071@cloud"
-  path "/"
-    br "/main"
-    co "/main"

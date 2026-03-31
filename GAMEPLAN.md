@@ -118,15 +118,14 @@ ItemData (ScriptableObject) — Ersetzt/erweitert EssenceData
 - Muss verschiedene Item-Typen anzeigen können
 - Icon-basiert (funktioniert bereits, nur Dictionary-Key ändert sich)
 
-**Dateien die geändert werden:**
+**Dateien die geändert wurden:**
 - `Core/IInventory.cs`
 - `Data/DataTemplates/EssenceData.cs` (wird zu Subclass)
 - Neues File: `Data/DataTemplates/ItemData.cs`
 - `Player/Inventory/PlayerInventory.cs`
 - `Data/SaveData.cs`
 - `Ui/Save/SaveManager.cs`
-- `Ui/Inventory/InventoryDisplay.cs`
-- `Ui/Inventory/InventorySlotDisplay.cs`
+- `Ui/Inventory/InventoryController.cs` (ehemals InventoryDisplay + InventorySlotDisplay)
 
 ---
 
@@ -161,8 +160,8 @@ RecipeData (ScriptableObject)
 - `Data/DataTemplates/RecipeData.cs`
 - `Data/RecipeDatabase.cs`
 - `Systems/Crafting/CraftingSystem.cs`
-- `Ui/Crafting/CraftingUI.cs`
-- `Ui/Crafting/RecipeSlotUI.cs`
+- `Ui/Crafting/CraftingController.cs` (ehemals CraftingUI)
+- `Ui/DataSources/CraftingDataSource.cs` (ehemals RecipeSlotUI)
 
 ---
 
@@ -247,8 +246,10 @@ MachineData (ScriptableObject)
 - `Data/DataTemplates/MachineData.cs`
 - `Systems/Building/BuildGrid.cs`
 - `Systems/Building/PlacementController.cs`
-- `Systems/Building/BuildingSaveData.cs`
-- `Ui/Building/BuildMenuUI.cs`
+- `Systems/Building/LayerHelper.cs`
+- `Data/SaveData.cs` (BuildingSaveEntry integriert)
+- `Ui/Building/MachineCatalogueController.cs` (ehemals BuildMenuUI)
+- `Ui/Building/HotbarController.cs`
 
 ---
 
@@ -459,11 +460,15 @@ QuestData (ScriptableObject)
 - Verbindet Factory-Output direkt mit Combat-Gameplay
 
 **Dateien:**
-- `Systems/Combat/CombatController.cs`
-- `Systems/Combat/HealthSystem.cs`
+- `Player/Combat/PlayerCombatController.cs` (ehemals CombatController)
+- `Core/HealthSystem.cs` (in Core für Assembly-übergreifenden Zugriff)
+- `Core/IDamageable.cs`
 - `Systems/Combat/EnemyAI.cs`
+- `Systems/Combat/EnemyLoot.cs`
 - `Data/DataTemplates/EnemyData.cs`
+- `Data/LootSystem.cs`
 - `Ui/Combat/HealthBarUI.cs`
+- `Ui/Combat/EnemyHealthBarUI.cs`
 
 ---
 
