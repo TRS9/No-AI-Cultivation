@@ -16,11 +16,9 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   machineType: 6
-  prefab: {fileID: 0}
-  ghostPrefab: {fileID: 0}
-  gridSize:
-    x: 3
-    y: 3
+  prefab: {fileID: 1341001637488546584, guid: 5c5d991b4f633ae45be8725c2079a1f7, type: 3}
+  ghostPrefab: {fileID: 5113866121212887693, guid: 1272555552051f047b718b4af6a35f34, type: 3}
+  gridSize: {x: 3, y: 3}
   buildCost: []
   requiredCultivationRealm: {fileID: 0}
   processingSpeed: 1

@@ -1,4 +1,4 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:cult="CultivationGame.UI" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="../Global.uss"/>
     <Style src="HUD.uss"/>
     <ui:VisualElement name="HUD" style="position: absolute; top: 0; left: 0; padding: 35px;">
@@ -13,9 +13,9 @@
                 <ui:ProgressBar value="100" title="" name="StaminaBar" class="hud-bar"/>
             </ui:VisualElement>
         </ui:VisualElement>
-        <LiquidCircle name="QiCircle" style="height: 90px; width: 90px; margin-left: 30px; border-width: 2px; border-color: rgba(180, 140, 50, 0.45);">
+        <cult:LiquidCircle name="QiCircle" style="height: 90px; width: 90px; margin-left: 30px; border-width: 2px; border-color: rgba(180, 140, 50, 0.45);">
             <ui:Label text="Qi&#10;0/0" name="QiLabel" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(212, 168, 74); font-size: 12px; letter-spacing: 0.5px;"/>
-        </LiquidCircle>
+        </cult:LiquidCircle>
         <ui:VisualElement style="margin-top: 8px; margin-left: 30px;">
             <ui:Label text="" name="RealmNameLabel" class="realm-name"/>
             <ui:Label text="" name="SubStageLabel" class="realm-sub"/>

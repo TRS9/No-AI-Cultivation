@@ -7012,6 +7012,26 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d8df639c3447c24e517c6e03bb69f3f5, type: 2}
   - {fileID: 11400000, guid: 101ab923d885a0545a82cbddd8a0cea9, type: 2}
   - {fileID: 11400000, guid: 558be4ec4d7bf1c4282d6f255adfb60c, type: 2}
+  allMachines:
+  - {fileID: 11400000, guid: 4f4fe18b26eaa7f468113e07e1fc69a3, type: 2}
+  - {fileID: 11400000, guid: 7f66a4a5601d68443957884e113e263d, type: 2}
+  - {fileID: 11400000, guid: dbc588214d404484b24c1d53484a2cba, type: 2}
+  - {fileID: 11400000, guid: 49faeffc41264b2bbed58a3fec3a6100, type: 2}
+  - {fileID: 11400000, guid: b615ef5d928340ca9ad2cc584d40bd65, type: 2}
+  - {fileID: 11400000, guid: 9c4d0c8e21364c9c86e37a6fd50fd627, type: 2}
+  - {fileID: 11400000, guid: cac072ff60ca4b0c94d901b89efa8820, type: 2}
+  - {fileID: 11400000, guid: a84f5db8013f4672bc1c10cee5928a0d, type: 2}
+  - {fileID: 11400000, guid: 7de3da4657024cbdb1934fd750bae51c, type: 2}
+  - {fileID: 11400000, guid: f5ceedbbfbe046c5b118568038054b75, type: 2}
+  - {fileID: 11400000, guid: ffad30f8f7357f94e99039a3f3bc1944, type: 2}
+  - {fileID: 11400000, guid: eabc4eae2b914baebb17fb3130b6e5eb, type: 2}
+  - {fileID: 11400000, guid: 3acf907bc24345d19eb985d8aa6c8aa9, type: 2}
+  - {fileID: 11400000, guid: a68412cd46924593b5adb43e48e47bba, type: 2}
+  buildGrid: {fileID: 704936436}
+  recipeDatabase: {fileID: 11400000, guid: 86d98502ff9c2534fbdc6a5cd85b1d19, type: 2}
+  machineLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!4 &398477573
 Transform:
   m_ObjectHideFlags: 0
@@ -12362,7 +12382,7 @@ MonoBehaviour:
   removeAction: {fileID: 0}
   machineLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
 --- !u!4 &704936438
 Transform:
   m_ObjectHideFlags: 0
@@ -27997,7 +28017,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2baee93c38c509f4393977c8d7400248, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2baee93c38c509f4393977c8d7400248, type: 3}
       propertyPath: m_Controller
@@ -33444,6 +33464,7 @@ MonoBehaviour:
   buildMenuData: {fileID: 11400000, guid: 1e5c5bb26fd7461cada6ffd6141e76fa, type: 2}
   placementController: {fileID: 704936437}
   playerInventory: {fileID: 1152538032}
+  _isOpen: 0
 --- !u!4 &1747133379
 Transform:
   m_ObjectHideFlags: 0
@@ -36145,6 +36166,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeshyCultivator (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c5a58d7e14b172d47bbbbad0157e54b9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: c5a58d7e14b172d47bbbbad0157e54b9, type: 3}
       propertyPath: m_Controller
       value: 
@@ -37690,6 +37715,9 @@ GameObject:
   - component: {fileID: 1982406405}
   - component: {fileID: 1982406404}
   - component: {fileID: 1982406403}
+  - component: {fileID: 1982406411}
+  - component: {fileID: 1982406412}
+  - component: {fileID: 1982406413}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -37915,6 +37943,49 @@ MonoBehaviour:
   buildMenuData: {fileID: 11400000, guid: 1e5c5bb26fd7461cada6ffd6141e76fa, type: 2}
   placementController: {fileID: 704936437}
   playerInventory: {fileID: 1152538032}
+  _isOpen: 0
+--- !u!114 &1982406411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 400dc1a7dd8fdc941921479c3f81c8d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.ResourcePickupNotificationUI
+--- !u!114 &1982406412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a7fad38ff1b984a83049dae99fb13a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.HotbarController
+  dataSource: {fileID: 11400000, guid: 3ba84f7301a46514391902d2c11dda4a, type: 2}
+  placementController: {fileID: 704936437}
+--- !u!114 &1982406413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982406395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63bf1cb91ded43346ab48e242482c590, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.MachineCatalogueController
+  catalogueSource: {fileID: 11400000, guid: 1e5c5bb26fd7461cada6ffd6141e76fa, type: 2}
+  hotbarData: {fileID: 11400000, guid: 3ba84f7301a46514391902d2c11dda4a, type: 2}
+  playerInventory: {fileID: 1152538032}
+  catalogueToggleAction: {fileID: 4201102554506953171, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1001 &1983599148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40572,6 +40643,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: P_CubicCliffPiece04
       objectReference: {fileID: 0}
+    - target: {fileID: 6104244740947936179, guid: 3ed2776f062a3c14dbc8497e708a0641, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4320fb7e9c52e4b45ac7a93561e1961f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

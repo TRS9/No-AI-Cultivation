@@ -11,6 +11,9 @@ namespace CultivationGame.Systems
     /// </summary>
     public class SpiritPipe : MonoBehaviour, IInteractable
     {
+        [Header("Machine Identity")]
+        [SerializeField] private MachineData machineData;
+
         [Header("Transport Settings")]
         [SerializeField] private float transferInterval = 1f;
         [SerializeField] private int itemsPerTransfer = 1;
@@ -25,6 +28,7 @@ namespace CultivationGame.Systems
         private bool _isConnected;
 
         // --- Public API ---
+        public MachineData MachineData => machineData;
         public IMachineConnectable Source => _source;
         public IMachineConnectable Destination => _destination;
         public bool IsConnected => _isConnected;
@@ -72,6 +76,11 @@ namespace CultivationGame.Systems
         public void SetFilter(ItemData item)
         {
             filterItem = item;
+        }
+
+        public void SetMachineData(MachineData data)
+        {
+            machineData = data;
         }
 
         public void Interact(GameObject user)

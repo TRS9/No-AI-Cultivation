@@ -16,8 +16,8 @@ MonoBehaviour:
   description: Distills essences for pill-making.
   icon: {fileID: 0}
   machineType: 4
-  prefab: {fileID: 0}
-  ghostPrefab: {fileID: 0}
+  prefab: {fileID: 4441773748955307310, guid: 40372734a4a511548a9a2c5db1f921bf, type: 3}
+  ghostPrefab: {fileID: 5113866121212887693, guid: 1272555552051f047b718b4af6a35f34, type: 3}
   gridSize: {x: 3, y: 3}
   buildCost:
   - item: {fileID: 11400000, guid: 193ebf2b768b7f449bd8bc2e55dc5d2c, type: 2}

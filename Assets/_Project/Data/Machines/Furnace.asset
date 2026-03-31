@@ -16,8 +16,8 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   machineType: 1
-  prefab: {fileID: 9180888848757574115, guid: efd2c05fbb552e74db40dd721c633866, type: 3}
-  ghostPrefab: {fileID: 9033191218787604008, guid: f584da914f16c214c9163a4dc847a027, type: 3}
+  prefab: {fileID: 763647330657135830, guid: d2170969d4a4b134a883a93e17be5976, type: 3}
+  ghostPrefab: {fileID: 5113866121212887693, guid: 1272555552051f047b718b4af6a35f34, type: 3}
   gridSize: {x: 2, y: 2}
   buildCost: []
   requiredCultivationRealm: {fileID: 11400000, guid: 1cef270aa9c5fe449b6d27945d285364, type: 2}

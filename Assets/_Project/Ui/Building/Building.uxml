@@ -1,0 +1,21 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:ui="UnityEngine.UIElements"
+         noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+         editor-extension-mode="False">
+
+    <Style src="Building.uss"/>
+
+    <!-- Hotbar: 10 slots at bottom-centre. Content created by HotbarController. -->
+    <ui:VisualElement name="HotbarPanel" class="hotbar-panel" style="display: none;" picking-mode="Ignore">
+        <!-- Slots are built programmatically -->
+    </ui:VisualElement>
+
+    <!-- Machine Catalogue: grid panel styled like the Inventory. -->
+    <ui:VisualElement name="MachineCataloguePanel" class="panel catalogue-panel" style="display: none;">
+        <ui:VisualElement class="panel-header">
+            <ui:Label text="MACHINE CATALOGUE" class="panel-title catalogue-title"/>
+            <ui:Button text="✕" name="CloseCatalogueBtn" class="close-btn"/>
+        </ui:VisualElement>
+        <ui:ScrollView name="CatalogueGrid" class="catalogue-grid"/>
+    </ui:VisualElement>
+</ui:UXML>

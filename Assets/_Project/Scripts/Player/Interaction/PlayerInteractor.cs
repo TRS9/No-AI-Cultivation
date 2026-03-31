@@ -50,7 +50,7 @@ namespace CultivationGame.Player
         {
             for (int i = 0; i < _nearbyCount; i++)
             {
-                var interactable = _nearbyColliders[i].GetComponent<IInteractable>();
+                var interactable = _nearbyColliders[i].GetComponentInParent<IInteractable>();
                 if (interactable != null) { interactable.Interact(gameObject); break; }
             }
         }

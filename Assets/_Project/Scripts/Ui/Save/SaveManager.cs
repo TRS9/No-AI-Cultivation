@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Linq;
 using CultivationGame.Core;
 using CultivationGame.Data;
 using CultivationGame.Player;
@@ -31,11 +32,21 @@ namespace CultivationGame.UI
         [Tooltip("Layer mask that placed machines should be assigned to (must match PlayerInteractor's interactableLayer).")]
         [SerializeField] private LayerMask machineLayer;
 
+        private int _interactableLayerIndex;
+
         public static SaveManager Instance { get; private set; }
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
+
+            _interactableLayerIndex = LayerMask.NameToLayer("Interactable");
+            if (_interactableLayerIndex < 0)
+            {
+                Debug.LogWarning("[SaveManager] 'Interactable' layer not found \u2014 falling back to machineLayer.");
+                _interactableLayerIndex = LayerHelper.GetLayerFromMask(machineLayer);
+            }
+
             Load();
         }
 
@@ -43,20 +54,24 @@ namespace CultivationGame.UI
 
         public void Save()
         {
-            if (playerStats == null || playerInventory == null || playerTransform == null) return;
+            var data = new SaveData();
 
-            var data = new SaveData
+            if (playerStats != null && playerInventory != null && playerTransform != null)
             {
-                currentQi = playerStats.currentQi,
-                currentRealmIndex = playerStats.currentRealm?.realmIndex ?? 0,
-                positionX = playerTransform.position.x,
-                positionY = playerTransform.position.y,
-                positionZ = playerTransform.position.z,
-                rotationY = playerTransform.eulerAngles.y
-            };
+                data.currentQi = playerStats.currentQi;
+                data.currentRealmIndex = playerStats.currentRealm?.realmIndex ?? 0;
+                data.positionX = playerTransform.position.x;
+                data.positionY = playerTransform.position.y;
+                data.positionZ = playerTransform.position.z;
+                data.rotationY = playerTransform.eulerAngles.y;
 
-            foreach (var kvp in playerInventory.GetItems())
-                data.inventoryEntries.Add(new InventorySaveEntry { essenceId = kvp.Key.ItemId, count = kvp.Value });
+                foreach (var kvp in playerInventory.GetItems())
+                    data.inventoryEntries.Add(new InventorySaveEntry { essenceId = kvp.Key.ItemId, count = kvp.Value });
+            }
+            else
+            {
+                Debug.LogWarning("[SaveManager] Player references missing \u2014 saving machines only.");
+            }
 
             // World state
             data.collectedEssenceIds = new List<string>(WorldState.CollectedIds);
@@ -83,6 +98,8 @@ namespace CultivationGame.UI
 
             // Placed machines
             SaveMachines(data);
+
+            Debug.Log($"[SaveManager] Saving {data.buildingEntries.Count} machines, {data.inventoryEntries.Count} inventory items.");
 
             SaveSystem.SaveGame(data);
         }
@@ -121,7 +138,14 @@ namespace CultivationGame.UI
                 return; // Target scene's SaveManager will apply player state
             }
 
-            if (playerStats == null || playerInventory == null || playerTransform == null) return;
+            // Restore placed machines (independent of player references)
+            LoadMachines(data);
+
+            if (playerStats == null || playerInventory == null || playerTransform == null)
+            {
+                Debug.LogWarning("[SaveManager] Player references missing — skipping player state restoration.");
+                return;
+            }
 
             // Restore realm
             var realm = allRealms?.Find(r => r.realmIndex == data.currentRealmIndex);
@@ -150,9 +174,6 @@ namespace CultivationGame.UI
                 if (item != null) loaded[item] = entry.count;
             }
             playerInventory.LoadInventory(loaded);
-
-            // Restore placed machines
-            LoadMachines(data);
         }
 
         // ------------------------------------------------------------------ //
@@ -167,6 +188,8 @@ namespace CultivationGame.UI
             SaveMachinesOfType<QiConduit>(data);
             SaveMachinesOfType<Splitter>(data);
             SaveMachinesOfType<Merger>(data);
+            SaveSpiritPipes(data);
+            SaveOreVeins(data);
         }
 
         private void SaveMachinesOfType<T>(SaveData data) where T : MonoBehaviour, IMachineConnectable
@@ -192,6 +215,66 @@ namespace CultivationGame.UI
                 });
 
                 SaveMachineInventory(data, machine, machine);
+            }
+        }
+
+        private void SaveSpiritPipes(SaveData data)
+        {
+#if UNITY_2023_1_OR_NEWER
+            var pipes = FindObjectsByType<SpiritPipe>(FindObjectsSortMode.None);
+#else
+            var pipes = FindObjectsOfType<SpiritPipe>();
+#endif
+            foreach (var pipe in pipes)
+            {
+                var md = pipe.MachineData;
+                if (md == null) continue;
+
+                int rot = Mathf.RoundToInt(pipe.transform.eulerAngles.y / 90f) % 4;
+                data.buildingEntries.Add(new BuildingSaveEntry
+                {
+                    machineId = md.name,
+                    posX = pipe.transform.position.x,
+                    posY = pipe.transform.position.y,
+                    posZ = pipe.transform.position.z,
+                    rotation = rot
+                });
+
+                // Save connection state
+                if (!pipe.IsConnected) continue;
+                var srcMb = pipe.Source as MonoBehaviour;
+                var dstMb = pipe.Destination as MonoBehaviour;
+                if (srcMb == null || dstMb == null) continue;
+
+                data.pipeConnections.Add(new PipeConnectionSaveEntry
+                {
+                    pipeId = PosKey(pipe.transform.position),
+                    sourcePosX = srcMb.transform.position.x,
+                    sourcePosY = srcMb.transform.position.y,
+                    sourcePosZ = srcMb.transform.position.z,
+                    destPosX = dstMb.transform.position.x,
+                    destPosY = dstMb.transform.position.y,
+                    destPosZ = dstMb.transform.position.z,
+                    filterItemId = pipe.FilterItem != null ? pipe.FilterItem.ItemId : null
+                });
+            }
+        }
+
+        private void SaveOreVeins(SaveData data)
+        {
+#if UNITY_2023_1_OR_NEWER
+            var veins = FindObjectsByType<OreVein>(FindObjectsSortMode.None);
+#else
+            var veins = FindObjectsOfType<OreVein>();
+#endif
+            foreach (var vein in veins)
+            {
+                if (string.IsNullOrEmpty(vein.UniqueId)) continue;
+                data.oreVeinEntries.Add(new OreVeinSaveEntry
+                {
+                    veinId = vein.UniqueId,
+                    remainingYield = vein.RemainingYield
+                });
             }
         }
 
@@ -233,11 +316,24 @@ namespace CultivationGame.UI
 
         private void LoadMachines(SaveData data)
         {
-            if (data.buildingEntries == null || data.buildingEntries.Count == 0) return;
-            if (allMachines == null) return;
+            if (data.buildingEntries == null || data.buildingEntries.Count == 0)
+            {
+                Debug.Log("[SaveManager] No machines to load.");
+                RestoreOreVeins(data);
+                return;
+            }
+            if (allMachines == null || allMachines.Count == 0)
+            {
+                Debug.LogWarning("[SaveManager] allMachines list is empty — cannot load machines. Assign MachineData assets in the inspector.");
+                RestoreOreVeins(data);
+                return;
+            }
 
-            // Build a position → machine lookup for efficient inventory restoration
+            Debug.Log($"[SaveManager] Loading {data.buildingEntries.Count} machines...");
+
+            // Build position → machine lookups for inventory + pipe connection restoration
             var machinesByPosition = new Dictionary<Vector3, IMachineConnectable>();
+            var pipesByPosKey = new Dictionary<string, SpiritPipe>();
 
             foreach (var entry in data.buildingEntries)
             {
@@ -258,7 +354,7 @@ namespace CultivationGame.UI
                 WireMachineData(placed, md);
 
                 // Set layer for interaction and removal detection
-                LayerHelper.SetLayerRecursive(placed, LayerHelper.GetLayerFromMask(machineLayer));
+                LayerHelper.SetLayerRecursive(placed, _interactableLayerIndex);
 
                 // Occupy grid cells
                 if (buildGrid != null)
@@ -268,10 +364,76 @@ namespace CultivationGame.UI
                 var connectable = placed.GetComponent<IMachineConnectable>();
                 if (connectable != null)
                     machinesByPosition[position] = connectable;
+
+                // Track pipes separately for connection restoration
+                var pipe = placed.GetComponent<SpiritPipe>();
+                if (pipe != null)
+                    pipesByPosKey[PosKey(position)] = pipe;
             }
 
             // Restore inventories after all machines have been instantiated
             RestoreMachineInventories(data, machinesByPosition);
+
+            // Restore pipe connections
+            RestorePipeConnections(data, pipesByPosKey, machinesByPosition);
+
+            // Restore ore vein yields
+            RestoreOreVeins(data);
+        }
+
+        private void RestorePipeConnections(SaveData data,
+            Dictionary<string, SpiritPipe> pipesByPosKey,
+            Dictionary<Vector3, IMachineConnectable> machinesByPosition)
+        {
+            if (data.pipeConnections == null || data.pipeConnections.Count == 0) return;
+
+            foreach (var conn in data.pipeConnections)
+            {
+                if (!pipesByPosKey.TryGetValue(conn.pipeId, out var pipe)) continue;
+
+                var srcPos = new Vector3(conn.sourcePosX, conn.sourcePosY, conn.sourcePosZ);
+                var dstPos = new Vector3(conn.destPosX, conn.destPosY, conn.destPosZ);
+
+                machinesByPosition.TryGetValue(srcPos, out var source);
+                machinesByPosition.TryGetValue(dstPos, out var dest);
+
+                if (source != null && dest != null)
+                {
+                    pipe.Connect(source, dest);
+
+                    // Restore filter
+                    if (!string.IsNullOrEmpty(conn.filterItemId))
+                    {
+                        var filterItem = allItems?.Find(i => i.ItemId == conn.filterItemId);
+                        if (filterItem != null) pipe.SetFilter(filterItem);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"[SaveManager] Pipe connection missing source or dest — src:{srcPos} dst:{dstPos}");
+                }
+            }
+        }
+
+        private void RestoreOreVeins(SaveData data)
+        {
+            if (data.oreVeinEntries == null || data.oreVeinEntries.Count == 0) return;
+
+            var yieldByVeinId = new Dictionary<string, int>();
+            foreach (var entry in data.oreVeinEntries)
+                yieldByVeinId[entry.veinId] = entry.remainingYield;
+
+#if UNITY_2023_1_OR_NEWER
+            var veins = FindObjectsByType<OreVein>(FindObjectsSortMode.None);
+#else
+            var veins = FindObjectsOfType<OreVein>();
+#endif
+            foreach (var vein in veins)
+            {
+                if (string.IsNullOrEmpty(vein.UniqueId)) continue;
+                if (yieldByVeinId.TryGetValue(vein.UniqueId, out int yield))
+                    vein.LoadRemainingYield(yield);
+            }
         }
 
         private void RestoreMachineInventories(SaveData data, Dictionary<Vector3, IMachineConnectable> machinesByPosition)
@@ -325,7 +487,11 @@ namespace CultivationGame.UI
                 splitter.SetMachineData(data);
             else if (placed.GetComponent<Merger>() is Merger merger)
                 merger.SetMachineData(data);
+            else if (placed.GetComponent<SpiritPipe>() is SpiritPipe pipe)
+                pipe.SetMachineData(data);
         }
+
+        private static string PosKey(Vector3 p) => $"{p.x:F3}_{p.y:F3}_{p.z:F3}";
 
         private RecipeData FindRecipeByName(string recipeName)
         {

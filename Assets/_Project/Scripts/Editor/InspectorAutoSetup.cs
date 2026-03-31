@@ -86,15 +86,6 @@ namespace CultivationGame.Editor
                 Commit(so, fix, placement);
             }
 
-            foreach (var controller in Object.FindObjectsByType<BuildMenuController>(FindObjectsSortMode.None))
-            {
-                var so = new SerializedObject(controller);
-                ApplyObject(so, "buildMenuData", buildMenuData, ref fixedCount, ref issueCount, fix);
-                ApplyObject(so, "placementController", placement, ref fixedCount, ref issueCount, fix);
-                ApplyObject(so, "playerInventory", playerInventory, ref fixedCount, ref issueCount, fix);
-                Commit(so, fix, controller);
-            }
-
             foreach (var inspect in Object.FindObjectsByType<MachineInspectUI>(FindObjectsSortMode.None))
             {
                 var so = new SerializedObject(inspect);

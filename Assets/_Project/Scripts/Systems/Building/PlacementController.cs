@@ -42,10 +42,26 @@ namespace CultivationGame.Systems
         private bool _isPlacing;
         private bool _canPlace;
         private int _rotation; // 0, 1, 2, 3 → 0°, 90°, 180°, 270°
+        private int _interactableLayerIndex;
+        private float _pivotYOffset; // distance from pivot to bottom of mesh
 
         public bool IsPlacing => _isPlacing;
 
         private static Vector3 ScreenCenter => new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f);
+
+        // ------------------------------------------------------------------ //
+        //  Initialization
+        // ------------------------------------------------------------------ //
+
+        private void Awake()
+        {
+            _interactableLayerIndex = LayerMask.NameToLayer("Interactable");
+            if (_interactableLayerIndex < 0)
+            {
+                Debug.LogWarning("[PlacementController] 'Interactable' layer not found — falling back to machineLayer.");
+                _interactableLayerIndex = LayerHelper.GetLayerFromMask(machineLayer);
+            }
+        }
 
         // ------------------------------------------------------------------ //
         //  Input wiring
@@ -128,6 +144,19 @@ namespace CultivationGame.Systems
             // Cache renderers for material swapping
             _ghostRenderers = _ghostInstance.GetComponentsInChildren<Renderer>();
 
+            // Calculate Y offset so the bottom of the mesh sits on the terrain
+            if (_ghostRenderers.Length > 0)
+            {
+                Bounds combined = _ghostRenderers[0].bounds;
+                for (int i = 1; i < _ghostRenderers.Length; i++)
+                    combined.Encapsulate(_ghostRenderers[i].bounds);
+                _pivotYOffset = _ghostInstance.transform.position.y - combined.min.y;
+            }
+            else
+            {
+                _pivotYOffset = 0f;
+            }
+
             // Pre-allocate material arrays to avoid per-frame heap allocations
             _cachedMaterialArrays = new Material[_ghostRenderers.Length][];
             for (int i = 0; i < _ghostRenderers.Length; i++)
@@ -176,6 +205,7 @@ namespace CultivationGame.Systems
             _ghostInstance.SetActive(true);
 
             Vector3 snapped = buildGrid.SnapToGrid(hit.point);
+            snapped.y += _pivotYOffset;
             _ghostInstance.transform.position = snapped;
             _ghostInstance.transform.rotation = Quaternion.Euler(0f, _rotation * 90f, 0f);
 
@@ -219,9 +249,12 @@ namespace CultivationGame.Systems
                 splitter.SetMachineData(_selectedMachine);
             else if (placed.GetComponent<Merger>() is Merger merger)
                 merger.SetMachineData(_selectedMachine);
+            else if (placed.GetComponent<SpiritPipe>() is SpiritPipe pipe)
+                pipe.SetMachineData(_selectedMachine);
 
             // Set the layer so the machine is detectable for interaction and removal
-            LayerHelper.SetLayerRecursive(placed, LayerHelper.GetLayerFromMask(machineLayer));
+            // Must use the Interactable layer so PlayerInteractor's OverlapSphere finds it
+            LayerHelper.SetLayerRecursive(placed, _interactableLayerIndex);
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
@@ -255,19 +288,32 @@ namespace CultivationGame.Systems
             Camera cam = buildCamera != null ? buildCamera : Camera.main;
             if (cam == null) return;
 
-            // Raycast from screen centre (the crosshair)
+            // Raycast from screen centre — check both Interactable and Machine layers
+            int removalMask = machineLayer | (1 << _interactableLayerIndex);
             Ray ray = cam.ScreenPointToRay(ScreenCenter);
-            if (!Physics.Raycast(ray, out RaycastHit hit, 500f, machineLayer)) return;
+            if (!Physics.Raycast(ray, out RaycastHit hit, 500f, removalMask)) return;
 
             // Try to find a machine component on the hit object
             var connectable = hit.collider.GetComponentInParent<IMachineConnectable>();
-            if (connectable == null) return;
+            MachineData data;
+            MonoBehaviour mb;
 
-            var mb = connectable as MonoBehaviour;
-            if (mb == null) return;
+            if (connectable != null)
+            {
+                mb = connectable as MonoBehaviour;
+                data = connectable.MachineData;
+            }
+            else
+            {
+                // SpiritPipe is not IMachineConnectable — handle it separately
+                var pipe = hit.collider.GetComponentInParent<SpiritPipe>();
+                if (pipe == null) return;
+                mb = pipe;
+                data = pipe.MachineData;
+                pipe.Disconnect();
+            }
 
-            MachineData data = connectable.MachineData;
-            if (data == null) return;
+            if (mb == null || data == null) return;
 
             Vector3 position = mb.transform.position;
 

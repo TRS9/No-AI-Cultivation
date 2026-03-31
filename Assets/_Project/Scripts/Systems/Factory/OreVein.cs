@@ -31,6 +31,13 @@ namespace CultivationGame.Systems
         public bool IsDepleted => _isDepleted;
         public string UniqueId => uniqueId;
 
+        public void LoadRemainingYield(int yield)
+        {
+            _remainingYield = yield;
+            _isDepleted = yield <= 0;
+            SetDepleted(_isDepleted);
+        }
+
         private void Awake()
         {
             _meshRenderer = GetComponent<MeshRenderer>();

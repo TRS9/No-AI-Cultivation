@@ -1,0 +1,164 @@
+/* =============================================================
+   Build Mode UI – Hotbar + Machine Catalogue
+   Follows the cultivation jade-and-gold theme from Inventory.uss
+   ============================================================= */
+
+/* ===== Hotbar Panel (bottom-centre bar with 10 slots) ===== */
+.hotbar-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    translate: -50% 0;
+    flex-direction: row;
+    padding: 6px;
+    background-color: rgba(9, 21, 11, 0.92);
+    border-width: 2px;
+    border-color: rgba(160, 120, 40, 0.4);
+    border-radius: 6px;
+}
+
+.hotbar-slot {
+    width: 64px;
+    height: 64px;
+    margin: 3px;
+    background-color: rgba(10, 30, 15, 0.6);
+    border-width: 1px;
+    border-color: rgba(70, 90, 50, 0.3);
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
+}
+
+.hotbar-slot:hover {
+    background-color: rgba(40, 80, 30, 0.25);
+    border-color: rgba(140, 110, 40, 0.4);
+}
+
+.hotbar-slot--selected {
+    border-color: rgb(212, 168, 74);
+    border-width: 2px;
+    background-color: rgba(180, 140, 50, 0.15);
+}
+
+.hotbar-slot--filled {
+}
+
+.hotbar-slot--empty {
+    opacity: 0.5;
+}
+
+.hotbar-slot--drag-over {
+    border-color: rgb(255, 216, 128);
+    border-width: 2px;
+    background-color: rgba(180, 140, 50, 0.25);
+}
+
+.hotbar-slot__icon {
+    width: 40px;
+    height: 40px;
+}
+
+.hotbar-slot__label {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 10px;
+    color: rgba(212, 168, 74, 0.6);
+    -unity-font-style: bold;
+}
+
+/* ===== Catalogue Panel ===== */
+.catalogue-panel {
+    width: 520px;
+    height: 440px;
+}
+
+.catalogue-title {
+    letter-spacing: 4px;
+}
+
+/* ===== Catalogue Grid (matches Inventory shelf grid) ===== */
+.catalogue-grid {
+    flex-grow: 1;
+}
+
+.catalogue-grid .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+/* ===== Individual Catalogue Slot (mirrors shelf-slot) ===== */
+.catalogue-slot {
+    width: 100px;
+    height: 100px;
+    margin: 6px;
+    background-color: rgba(10, 30, 15, 0.6);
+    border-width: 1px;
+    border-color: rgba(70, 90, 50, 0.3);
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
+}
+
+.catalogue-slot:hover {
+    background-color: rgba(40, 80, 30, 0.25);
+    border-color: rgba(140, 110, 40, 0.4);
+}
+
+.catalogue-slot--locked {
+    opacity: 0.4;
+}
+
+.catalogue-slot__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 4px;
+}
+
+.catalogue-slot__label {
+    font-size: 11px;
+    color: rgb(212, 168, 74);
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.catalogue-slot__platform {
+    position: absolute;
+    bottom: 6px;
+    left: 10%;
+    width: 80%;
+    height: 4px;
+    background-color: rgb(26, 58, 34);
+    border-width: 1px;
+    border-color: rgba(100, 120, 60, 0.4);
+    border-radius: 2px;
+}
+
+/* ===== Hint label below hotbar ===== */
+.hotbar-hint {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    translate: -50% 0;
+    font-size: 11px;
+    color: rgba(212, 168, 74, 0.45);
+    letter-spacing: 0.5px;
+}
+
+/* ===== Drag Ghost ===== */
+.catalogue-drag-ghost {
+    width: 48px;
+    height: 48px;
+    opacity: 0.85;
+    border-width: 1px;
+    border-color: rgb(212, 168, 74);
+    border-radius: 4px;
+    background-color: rgba(9, 21, 11, 0.85);
+}
