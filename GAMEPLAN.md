@@ -29,7 +29,7 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 | **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory, IMachineConnectable |
 | **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe (IMachineConnectable), StorageContainer |
 | **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
-| **Maschinen-UI** | ✅ **Fertig** | MachineUIController (Rezept, Slots, Progress) |
+| **Maschinen-UI** | ✅ **Fertig** | MachineInspectUI (Rezept, Slots, Progress) |
 | **Machine-Removal** | ✅ **Fertig** | PlacementController.OnRemove |
 | **Qi-Netzwerk** | ✅ **Fertig** | QiNetwork, QiConduit (Satisfactory-Strom) |
 
@@ -298,7 +298,7 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - `Systems/Factory/MachineInventory.cs` ✅
 - `Systems/Factory/Splitter.cs` ✅ (neu — verteilt Items 1→2, Round-Robin)
 - `Systems/Factory/Merger.cs` ✅ (neu — kombiniert Streams 2→1)
-- `Ui/Factory/MachineUIController.cs` ✅
+- `Ui/Factory/MachineInspectUI.cs` ✅
 
 ---
 
@@ -560,7 +560,8 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 - `Scripts/Data/DataTemplates/RealmDefinition.cs` — spiritSenseRange Feld
 - `Scripts/Player/Camera/CameraSystem.cs` — Build-Toggle, Kamera-Fix, Realm-Distanz
 - `Scripts/Player/Camera/SpiritSenseCamera.cs` — SetMaxZoom()
-- `Scripts/Ui/Building/BuildMenuController.cs` — hört auf OnBuildModeToggled
+- `Scripts/Ui/Building/MachineCatalogueController.cs` — hört auf OnBuildModeToggled
+- `Scripts/Ui/Building/HotbarController.cs` — Hotbar-Slot Verwaltung
 - `Input/InputSystem_Actions.inputactions` — BuildToggle im Player-Map
 
 ---
