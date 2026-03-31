@@ -114,7 +114,7 @@ ItemData (ScriptableObject) — Ersetzt/erweitert EssenceData
 - `inventoryEntries` muss Item-Typ-ID speichern, nicht nur Essence-ID
 - Neues Feld: `itemId` statt `essenceId` (backwards-compatible mit Migration)
 
-#### Schritt 0.5: InventoryDisplay anpassen
+#### Schritt 0.5: Inventory-UI anpassen (jetzt InventoryController)
 - Muss verschiedene Item-Typen anzeigen können
 - Icon-basiert (funktioniert bereits, nur Dictionary-Key ändert sich)
 

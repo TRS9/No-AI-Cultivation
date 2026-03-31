@@ -34,9 +34,9 @@ Das Camera-System wurde durch parallele Copilot-Agents beeinträchtigt. Die `.me
 
 ### 1.4 Weitere Scene-Setup Prüfungen
 
-- [ ] **Player GameObject**: Hat PlayerStats, PlayerMovement, PlayerInteractor, PlayerInventory, PlayerCombatController?
-- [ ] **Canvas**: PlayerStatsUI, StaminaUI, InventoryController, HUDController korrekt verkabelt?
-- [ ] **GameManager**: ~~Existiert als Singleton (DontDestroyOnLoad)?~~ **GELÖSCHT** — GameManager.cs war toter Code (`SetState()` nie aufgerufen). `GameStateManager` übernimmt alle Aufgaben.
+- [ ] **Player GameObject**: Hat PlayerStats, PlayerMovement, PlayerInteractor, PlayerInventory, PlayerCombatController, HealthSystem?
+- [ ] **UI Document**: HUDController, InventoryController, CraftingController + alle UI-Controller als Components auf UIManager-GameObject?
+- [x] ~~**GameManager**~~ — **GELÖSCHT** — GameManager.cs war toter Code (`SetState()` nie aufgerufen). `GameStateManager` übernimmt alle Aufgaben.
 - [ ] **EventSystem**: Vorhanden mit InputSystemUIInputModule?
 - [ ] **BuildSystem GameObject**: BuildGrid + PlacementController vorhanden?
 - [ ] **UIManager**: MachineCatalogueController + HotbarController + HotbarDataSource referenziert?
