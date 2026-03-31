@@ -6,8 +6,8 @@ namespace CultivationGame.Systems
 {
     public class BreakthroughSystem : MonoBehaviour
     {
-        [SerializeField] private PlayerStats playerStats;
-        [SerializeField] private float failureQiLoss = 0.1f;
+        [SerializeField] [Tooltip("Reference to the player's stats, used to read current realm and Qi.")] private PlayerStats playerStats;
+        [SerializeField] [Tooltip("Fraction of maximum Qi lost on a failed breakthrough attempt (0–1).")] private float failureQiLoss = 0.1f;
 
         private void OnEnable()
         {

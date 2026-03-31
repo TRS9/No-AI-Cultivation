@@ -12,14 +12,14 @@ namespace CultivationGame.Systems
     public class BaseMachine : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
-        [SerializeField] private MachineData machineData;
+        [SerializeField] [Tooltip("ScriptableObject containing the machine's name, icon, type, and processing speed.")] private MachineData machineData;
 
         [Header("Recipe")]
-        [SerializeField] private RecipeData currentRecipe;
+        [SerializeField] [Tooltip("Recipe currently assigned to this machine.")] private RecipeData currentRecipe;
 
         [Header("Inventory Capacities")]
-        [SerializeField] private int inputCapacity = 50;
-        [SerializeField] private int outputCapacity = 50;
+        [SerializeField] [Tooltip("Maximum item count the input inventory can hold.")] private int inputCapacity = 50;
+        [SerializeField] [Tooltip("Maximum item count the output inventory can hold.")] private int outputCapacity = 50;
 
         private MachineInventory _inputInventory;
         private MachineInventory _outputInventory;

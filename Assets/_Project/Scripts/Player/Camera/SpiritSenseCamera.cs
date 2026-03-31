@@ -6,21 +6,21 @@ namespace CultivationGame.Player
     public class SpiritSenseCamera : MonoBehaviour
     {
         [Header("Pan")]
-        [SerializeField] private float panSpeed = 20f;
+        [SerializeField] [Tooltip("Speed at which the focal point moves when panning.")] private float panSpeed = 20f;
 
         [Header("Orbit")]
-        [SerializeField] private float orbitSensitivity = 2f;
-        [SerializeField] private float minPitch = 10f;
-        [SerializeField] private float maxPitch = 85f;
+        [SerializeField] [Tooltip("Mouse sensitivity for orbiting the camera around the focal point.")] private float orbitSensitivity = 2f;
+        [SerializeField] [Tooltip("Minimum vertical pitch angle in degrees (prevents camera going below horizon).")] private float minPitch = 10f;
+        [SerializeField] [Tooltip("Maximum vertical pitch angle in degrees (prevents camera going fully overhead).")] private float maxPitch = 85f;
 
         [Header("Zoom")]
-        [SerializeField] private float zoomSpeed = 5f;
-        [SerializeField] private float minZoom = 5f;
-        [SerializeField] private float maxZoom = 50f;
+        [SerializeField] [Tooltip("Speed at which the camera zooms in and out via scroll.")] private float zoomSpeed = 5f;
+        [SerializeField] [Tooltip("Minimum distance from the focal point (closest zoom).")] private float minZoom = 5f;
+        [SerializeField] [Tooltip("Maximum distance from the focal point (farthest zoom); overridden by realm Spirit Sense range.")] private float maxZoom = 50f;
 
         [Header("Initial")]
-        [SerializeField] private float initialHeight = 20f;
-        [SerializeField] private float initialPitch = 60f;
+        [SerializeField] [Tooltip("Initial zoom distance when entering Spirit Sense mode.")] private float initialHeight = 20f;
+        [SerializeField] [Tooltip("Initial pitch angle in degrees when entering Spirit Sense mode.")] private float initialPitch = 60f;
 
         [Header("Input")]
         public InputActionReference panAction;

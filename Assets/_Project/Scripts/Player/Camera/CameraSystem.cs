@@ -9,24 +9,24 @@ namespace CultivationGame.Player
     public class CameraSystem : MonoBehaviour
     {
         [Header("Cinemachine (Action Mode)")]
-        [SerializeField] private CinemachineBrain cinemachineBrain;
-        [SerializeField] private CinemachineCamera cinemachineVCam;
+        [SerializeField] [Tooltip("Cinemachine brain component attached to the main camera.")] private CinemachineBrain cinemachineBrain;
+        [SerializeField] [Tooltip("The active Cinemachine virtual camera used in action mode.")] private CinemachineCamera cinemachineVCam;
 
         [Header("Spirit Sense (Free Camera)")]
-        [SerializeField] private SpiritSenseCamera spiritSenseCamera;
+        [SerializeField] [Tooltip("The Spirit Sense free camera used during meditation.")] private SpiritSenseCamera spiritSenseCamera;
 
         [Header("Player")]
-        [SerializeField] private Transform playerTransform;
-        [SerializeField] private PlayerStats playerStats;
+        [SerializeField] [Tooltip("The player's transform, used to compute camera positions during transitions.")] private Transform playerTransform;
+        [SerializeField] [Tooltip("Player stats, used to read the current realm's Spirit Sense range.")] private PlayerStats playerStats;
 
         [Header("Transition")]
-        [SerializeField] private float transitionDuration = 1.0f;
-        [SerializeField] private AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+        [SerializeField] [Tooltip("Duration in seconds for the camera blend between action and Spirit Sense modes.")] private float transitionDuration = 1.0f;
+        [SerializeField] [Tooltip("Animation curve defining the easing of camera transitions.")] private AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         [Header("Input")]
-        [SerializeField] private InputActionAsset inputActions;
-        [SerializeField] private string playerMapName = "Player";
-        [SerializeField] private string buildModeMapName = "BuildMode";
+        [SerializeField] [Tooltip("The Input Action Asset containing Player and BuildMode action maps.")] private InputActionAsset inputActions;
+        [SerializeField] [Tooltip("Name of the Player action map inside the Input Action Asset.")] private string playerMapName = "Player";
+        [SerializeField] [Tooltip("Name of the BuildMode action map inside the Input Action Asset.")] private string buildModeMapName = "BuildMode";
 
         private Camera _mainCamera;
         private bool _isTransitioning;

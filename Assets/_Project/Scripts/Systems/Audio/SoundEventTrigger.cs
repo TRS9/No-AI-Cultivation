@@ -11,25 +11,25 @@ namespace CultivationGame.Systems
     public class SoundEventTrigger : MonoBehaviour
     {
         [Header("Machine Sounds")]
-        [SerializeField] private SoundClip machineStartClip;
-        [SerializeField] private SoundClip machineCompleteClip;
-        [SerializeField] private SoundClip machineStalledClip;
+        [SerializeField] [Tooltip("Sound played when a crafting recipe starts processing.")] private SoundClip machineStartClip;
+        [SerializeField] [Tooltip("Sound played when a machine finishes processing a recipe.")] private SoundClip machineCompleteClip;
+        [SerializeField] [Tooltip("Sound played when a machine stalls due to insufficient power.")] private SoundClip machineStalledClip;
 
         [Header("Item Sounds")]
-        [SerializeField] private SoundClip itemPickupClip;
+        [SerializeField] [Tooltip("Sound played when a resource is extracted or picked up.")] private SoundClip itemPickupClip;
 
         [Header("Cultivation Sounds")]
-        [SerializeField] private SoundClip breakthroughClip;
+        [SerializeField] [Tooltip("Sound played when the player successfully breaks through to the next realm.")] private SoundClip breakthroughClip;
 
         [Header("Combat Sounds")]
-        [SerializeField] private SoundClip combatHitClip;
-        [SerializeField] private SoundClip combatDeathClip;
+        [SerializeField] [Tooltip("Sound played when the player performs an attack.")] private SoundClip combatHitClip;
+        [SerializeField] [Tooltip("Sound played when the player or an enemy dies.")] private SoundClip combatDeathClip;
 
         [Header("UI Sounds")]
-        [SerializeField] private SoundClip uiClickClip;
+        [SerializeField] [Tooltip("Sound played on UI button clicks.")] private SoundClip uiClickClip;
 
         [Header("Dialogue Sounds")]
-        [SerializeField] private SoundClip dialogueTypeClip;
+        [SerializeField] [Tooltip("Sound played as each dialogue character types.")] private SoundClip dialogueTypeClip;
 
         private void OnEnable()
         {

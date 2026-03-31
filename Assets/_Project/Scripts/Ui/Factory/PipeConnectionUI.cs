@@ -16,13 +16,13 @@ namespace CultivationGame.UI
     public class PipeConnectionUI : MonoBehaviour
     {
         [Header("Connection Settings")]
-        [SerializeField] private float maxConnectionRange = 100f;
-        [SerializeField] private LayerMask machineLayer = ~0;
+        [SerializeField] [Tooltip("Maximum world-space distance allowed between source and destination machines.")] private float maxConnectionRange = 100f;
+        [SerializeField] [Tooltip("Layer mask used to raycast for machine selection in the connection workflow.")] private LayerMask machineLayer = ~0;
 
         [Header("Highlight Colors")]
-        [SerializeField] private Color compatibleHighlight = new Color(0.2f, 1f, 0.2f, 1f);
-        [SerializeField] private Color hoverHighlight = new Color(0.4f, 1f, 0.8f, 1f);
-        [SerializeField] private Color selectedHighlight = new Color(0.2f, 0.6f, 1f, 1f);
+        [SerializeField] [Tooltip("Tint color applied to machines that are compatible as source or destination.")] private Color compatibleHighlight = new Color(0.2f, 1f, 0.2f, 1f);
+        [SerializeField] [Tooltip("Tint color applied when the player hovers over a connectable machine.")] private Color hoverHighlight = new Color(0.4f, 1f, 0.8f, 1f);
+        [SerializeField] [Tooltip("Tint color applied to the currently selected source machine.")] private Color selectedHighlight = new Color(0.2f, 0.6f, 1f, 1f);
 
         // UI Elements
         private VisualElement _panel;

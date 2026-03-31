@@ -13,14 +13,14 @@ namespace CultivationGame.Systems
     public class Splitter : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
-        [SerializeField] private MachineData machineData;
+        [SerializeField] [Tooltip("ScriptableObject containing the machine's name, icon, and build cost.")] private MachineData machineData;
 
         [Header("Transfer Settings")]
-        [SerializeField] private float transferInterval = 1f;
-        [SerializeField] private int itemsPerTransfer = 1;
+        [SerializeField] [Tooltip("Seconds between item transfer ticks.")] private float transferInterval = 1f;
+        [SerializeField] [Tooltip("Number of items moved per transfer tick.")] private int itemsPerTransfer = 1;
 
         [Header("Buffer Capacity")]
-        [SerializeField] private int bufferCapacity = 50;
+        [SerializeField] [Tooltip("Maximum number of items the internal input buffer can hold.")] private int bufferCapacity = 50;
 
         private MachineInventory _inputInventory;
         private float _transferTimer;
