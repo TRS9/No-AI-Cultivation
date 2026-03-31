@@ -221,7 +221,7 @@ namespace CultivationGame.Systems
                 merger.SetMachineData(_selectedMachine);
 
             // Set the layer so the machine is detectable for interaction and removal
-            SetLayerRecursive(placed, GetLayerFromMask(machineLayer));
+            LayerHelper.SetLayerRecursive(placed, LayerHelper.GetLayerFromMask(machineLayer));
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
@@ -322,21 +322,6 @@ namespace CultivationGame.Systems
                 if (cost.item == null) continue;
                 playerInventory.RemoveItem(cost.item, cost.amount);
             }
-        }
-
-        private static void SetLayerRecursive(GameObject obj, int layer)
-        {
-            obj.layer = layer;
-            foreach (Transform child in obj.transform)
-                SetLayerRecursive(child.gameObject, layer);
-        }
-
-        private static int GetLayerFromMask(LayerMask mask)
-        {
-            int value = mask.value;
-            for (int i = 0; i < 32; i++)
-                if ((value & (1 << i)) != 0) return i;
-            return 0;
         }
     }
 }

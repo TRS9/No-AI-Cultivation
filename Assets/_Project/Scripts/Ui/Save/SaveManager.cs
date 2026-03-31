@@ -236,6 +236,9 @@ namespace CultivationGame.UI
             if (data.buildingEntries == null || data.buildingEntries.Count == 0) return;
             if (allMachines == null) return;
 
+            // Build a position → machine lookup for efficient inventory restoration
+            var machinesByPosition = new Dictionary<Vector3, IMachineConnectable>();
+
             foreach (var entry in data.buildingEntries)
             {
                 var md = allMachines.Find(m => m.name == entry.machineId);
@@ -255,26 +258,30 @@ namespace CultivationGame.UI
                 WireMachineData(placed, md);
 
                 // Set layer for interaction and removal detection
-                SetLayerRecursive(placed, GetLayerFromMask(machineLayer));
+                LayerHelper.SetLayerRecursive(placed, LayerHelper.GetLayerFromMask(machineLayer));
 
                 // Occupy grid cells
                 if (buildGrid != null)
                     buildGrid.OccupyCells(position, md.gridSize, entry.rotation);
+
+                // Register for inventory restoration
+                var connectable = placed.GetComponent<IMachineConnectable>();
+                if (connectable != null)
+                    machinesByPosition[position] = connectable;
             }
 
             // Restore inventories after all machines have been instantiated
-            RestoreMachineInventories(data);
+            RestoreMachineInventories(data, machinesByPosition);
         }
 
-        private void RestoreMachineInventories(SaveData data)
+        private void RestoreMachineInventories(SaveData data, Dictionary<Vector3, IMachineConnectable> machinesByPosition)
         {
             if (data.machineInventories == null || data.machineInventories.Count == 0) return;
 
             foreach (var invEntry in data.machineInventories)
             {
                 Vector3 pos = new Vector3(invEntry.machinePosX, invEntry.machinePosY, invEntry.machinePosZ);
-                var connectable = FindMachineAtPosition(pos);
-                if (connectable == null) continue;
+                if (!machinesByPosition.TryGetValue(pos, out var connectable)) continue;
 
                 // Restore recipe
                 if (!string.IsNullOrEmpty(invEntry.recipeId) && connectable is BaseMachine bm)
@@ -320,31 +327,6 @@ namespace CultivationGame.UI
                 merger.SetMachineData(data);
         }
 
-        private IMachineConnectable FindMachineAtPosition(Vector3 pos)
-        {
-            const float tolerance = 0.1f;
-            IMachineConnectable result;
-            if ((result = FindAtPos<BaseMachine>(pos, tolerance)) != null) return result;
-            if ((result = FindAtPos<ResourceExtractor>(pos, tolerance)) != null) return result;
-            if ((result = FindAtPos<StorageContainer>(pos, tolerance)) != null) return result;
-            if ((result = FindAtPos<QiConduit>(pos, tolerance)) != null) return result;
-            if ((result = FindAtPos<Splitter>(pos, tolerance)) != null) return result;
-            if ((result = FindAtPos<Merger>(pos, tolerance)) != null) return result;
-            return null;
-        }
-
-        private static T FindAtPos<T>(Vector3 pos, float tolerance) where T : MonoBehaviour, IMachineConnectable
-        {
-#if UNITY_2023_1_OR_NEWER
-            var machines = FindObjectsByType<T>(FindObjectsSortMode.None);
-#else
-            var machines = FindObjectsOfType<T>();
-#endif
-            foreach (var m in machines)
-                if (Vector3.Distance(m.transform.position, pos) < tolerance) return m;
-            return null;
-        }
-
         private RecipeData FindRecipeByName(string recipeName)
         {
             if (recipeDatabase == null || recipeDatabase.allRecipes == null) return null;
@@ -360,21 +342,6 @@ namespace CultivationGame.UI
                 if (item != null) result[item] = entry.count;
             }
             return result;
-        }
-
-        private static void SetLayerRecursive(GameObject obj, int layer)
-        {
-            obj.layer = layer;
-            foreach (Transform child in obj.transform)
-                SetLayerRecursive(child.gameObject, layer);
-        }
-
-        private static int GetLayerFromMask(LayerMask mask)
-        {
-            int value = mask.value;
-            for (int i = 0; i < 32; i++)
-                if ((value & (1 << i)) != 0) return i;
-            return 0;
         }
     }
 }
