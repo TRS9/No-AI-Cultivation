@@ -20,11 +20,9 @@ namespace CultivationGame.UI
 
         private VisualElement _panel;
         private ScrollView _machineGrid;
-        private bool _inSpiritSense;
         private bool _isOpen;
 
         private const string PanelId = "BuildMenu";
-        private const string ThirdPersonClass = "build-menu--third-person";
         private const string LockedClass = "build-slot--locked";
 
         // ------------------------------------------------------------------ //
@@ -38,11 +36,9 @@ namespace CultivationGame.UI
 
             // Unsubscribe first to prevent double-registration if InitializeUI is called again
             GameEvents.OnBuildModeToggled -= OnBuildModeToggled;
-            GameEvents.OnMeditationToggled -= OnMeditationToggled;
             GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
             GameEvents.OnInventoryChanged -= OnInventoryChanged;
             GameEvents.OnBuildModeToggled += OnBuildModeToggled;
-            GameEvents.OnMeditationToggled += OnMeditationToggled;
             GameEvents.OnPanelStateChanged += OnPanelStateChanged;
             GameEvents.OnInventoryChanged += OnInventoryChanged;
         }
@@ -50,7 +46,6 @@ namespace CultivationGame.UI
         private void OnDisable()
         {
             GameEvents.OnBuildModeToggled -= OnBuildModeToggled;
-            GameEvents.OnMeditationToggled -= OnMeditationToggled;
             GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
             GameEvents.OnInventoryChanged -= OnInventoryChanged;
         }
@@ -58,11 +53,6 @@ namespace CultivationGame.UI
         // ------------------------------------------------------------------ //
         //  Event handlers
         // ------------------------------------------------------------------ //
-
-        private void OnMeditationToggled(bool isMeditating)
-        {
-            _inSpiritSense = isMeditating;
-        }
 
         private void OnInventoryChanged()
         {
@@ -82,13 +72,6 @@ namespace CultivationGame.UI
                 RebuildGrid();
                 _panel.style.display = DisplayStyle.Flex;
                 _isOpen = true;
-
-                // Ensure clean state before applying layout class
-                _panel.RemoveFromClassList(ThirdPersonClass);
-
-                // Apply compact layout when in 3rd-person (not Spirit Sense)
-                if (!_inSpiritSense)
-                    _panel.AddToClassList(ThirdPersonClass);
             }
             else
             {
@@ -110,10 +93,7 @@ namespace CultivationGame.UI
         private void CloseBuildMenu()
         {
             if (_panel != null)
-            {
                 _panel.style.display = DisplayStyle.None;
-                _panel.RemoveFromClassList(ThirdPersonClass);
-            }
             _isOpen = false;
             placementController?.CancelPlacement();
         }
