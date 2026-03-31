@@ -12,7 +12,7 @@ namespace CultivationGame.Systems
     [Serializable]
     public class MachineInventory
     {
-        [SerializeField] private int maxCapacity = 100;
+        [SerializeField] [Tooltip("Maximum total item count this inventory can hold across all item types.")] private int maxCapacity = 100;
 
         private Dictionary<ItemData, int> _items = new();
 

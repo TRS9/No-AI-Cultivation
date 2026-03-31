@@ -15,18 +15,18 @@ namespace CultivationGame.Systems
     public class MinorRealmGenerator : MonoBehaviour
     {
         [Header("Biome Configs — assign one per biome")]
-        [SerializeField] private MinorRealmConfig[] biomeConfigs;
+        [SerializeField] [Tooltip("Array of biome configuration assets; the generator selects one based on the loaded realm's biome type.")] private MinorRealmConfig[] biomeConfigs;
 
         [Header("Shared Prefabs")]
-        [SerializeField] private GameObject exitPortalPrefab;
+        [SerializeField] [Tooltip("Prefab instantiated as the exit portal at the realm boundary.")] private GameObject exitPortalPrefab;
 
         [Header("World Settings")]
-        [SerializeField] private int   terrainSize         = 400;
-        [SerializeField] private int   heightmapResolution = 257;
-        [SerializeField] private Vector3 exitPortalOffset  = new Vector3(0f, 0f, 160f);
+        [SerializeField] [Tooltip("Width and depth of the generated terrain in world units.")] private int   terrainSize         = 400;
+        [SerializeField] [Tooltip("Resolution of the terrain heightmap; must be 2^n+1 (e.g. 257, 513).")] private int   heightmapResolution = 257;
+        [SerializeField] [Tooltip("Local offset from terrain centre where the exit portal is placed.")] private Vector3 exitPortalOffset  = new Vector3(0f, 0f, 160f);
 
         [Header("Spawn Safety")]
-        [SerializeField] private float spawnClearRadius = 12f;
+        [SerializeField] [Tooltip("Radius in world units that must be free of obstacles around the player spawn point.")] private float spawnClearRadius = 12f;
 
         private Terrain _terrain;
         private float   _halfSize;

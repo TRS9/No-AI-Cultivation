@@ -17,7 +17,7 @@ namespace CultivationGame.Systems
         public OreVeinData veinData;
 
         [Header("Persistence")]
-        [SerializeField] private string uniqueId;
+        [SerializeField] [Tooltip("Unique identifier for this vein, used to persist depletion state across sessions.")] private string uniqueId;
 
         private MeshRenderer _meshRenderer;
         private Collider _collider;

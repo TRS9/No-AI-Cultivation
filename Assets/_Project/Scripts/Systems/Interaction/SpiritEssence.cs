@@ -8,7 +8,7 @@ namespace CultivationGame.Systems
     public class SpiritEssence : MonoBehaviour, IInteractable
     {
         public EssenceData essenceData;
-        [SerializeField] private string uniqueId;
+        [SerializeField] [Tooltip("Unique identifier for this essence node, used to persist collection state across sessions.")] private string uniqueId;
 
         private MeshRenderer meshRenderer;
         private static MaterialPropertyBlock propertyBlock;

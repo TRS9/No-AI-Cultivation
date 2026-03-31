@@ -13,9 +13,9 @@ namespace CultivationGame.Systems
     public class PipeConnectionVisualizer : MonoBehaviour
     {
         [Header("Line Appearance")]
-        [SerializeField] private Color lineColor = new Color(0.3f, 0.7f, 1f, 0.8f);
-        [SerializeField] private float lineWidth = 0.06f;
-        [SerializeField] private float heightOffset = 0.5f;
+        [SerializeField] [Tooltip("Color of the connection lines drawn between connected machines.")] private Color lineColor = new Color(0.3f, 0.7f, 1f, 0.8f);
+        [SerializeField] [Tooltip("World-space width of the pipe connection visualization lines.")] private float lineWidth = 0.06f;
+        [SerializeField] [Tooltip("Vertical offset applied to both line endpoints to raise lines above machines.")] private float heightOffset = 0.5f;
 
         private readonly Dictionary<SpiritPipe, LineRenderer> _lines = new();
         private readonly List<SpiritPipe> _toRemove = new();

@@ -7,11 +7,11 @@ namespace CultivationGame.Systems
     {
         public static SoundManager Instance { get; private set; }
 
-        [SerializeField] private AudioSource musicSource;
+        [SerializeField] [Tooltip("AudioSource used for background music; auto-created if not assigned.")] private AudioSource musicSource;
 
-        [Range(0f, 1f)] [SerializeField] private float masterVolume = 1f;
-        [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
-        [Range(0f, 1f)] [SerializeField] private float musicVolume = 1f;
+        [Range(0f, 1f)] [SerializeField] [Tooltip("Global volume multiplier applied to all sounds.")] private float masterVolume = 1f;
+        [Range(0f, 1f)] [SerializeField] [Tooltip("Volume multiplier applied to all sound effects.")] private float sfxVolume = 1f;
+        [Range(0f, 1f)] [SerializeField] [Tooltip("Volume multiplier applied to background music.")] private float musicVolume = 1f;
 
         public float MasterVolume => masterVolume;
         public float SFXVolume => sfxVolume;

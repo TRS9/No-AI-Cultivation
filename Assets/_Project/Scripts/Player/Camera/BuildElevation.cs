@@ -6,13 +6,13 @@ namespace CultivationGame.Player
 {
     public class BuildElevation : MonoBehaviour
     {
-        [SerializeField] private float layerHeight = 3f;
-        [SerializeField] private float baseY;
-        [SerializeField] private int maxLayers = 10;
+        [SerializeField] [Tooltip("Vertical distance in world units between build layers.")] private float layerHeight = 3f;
+        [SerializeField] [Tooltip("World Y position of build layer 0 (ground level).")] private float baseY;
+        [SerializeField] [Tooltip("Maximum number of build layers the player can ascend to.")] private int maxLayers = 10;
 
         [Header("Input")]
-        [SerializeField] private InputActionReference layerUpAction;
-        [SerializeField] private InputActionReference layerDownAction;
+        [SerializeField] [Tooltip("Input action to ascend one build layer.")] private InputActionReference layerUpAction;
+        [SerializeField] [Tooltip("Input action to descend one build layer.")] private InputActionReference layerDownAction;
 
         private int _currentLayer;
 

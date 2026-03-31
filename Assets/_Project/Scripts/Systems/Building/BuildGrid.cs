@@ -5,8 +5,8 @@ namespace CultivationGame.Systems
 {
     public class BuildGrid : MonoBehaviour
     {
-        [SerializeField] private float cellSize = 2f;
-        [SerializeField] private LayerMask terrainLayer;
+        [SerializeField] [Tooltip("Size of each grid cell in world units; all machines snap to this grid.")] private float cellSize = 2f;
+        [SerializeField] [Tooltip("Layer mask used to determine terrain height for snapping placed machines.")] private LayerMask terrainLayer;
 
         private HashSet<Vector2Int> _occupiedCells = new();
 

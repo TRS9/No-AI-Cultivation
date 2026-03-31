@@ -17,23 +17,23 @@ namespace CultivationGame.Systems
     public class PlacementController : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private BuildGrid buildGrid;
-        [SerializeField] private PlayerInventory playerInventory;
-        [SerializeField] private LayerMask terrainLayer;
-        [SerializeField] private Camera buildCamera;
+        [SerializeField] [Tooltip("Reference to the build grid that snaps machine positions and tracks occupied cells.")] private BuildGrid buildGrid;
+        [SerializeField] [Tooltip("Player inventory used to check and deduct machine build costs.")] private PlayerInventory playerInventory;
+        [SerializeField] [Tooltip("Layer mask for terrain raycasts to determine valid placement positions.")] private LayerMask terrainLayer;
+        [SerializeField] [Tooltip("Camera used for placement raycasts; falls back to Camera.main if unassigned.")] private Camera buildCamera;
 
         [Header("Ghost Settings")]
-        [SerializeField] private Material ghostValidMaterial;
-        [SerializeField] private Material ghostInvalidMaterial;
+        [SerializeField] [Tooltip("Material applied to the placement ghost when the current position is valid.")] private Material ghostValidMaterial;
+        [SerializeField] [Tooltip("Material applied to the placement ghost when the current position is invalid.")] private Material ghostInvalidMaterial;
 
         [Header("Input")]
-        [SerializeField] private InputActionReference placeAction;
-        [SerializeField] private InputActionReference cancelAction;
-        [SerializeField] private InputActionReference rotateAction;
-        [SerializeField] private InputActionReference removeAction;
+        [SerializeField] [Tooltip("Input action that confirms machine placement (left mouse button).")] private InputActionReference placeAction;
+        [SerializeField] [Tooltip("Input action that cancels the current placement (Escape).")] private InputActionReference cancelAction;
+        [SerializeField] [Tooltip("Input action that rotates the ghost 90° clockwise (R key).")] private InputActionReference rotateAction;
+        [SerializeField] [Tooltip("Input action that removes the machine under the crosshair.")] private InputActionReference removeAction;
 
         [Header("Removal")]
-        [SerializeField] private LayerMask machineLayer;
+        [SerializeField] [Tooltip("Layer mask used to detect placed machines for removal raycasts.")] private LayerMask machineLayer;
 
         private MachineData _selectedMachine;
         private GameObject _ghostInstance;

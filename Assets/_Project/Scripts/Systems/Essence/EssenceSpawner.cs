@@ -11,7 +11,7 @@ namespace CultivationGame.Systems
         public EssenceData essenceData;
         public float respawnTimeSeconds = 300f;
 
-        [SerializeField] private string uniqueId;
+        [SerializeField] [Tooltip("Unique identifier for this spawner, used to persist collection and respawn state across sessions.")] private string uniqueId;
 
         private MeshRenderer meshRenderer;
         private Collider col;

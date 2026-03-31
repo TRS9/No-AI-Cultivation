@@ -11,15 +11,15 @@ namespace CultivationGame.Systems
     public class ResourceExtractor : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
-        [SerializeField] private MachineData machineData;
+        [SerializeField] [Tooltip("ScriptableObject containing the machine's name, icon, and build cost.")] private MachineData machineData;
 
         [Header("Extraction Settings")]
-        [SerializeField] private float extractionInterval = 3f;
-        [SerializeField] private int amountPerExtraction = 1;
-        [SerializeField] private float detectionRadius = 4f;
+        [SerializeField] [Tooltip("Seconds between extraction attempts.")] private float extractionInterval = 3f;
+        [SerializeField] [Tooltip("Number of items extracted per interval.")] private int amountPerExtraction = 1;
+        [SerializeField] [Tooltip("World-space radius used to detect nearby OreVeins.")] private float detectionRadius = 4f;
 
         [Header("Output")]
-        [SerializeField] private int outputCapacity = 50;
+        [SerializeField] [Tooltip("Maximum number of items the output inventory can hold.")] private int outputCapacity = 50;
 
         private MachineInventory _outputInventory;
         private OreVein _targetVein;

@@ -9,9 +9,9 @@ namespace CultivationGame.UI
     {
         public static GameStateManager Instance { get; private set; }
 
-        [SerializeField] private InputActionReference pauseAction;
-        [SerializeField] private InputActionReference toggleInventoryAction;
-        [SerializeField] private string playerMapName = "Player";
+        [SerializeField] [Tooltip("Input action that toggles the pause menu.")] private InputActionReference pauseAction;
+        [SerializeField] [Tooltip("Input action that opens or closes the inventory panel.")] private InputActionReference toggleInventoryAction;
+        [SerializeField] [Tooltip("Name of the Player input action map, used to disable player controls when panels are open.")] private string playerMapName = "Player";
 
         public bool IsPaused { get; private set; }
 

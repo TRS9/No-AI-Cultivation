@@ -15,11 +15,11 @@ namespace CultivationGame.Systems
     public class QiConduit : MonoBehaviour, IInteractable, IMachineConnectable
     {
         [Header("Machine Configuration")]
-        [SerializeField] private MachineData machineData;
+        [SerializeField] [Tooltip("ScriptableObject containing the conduit's name, icon, and build cost.")] private MachineData machineData;
 
         [Header("Conduit Settings")]
-        [SerializeField] private float connectionRadius = 12f;
-        [SerializeField] private float machineRadius = 8f;
+        [SerializeField] [Tooltip("Maximum distance to another conduit for Qi network chaining.")] private float connectionRadius = 12f;
+        [SerializeField] [Tooltip("Maximum distance to power nearby machines from this conduit.")] private float machineRadius = 8f;
 
         /// <summary>Set by QiNetwork. True if this conduit is reachable from the Qi source.</summary>
         public bool IsConnected { get; set; }
