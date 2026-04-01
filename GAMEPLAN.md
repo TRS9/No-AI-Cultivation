@@ -29,7 +29,7 @@ Inspiriert von: Satisfactory, Arknights Endfield, Xianxia-Novels (Martial Peak e
 | **Maschinen-Logik** | ✅ **Fertig** | BaseMachine, MachineInventory, IMachineConnectable |
 | **Transport (Spirit Pipes)** | ✅ **Fertig** | SpiritPipe (IMachineConnectable), StorageContainer |
 | **Ore Veins** | ✅ **Fertig** | OreVein, OreVeinData, ResourceExtractor |
-| **Maschinen-UI** | ✅ **Fertig** | MachineUIController (Rezept, Slots, Progress) |
+| **Maschinen-UI** | ✅ **Fertig** | MachineInspectUI (Rezept, Slots, Progress) |
 | **Machine-Removal** | ✅ **Fertig** | PlacementController.OnRemove |
 | **Qi-Netzwerk** | ✅ **Fertig** | QiNetwork, QiConduit (Satisfactory-Strom) |
 
@@ -114,19 +114,18 @@ ItemData (ScriptableObject) — Ersetzt/erweitert EssenceData
 - `inventoryEntries` muss Item-Typ-ID speichern, nicht nur Essence-ID
 - Neues Feld: `itemId` statt `essenceId` (backwards-compatible mit Migration)
 
-#### Schritt 0.5: InventoryDisplay anpassen
+#### Schritt 0.5: Inventory-UI anpassen (jetzt InventoryController)
 - Muss verschiedene Item-Typen anzeigen können
 - Icon-basiert (funktioniert bereits, nur Dictionary-Key ändert sich)
 
-**Dateien die geändert werden:**
+**Dateien die geändert wurden:**
 - `Core/IInventory.cs`
 - `Data/DataTemplates/EssenceData.cs` (wird zu Subclass)
 - Neues File: `Data/DataTemplates/ItemData.cs`
 - `Player/Inventory/PlayerInventory.cs`
 - `Data/SaveData.cs`
 - `Ui/Save/SaveManager.cs`
-- `Ui/Inventory/InventoryDisplay.cs`
-- `Ui/Inventory/InventorySlotDisplay.cs`
+- `Ui/Inventory/InventoryController.cs` (ehemals InventoryDisplay + InventorySlotDisplay)
 
 ---
 
@@ -161,8 +160,8 @@ RecipeData (ScriptableObject)
 - `Data/DataTemplates/RecipeData.cs`
 - `Data/RecipeDatabase.cs`
 - `Systems/Crafting/CraftingSystem.cs`
-- `Ui/Crafting/CraftingUI.cs`
-- `Ui/Crafting/RecipeSlotUI.cs`
+- `Ui/Crafting/CraftingController.cs` (ehemals CraftingUI)
+- `Ui/DataSources/CraftingDataSource.cs` (ehemals RecipeSlotUI)
 
 ---
 
@@ -247,8 +246,10 @@ MachineData (ScriptableObject)
 - `Data/DataTemplates/MachineData.cs`
 - `Systems/Building/BuildGrid.cs`
 - `Systems/Building/PlacementController.cs`
-- `Systems/Building/BuildingSaveData.cs`
-- `Ui/Building/BuildMenuUI.cs`
+- `Systems/Building/LayerHelper.cs`
+- `Data/SaveData.cs` (BuildingSaveEntry integriert)
+- `Ui/Building/MachineCatalogueController.cs` (ehemals BuildMenuUI)
+- `Ui/Building/HotbarController.cs`
 
 ---
 
@@ -298,7 +299,7 @@ PillPress   — Formt finale Pillen aus Zwischenprodukten
 - `Systems/Factory/MachineInventory.cs` ✅
 - `Systems/Factory/Splitter.cs` ✅ (neu — verteilt Items 1→2, Round-Robin)
 - `Systems/Factory/Merger.cs` ✅ (neu — kombiniert Streams 2→1)
-- `Ui/Factory/MachineUIController.cs` ✅
+- `Ui/Factory/MachineInspectUI.cs` ✅
 
 ---
 
@@ -459,11 +460,15 @@ QuestData (ScriptableObject)
 - Verbindet Factory-Output direkt mit Combat-Gameplay
 
 **Dateien:**
-- `Systems/Combat/CombatController.cs`
-- `Systems/Combat/HealthSystem.cs`
+- `Player/Combat/PlayerCombatController.cs` (ehemals CombatController)
+- `Core/HealthSystem.cs` (in Core für Assembly-übergreifenden Zugriff)
+- `Core/IDamageable.cs`
 - `Systems/Combat/EnemyAI.cs`
+- `Systems/Combat/EnemyLoot.cs`
 - `Data/DataTemplates/EnemyData.cs`
+- `Data/LootSystem.cs`
 - `Ui/Combat/HealthBarUI.cs`
+- `Ui/Combat/EnemyHealthBarUI.cs`
 
 ---
 
@@ -560,7 +565,8 @@ SCHRITT 15: [Phase 9] Balancing + Win-Condition         ⬜ OFFEN
 - `Scripts/Data/DataTemplates/RealmDefinition.cs` — spiritSenseRange Feld
 - `Scripts/Player/Camera/CameraSystem.cs` — Build-Toggle, Kamera-Fix, Realm-Distanz
 - `Scripts/Player/Camera/SpiritSenseCamera.cs` — SetMaxZoom()
-- `Scripts/Ui/Building/BuildMenuController.cs` — hört auf OnBuildModeToggled
+- `Scripts/Ui/Building/MachineCatalogueController.cs` — hört auf OnBuildModeToggled
+- `Scripts/Ui/Building/HotbarController.cs` — Hotbar-Slot Verwaltung
 - `Input/InputSystem_Actions.inputactions` — BuildToggle im Player-Map
 
 ---
