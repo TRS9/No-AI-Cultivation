@@ -1,7 +1,7 @@
 # Prison Realm: Alchemy Factory — Vollständige Aufgabenliste
 
-Letzte Aktualisierung: 2025-07-21
-Analyse-Status: Deep Analysis Pass abgeschlossen — Alle Scripts, Data-Assets, UXML/USS, Assemblies geprüft.
+Letzte Aktualisierung: 2025-07-22
+Analyse-Status: Deep Analysis + Code Review Pass abgeschlossen — Alle Scripts, Data-Assets, UXML/USS, Assemblies, MD-Dokumentation geprüft.
 
 ---
 
@@ -34,12 +34,12 @@ Das Camera-System wurde durch parallele Copilot-Agents beeinträchtigt. Die `.me
 
 ### 1.4 Weitere Scene-Setup Prüfungen
 
-- [ ] **Player GameObject**: Hat PlayerStats, PlayerMovement, PlayerInteractor, PlayerInventory, PlayerCombatController?
-- [ ] **Canvas**: PlayerStatsUI, StaminaUI, InventoryController, HUDController korrekt verkabelt?
-- [ ] **GameManager**: ~~Existiert als Singleton (DontDestroyOnLoad)?~~ **GELÖSCHT** — GameManager.cs war toter Code (`SetState()` nie aufgerufen). `GameStateManager` übernimmt alle Aufgaben.
+- [ ] **Player GameObject**: Hat PlayerStats, PlayerMovement, PlayerInteractor, PlayerInventory, PlayerCombatController, HealthSystem?
+- [ ] **UI Document**: HUDController, InventoryController, CraftingController + alle UI-Controller als Components auf UIManager-GameObject?
+- [x] ~~**GameManager**~~ — **GELÖSCHT** — GameManager.cs war toter Code (`SetState()` nie aufgerufen). `GameStateManager` übernimmt alle Aufgaben.
 - [ ] **EventSystem**: Vorhanden mit InputSystemUIInputModule?
 - [ ] **BuildSystem GameObject**: BuildGrid + PlacementController vorhanden?
-- [ ] **UIManager**: BuildMenuController + BuildMenuDataSource referenziert?
+- [ ] **UIManager**: MachineCatalogueController + HotbarController + HotbarDataSource referenziert?
 - [ ] **SoundManager**: Singleton in Scene? SoundEventTrigger auf passendem GameObject?
 - [ ] **BreakthroughSystem**: Auf GameObject mit PlayerStats-Zugriff?
 - [ ] **GameStateManager**: Singleton vorhanden?
@@ -65,7 +65,8 @@ Jeder Maschinen-Typ braucht ein Prefab mit der richtigen Component:
 
 Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden via `BroadcastMessage` vom `UIManager` aufgerufen. Sie müssen als **Components auf demselben GameObject** wie `UIManager` sitzen:
 
-- [ ] `BuildMenuController`
+- [ ] `MachineCatalogueController`
+- [ ] `HotbarController`
 - [ ] `DialogueUI`
 - [ ] `MachineInspectUI`
 - [ ] `FactoryDashboardUI`
@@ -173,7 +174,7 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 
 | Step | Mechanism | Status |
 |------|-----------|--------|
-| Player opens Build Menu | Shift key → `GameEvents.OnBuildModeToggled` → `BuildMenuController` shows panel | ✅ |
+| Player opens Build Menu | Shift key → `GameEvents.OnBuildModeToggled` → `MachineCatalogueController` shows panel | ✅ |
 | Player selects machine | Clicks slot → `placementController.StartPlacement(machine)` | ✅ |
 | Ghost preview follows cursor | `PlacementController.UpdateGhostPosition` snaps to BuildGrid | ✅ |
 | Cost check | `HasBuildResources()` checks `PlayerInventory.HasItem()` | ✅ |
@@ -195,7 +196,7 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 | 🔴 Critical | `SpiritPipe` | `TransferItems()` now checks `StorageContainer.AcceptsItem()` before transferring. Storage item filters now work. |
 | 🔴 Critical | `PlayerInteractor` | Added `if (interactAction != null)` guard in `OnEnable`/`OnDisable`. No longer crashes if field is not wired in Inspector. |
 | 🟡 Medium | `ResourceExtractor` | `SetMachineData()` now guards `data.processingSpeed > 0f` before dividing. No longer produces infinite extraction interval. |
-| 🟡 Medium | `BuildMenuController` | `InitializeUI` now unsubscribes before re-subscribing. No double-registration on enable/disable cycles. |
+| 🟡 Medium | `MachineCatalogueController` | `InitializeUI` now unsubscribes before re-subscribing. No double-registration on enable/disable cycles. |
 | 🟡 Medium | `MachineInspectUI` | Same double-subscription fix applied. |
 | 🟡 Medium | `PipeConnectionUI` | Same double-subscription fix applied. |
 | 🟡 Medium | `MachineInspectUI` | `SubscribeToMachine` / `UnsubscribeFromMachine` now guard against double-subscribing when `InputInventory == OutputInventory` (StorageContainer). |
@@ -211,7 +212,8 @@ Alle UI-Scripts die `InitializeUI(VisualElement root)` implementieren, werden vi
 | Component | Required Fields |
 |-----------|----------------|
 | `PlacementController` | buildGrid, playerInventory, terrainLayer, buildCamera, ghostValidMaterial, ghostInvalidMaterial, placeAction, cancelAction, rotateAction, removeAction, machineLayer |
-| `BuildMenuController` | buildMenuData (BuildMenuDataSource asset), placementController |
+| `MachineCatalogueController` | HotbarDataSource asset, placementController |
+| `HotbarController` | HotbarDataSource asset |
 | `BuildMenuDataSource` | availableMachines[] — all 11 MachineData assets |
 | `MachineInspectUI` | recipeDatabase, playerInventory |
 | `PlayerInteractor` | interactAction (Player/Interact), interactableLayer, interactionRadius |
@@ -306,12 +308,12 @@ Vier UI-Controller referenzierten UXML-Elemente die nicht existierten → Panels
 
 ### UI & HUD (vollständig ✅)
 - `HUDController` + `HUDDataSource` (Qi/HP/Stamina Bars)
-- `BuildMenuController` + `BuildMenuDataSource`
+- `MachineCatalogueController` + `HotbarController` + `HotbarDataSource`
 - `InventoryController` + `InventoryDataSource`
 - `PauseMenuController`
 - `GameStateManager` (Panel-Management, Cursor-Locking)
 - `UIManager` (BroadcastMessage zu UI-Components)
-- ~~`MachineUIController`~~ + `MachineInspectUI`
+- ~~`MachineUIController`~~ → `MachineInspectUI` (Duplikat gelöscht, Features migriert)
 - `HealthBarUI` + `EnemyHealthBarUI`
 - `BreakthroughController`
 
@@ -320,10 +322,36 @@ Vier UI-Controller referenzierten UXML-Elemente die nicht existierten → Panels
 - `EssencePainterWindow` (Biome-Painted Essence Spawning)
 - `CsvImportWindow` (Bulk-Import von Items via CSV)
 - `MinorRealmConfigEditor` (Custom Inspector)
+- `InspectorAutoSetup` (Auto-Wiring Inspector Utility)
+- `RealmProgressionLinker` (Realm-Progressions-Ketten-Linker)
 
 ### Unit Tests (teilweise ✅)
 - `MachineInventoryTests` (MachineInventory Coverage)
 - `RecipeDataValidationTests` (RecipeData-Felder + Constraints)
 - `RecipeDatabaseLookupTests` (GetRecipesForMachine, GetRecipesForItem)
 - `LootSystemTests` (Drop-Table Logik)
+- `RecipeTestHelper` (Test-Hilfsfunktionen)
 - **Fehlen**: QiNetworkTests, BaseMachinePipelineTests, SaveSystemTests
+
+---
+
+## 8. Code-Qualität Zusammenfassung (2025-07-22)
+
+### Geprüft und in Ordnung ✅
+- **Namespaces**: Alle 97 .cs-Dateien nutzen korrekte Namespaces gemäß Assembly
+- **Assembly-Abhängigkeiten**: Korrekte Kette: Core → Data → Player → Systems → UI → Editor
+- **Interface-Implementierungen**: Alle Maschinen implementieren IInteractable + IMachineConnectable
+- **Event-Management**: Alle Subscriptions werden korrekt in OnDisable/OnDestroy aufgeräumt
+- **Null-Safety**: Durchgehend gute Null-Checks (PlayerInteractor, BaseMachine, OreVein, etc.)
+- **Kein toter Code**: Alle Methoden werden referenziert oder sind Unity-Lifecycle-Methoden
+- **Keine fehlenden Typen**: Alle referenzierten Typen existieren
+
+### Gelöschte Dateien (nicht mehr im Projekt)
+- ~~`GameManager.cs`~~ — Ersetzt durch `GameStateManager`
+- ~~`MachineUIController.cs`~~ — Ersetzt durch `MachineInspectUI`
+- ~~`BuildMenuController.cs`~~ — Ersetzt durch `MachineCatalogueController` + `HotbarController`
+- ~~`PlayerStatsUI.cs`~~ — Ersetzt durch `HUDController` + `HUDDataSource`
+- ~~`StaminaUI.cs`~~ — Integriert in `HUDController`
+- ~~`InventoryManager.cs`~~ — Ersetzt durch `InventoryController`
+- ~~`InventoryDisplay.cs`~~ — Integriert in `InventoryController`
+- ~~`InventorySlotDisplay.cs`~~ — Integriert in `InventoryController`
