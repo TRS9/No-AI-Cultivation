@@ -65,6 +65,7 @@ namespace CultivationGame.Data
     [Serializable]
     public class BuildingSaveEntry
     {
+        public string guid;      // persistent unique ID for this machine instance
         public string machineId; // MachineData asset name
         public float posX, posY, posZ;
         public int rotation; // 0-3
@@ -73,19 +74,17 @@ namespace CultivationGame.Data
     [Serializable]
     public class PipeConnectionSaveEntry
     {
-        public string pipeId;           // unique ID of the pipe building entry
-        public string sourceBuildingId; // machineId of source building
-        public float sourcePosX, sourcePosY, sourcePosZ;
-        public string destBuildingId;   // machineId of destination building
-        public float destPosX, destPosY, destPosZ;
+        public string pipeGuid;         // GUID of the pipe itself
+        public string sourceGuid;       // GUID of source machine
+        public string destGuid;         // GUID of destination machine
         public string filterItemId;     // optional filter item
     }
 
     [Serializable]
     public class MachineInventorySaveEntry
     {
-        public float machinePosX, machinePosY, machinePosZ; // position as identifier
-        public string recipeId;  // current recipe name
+        public string machineGuid; // GUID as identifier
+        public string recipeId;    // current recipe name
         public List<InventorySaveEntry> inputItems = new List<InventorySaveEntry>();
         public List<InventorySaveEntry> outputItems = new List<InventorySaveEntry>();
     }

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using CultivationGame.Core;
@@ -236,7 +237,15 @@ namespace CultivationGame.Systems
             GameObject placed = Instantiate(_selectedMachine.prefab, position, rotation);
             placed.name = _selectedMachine.machineName;
 
+            // Assign persistent GUID for save/load identification
+            var machineGuid = placed.AddComponent<MachineGuid>();
+            machineGuid.AssignNewGuid();
+
+            // Ensure the prefab has the correct machine component (add at runtime if missing)
+            EnsureMachineComponent(placed, _selectedMachine.machineType);
+
             // Wire machine data to the placed component
+            bool wired = true;
             if (placed.GetComponent<BaseMachine>() is BaseMachine bm)
                 bm.SetMachineData(_selectedMachine);
             else if (placed.GetComponent<ResourceExtractor>() is ResourceExtractor ext)
@@ -251,10 +260,22 @@ namespace CultivationGame.Systems
                 merger.SetMachineData(_selectedMachine);
             else if (placed.GetComponent<SpiritPipe>() is SpiritPipe pipe)
                 pipe.SetMachineData(_selectedMachine);
+            else
+            {
+                wired = false;
+                Debug.LogWarning($"[PlacementController] Prefab '{_selectedMachine.machineName}' has NO recognized machine component! " +
+                    $"Components: {string.Join(", ", placed.GetComponents<Component>().Select(c => c.GetType().Name))}");
+            }
 
             // Set the layer so the machine is detectable for interaction and removal
             // Must use the Interactable layer so PlayerInteractor's OverlapSphere finds it
             LayerHelper.SetLayerRecursive(placed, _interactableLayerIndex);
+
+            if (placed.GetComponentInChildren<Collider>() == null)
+                Debug.LogWarning($"[PlacementController] Placed machine '{placed.name}' has NO collider — interaction will not work!");
+
+            Debug.Log($"[PlacementController] Placed '{placed.name}' at {position}. Wired={wired} " +
+                $"HasCollider={placed.GetComponentInChildren<Collider>() != null} Layer={placed.layer} GUID={machineGuid.Guid}");
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
@@ -269,6 +290,50 @@ namespace CultivationGame.Systems
         private void OnCancel(InputAction.CallbackContext ctx)
         {
             if (_isPlacing) CancelPlacement();
+        }
+
+        /// <summary>
+        /// Adds the correct machine MonoBehaviour to the placed GameObject
+        /// based on its MachineType, if the component is not already present.
+        /// </summary>
+        private static void EnsureMachineComponent(GameObject placed, MachineType type)
+        {
+            switch (type)
+            {
+                case MachineType.Furnace:
+                case MachineType.Crusher:
+                case MachineType.Mixer:
+                case MachineType.Distiller:
+                case MachineType.Condenser:
+                case MachineType.PillPress:
+                    if (!placed.GetComponent<BaseMachine>())
+                        placed.AddComponent<BaseMachine>();
+                    break;
+                case MachineType.ResourceExtractor:
+                    if (!placed.GetComponent<ResourceExtractor>())
+                        placed.AddComponent<ResourceExtractor>();
+                    break;
+                case MachineType.Storage:
+                    if (!placed.GetComponent<StorageContainer>())
+                        placed.AddComponent<StorageContainer>();
+                    break;
+                case MachineType.QiConduit:
+                    if (!placed.GetComponent<QiConduit>())
+                        placed.AddComponent<QiConduit>();
+                    break;
+                case MachineType.Splitter:
+                    if (!placed.GetComponent<Splitter>())
+                        placed.AddComponent<Splitter>();
+                    break;
+                case MachineType.Merger:
+                    if (!placed.GetComponent<Merger>())
+                        placed.AddComponent<Merger>();
+                    break;
+                case MachineType.SpiritPipe:
+                    if (!placed.GetComponent<SpiritPipe>())
+                        placed.AddComponent<SpiritPipe>();
+                    break;
+            }
         }
 
         private void OnRotate(InputAction.CallbackContext ctx)

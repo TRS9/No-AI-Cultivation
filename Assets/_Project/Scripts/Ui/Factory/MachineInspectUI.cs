@@ -40,6 +40,7 @@ namespace CultivationGame.UI
         private BaseMachine _currentMachine;               // null for non-BaseMachine types
         private List<RecipeData> _availableRecipes = new();
         private bool _slotsDirty;
+        private VisualElement _root;                       // cached for lazy panel retry
 
         // ------------------------------------------------------------------ //
         //  Lifecycle
@@ -47,8 +48,51 @@ namespace CultivationGame.UI
 
         public void InitializeUI(VisualElement root)
         {
+            Debug.Log($"[MachineInspectUI] InitializeUI called, root={root != null}");
+            _root = root;
+            TryBindPanel();
+        }
+
+        private void OnEnable()
+        {
+            Debug.Log("[MachineInspectUI] OnEnable — subscribing to events");
+            GameDataEvents.OnMachineInteracted -= OnMachineInteracted;
+            GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
+            GameDataEvents.OnMachineInteracted += OnMachineInteracted;
+            GameEvents.OnPanelStateChanged += OnPanelStateChanged;
+        }
+
+        private void Start()
+        {
+            if (_panel == null)
+                TryBindPanel();
+        }
+
+        private void OnDisable()
+        {
+            GameDataEvents.OnMachineInteracted -= OnMachineInteracted;
+            GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
+            UnsubscribeFromMachine();
+        }
+
+        private bool TryBindPanel()
+        {
+            if (_panel != null) return true;
+
+            var root = _root ?? UIManager.Instance?.Root;
+            if (root == null)
+            {
+                Debug.LogWarning($"[MachineInspectUI] TryBindPanel: root is null (_root={_root != null}, UIManager.Instance={UIManager.Instance != null})");
+                return false;
+            }
+            _root = root;
+
             _panel = root.Q<VisualElement>("MachineInspectPanel");
-            if (_panel == null) return;
+            if (_panel == null)
+            {
+                Debug.LogWarning("[MachineInspectUI] Could not find 'MachineInspectPanel' in UI root — will retry on next interaction.");
+                return false;
+            }
 
             _machineNameLabel = _panel.Q<Label>("InspectMachineName");
             _statusLabel = _panel.Q<Label>("InspectStatus");
@@ -76,18 +120,7 @@ namespace CultivationGame.UI
             if (_recipeDropdown != null)
                 _recipeDropdown.RegisterValueChangedCallback(OnRecipeSelected);
 
-            // Unsubscribe first to prevent double-registration if InitializeUI is called again
-            GameDataEvents.OnMachineInteracted -= OnMachineInteracted;
-            GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
-            GameDataEvents.OnMachineInteracted += OnMachineInteracted;
-            GameEvents.OnPanelStateChanged += OnPanelStateChanged;
-        }
-
-        private void OnDisable()
-        {
-            GameDataEvents.OnMachineInteracted -= OnMachineInteracted;
-            GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
-            UnsubscribeFromMachine();
+            return true;
         }
 
         private void Update()
@@ -115,11 +148,21 @@ namespace CultivationGame.UI
 
         private void OnMachineInteracted(MonoBehaviour machine)
         {
+            Debug.Log($"[MachineInspectUI] OnMachineInteracted: '{machine?.name}', panel={_panel != null}, " +
+                $"isIMachineConnectable={machine is IMachineConnectable}, GameStateManager={GameStateManager.Instance != null}");
+
+            if (_panel == null)
+                TryBindPanel();
+
             if (machine is IMachineConnectable connectable)
             {
                 _currentConnectable = connectable;
                 _currentMachine = machine as BaseMachine; // null for Splitter, Merger, etc.
                 GameStateManager.Instance?.OpenPanel(PanelId);
+            }
+            else
+            {
+                Debug.LogWarning($"[MachineInspectUI] Machine '{machine?.name}' is NOT IMachineConnectable — UI will not open.");
             }
         }
 
@@ -153,8 +196,13 @@ namespace CultivationGame.UI
 
         private void Open()
         {
-            if (_panel == null || _currentConnectable == null) return;
+            if (_panel == null || _currentConnectable == null)
+            {
+                Debug.LogWarning($"[MachineInspectUI] Open() aborted: panel={_panel != null}, connectable={_currentConnectable != null}");
+                return;
+            }
 
+            Debug.Log("[MachineInspectUI] Open() — showing panel");
             _panel.style.display = DisplayStyle.Flex;
 
             if (_machineNameLabel != null)

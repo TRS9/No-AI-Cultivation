@@ -48,10 +48,19 @@ namespace CultivationGame.Player
 
         private void AttemptInteraction(InputAction.CallbackContext context)
         {
+            Debug.Log($"[PlayerInteractor] AttemptInteraction: {_nearbyCount} nearby colliders on layer mask {interactableLayer.value}");
             for (int i = 0; i < _nearbyCount; i++)
             {
-                var interactable = _nearbyColliders[i].GetComponentInParent<IInteractable>();
-                if (interactable != null) { interactable.Interact(gameObject); break; }
+                var col = _nearbyColliders[i];
+                if (col == null) continue;
+                Debug.Log($"[PlayerInteractor] Collider[{i}]: '{col.name}' layer={col.gameObject.layer}");
+                var interactable = col.GetComponentInParent<IInteractable>();
+                if (interactable != null)
+                {
+                    Debug.Log($"[PlayerInteractor] Found IInteractable: {interactable.GetType().Name} on '{(interactable as MonoBehaviour)?.name}'");
+                    interactable.Interact(gameObject);
+                    break;
+                }
             }
         }
     }

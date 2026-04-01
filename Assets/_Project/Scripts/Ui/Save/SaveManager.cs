@@ -199,14 +199,30 @@ namespace CultivationGame.UI
 #else
             var machines = FindObjectsOfType<T>();
 #endif
+            Debug.Log($"[SaveManager] FindObjectsByType<{typeof(T).Name}>() found {machines.Length} instances.");
             foreach (var machine in machines)
             {
                 var md = machine.MachineData;
-                if (md == null) continue;
+                if (md == null)
+                {
+                    Debug.LogWarning($"[SaveManager] Skipping {typeof(T).Name} '{machine.name}' at {machine.transform.position} — MachineData is null.");
+                    continue;
+                }
+
+                var guidComp = machine.GetComponent<MachineGuid>();
+                string guid = guidComp != null ? guidComp.Guid : null;
+                if (string.IsNullOrEmpty(guid))
+                {
+                    Debug.LogWarning($"[SaveManager] Machine '{md.name}' at {machine.transform.position} has no GUID — assigning one now.");
+                    if (guidComp == null) guidComp = machine.gameObject.AddComponent<MachineGuid>();
+                    guidComp.AssignNewGuid();
+                    guid = guidComp.Guid;
+                }
 
                 int rot = Mathf.RoundToInt(machine.transform.eulerAngles.y / 90f) % 4;
                 data.buildingEntries.Add(new BuildingSaveEntry
                 {
+                    guid = guid,
                     machineId = md.name,
                     posX = machine.transform.position.x,
                     posY = machine.transform.position.y,
@@ -214,7 +230,7 @@ namespace CultivationGame.UI
                     rotation = rot
                 });
 
-                SaveMachineInventory(data, machine, machine);
+                SaveMachineInventory(data, machine, guid);
             }
         }
 
@@ -230,9 +246,19 @@ namespace CultivationGame.UI
                 var md = pipe.MachineData;
                 if (md == null) continue;
 
+                var guidComp = pipe.GetComponent<MachineGuid>();
+                string guid = guidComp != null ? guidComp.Guid : null;
+                if (string.IsNullOrEmpty(guid))
+                {
+                    if (guidComp == null) guidComp = pipe.gameObject.AddComponent<MachineGuid>();
+                    guidComp.AssignNewGuid();
+                    guid = guidComp.Guid;
+                }
+
                 int rot = Mathf.RoundToInt(pipe.transform.eulerAngles.y / 90f) % 4;
                 data.buildingEntries.Add(new BuildingSaveEntry
                 {
+                    guid = guid,
                     machineId = md.name,
                     posX = pipe.transform.position.x,
                     posY = pipe.transform.position.y,
@@ -246,15 +272,15 @@ namespace CultivationGame.UI
                 var dstMb = pipe.Destination as MonoBehaviour;
                 if (srcMb == null || dstMb == null) continue;
 
+                string sourceGuid = srcMb.GetComponent<MachineGuid>()?.Guid;
+                string destGuid = dstMb.GetComponent<MachineGuid>()?.Guid;
+                if (string.IsNullOrEmpty(sourceGuid) || string.IsNullOrEmpty(destGuid)) continue;
+
                 data.pipeConnections.Add(new PipeConnectionSaveEntry
                 {
-                    pipeId = PosKey(pipe.transform.position),
-                    sourcePosX = srcMb.transform.position.x,
-                    sourcePosY = srcMb.transform.position.y,
-                    sourcePosZ = srcMb.transform.position.z,
-                    destPosX = dstMb.transform.position.x,
-                    destPosY = dstMb.transform.position.y,
-                    destPosZ = dstMb.transform.position.z,
+                    pipeGuid = guid,
+                    sourceGuid = sourceGuid,
+                    destGuid = destGuid,
                     filterItemId = pipe.FilterItem != null ? pipe.FilterItem.ItemId : null
                 });
             }
@@ -278,7 +304,7 @@ namespace CultivationGame.UI
             }
         }
 
-        private void SaveMachineInventory(SaveData data, IMachineConnectable connectable, MonoBehaviour mb)
+        private void SaveMachineInventory(SaveData data, IMachineConnectable connectable, string machineGuid)
         {
             var input = connectable.InputInventory;
             var output = connectable.OutputInventory;
@@ -293,9 +319,7 @@ namespace CultivationGame.UI
 
             var entry = new MachineInventorySaveEntry
             {
-                machinePosX = mb.transform.position.x,
-                machinePosY = mb.transform.position.y,
-                machinePosZ = mb.transform.position.z,
+                machineGuid = machineGuid,
                 recipeId = recipeId
             };
 
@@ -331,9 +355,9 @@ namespace CultivationGame.UI
 
             Debug.Log($"[SaveManager] Loading {data.buildingEntries.Count} machines...");
 
-            // Build position → machine lookups for inventory + pipe connection restoration
-            var machinesByPosition = new Dictionary<Vector3, IMachineConnectable>();
-            var pipesByPosKey = new Dictionary<string, SpiritPipe>();
+            // Build GUID → machine lookups for inventory + pipe connection restoration
+            var machinesByGuid = new Dictionary<string, IMachineConnectable>();
+            var pipesByGuid = new Dictionary<string, SpiritPipe>();
 
             foreach (var entry in data.buildingEntries)
             {
@@ -344,11 +368,20 @@ namespace CultivationGame.UI
                     continue;
                 }
 
+                // Backward compat: generate GUID for old saves that don't have one
+                string guid = entry.guid;
+                if (string.IsNullOrEmpty(guid))
+                    guid = System.Guid.NewGuid().ToString();
+
                 Vector3 position = new Vector3(entry.posX, entry.posY, entry.posZ);
                 Quaternion rotation = Quaternion.Euler(0f, entry.rotation * 90f, 0f);
 
                 GameObject placed = Instantiate(md.prefab, position, rotation);
                 placed.name = md.machineName;
+
+                // Restore persistent GUID
+                var guidComp = placed.AddComponent<MachineGuid>();
+                guidComp.SetGuid(guid);
 
                 // Wire machine data
                 WireMachineData(placed, md);
@@ -363,39 +396,37 @@ namespace CultivationGame.UI
                 // Register for inventory restoration
                 var connectable = placed.GetComponent<IMachineConnectable>();
                 if (connectable != null)
-                    machinesByPosition[position] = connectable;
+                    machinesByGuid[guid] = connectable;
 
                 // Track pipes separately for connection restoration
                 var pipe = placed.GetComponent<SpiritPipe>();
                 if (pipe != null)
-                    pipesByPosKey[PosKey(position)] = pipe;
+                    pipesByGuid[guid] = pipe;
             }
 
             // Restore inventories after all machines have been instantiated
-            RestoreMachineInventories(data, machinesByPosition);
+            RestoreMachineInventories(data, machinesByGuid);
 
             // Restore pipe connections
-            RestorePipeConnections(data, pipesByPosKey, machinesByPosition);
+            RestorePipeConnections(data, pipesByGuid, machinesByGuid);
 
             // Restore ore vein yields
             RestoreOreVeins(data);
         }
 
         private void RestorePipeConnections(SaveData data,
-            Dictionary<string, SpiritPipe> pipesByPosKey,
-            Dictionary<Vector3, IMachineConnectable> machinesByPosition)
+            Dictionary<string, SpiritPipe> pipesByGuid,
+            Dictionary<string, IMachineConnectable> machinesByGuid)
         {
             if (data.pipeConnections == null || data.pipeConnections.Count == 0) return;
 
             foreach (var conn in data.pipeConnections)
             {
-                if (!pipesByPosKey.TryGetValue(conn.pipeId, out var pipe)) continue;
+                if (string.IsNullOrEmpty(conn.pipeGuid)) continue;
+                if (!pipesByGuid.TryGetValue(conn.pipeGuid, out var pipe)) continue;
 
-                var srcPos = new Vector3(conn.sourcePosX, conn.sourcePosY, conn.sourcePosZ);
-                var dstPos = new Vector3(conn.destPosX, conn.destPosY, conn.destPosZ);
-
-                machinesByPosition.TryGetValue(srcPos, out var source);
-                machinesByPosition.TryGetValue(dstPos, out var dest);
+                machinesByGuid.TryGetValue(conn.sourceGuid ?? "", out var source);
+                machinesByGuid.TryGetValue(conn.destGuid ?? "", out var dest);
 
                 if (source != null && dest != null)
                 {
@@ -410,7 +441,7 @@ namespace CultivationGame.UI
                 }
                 else
                 {
-                    Debug.LogWarning($"[SaveManager] Pipe connection missing source or dest — src:{srcPos} dst:{dstPos}");
+                    Debug.LogWarning($"[SaveManager] Pipe connection missing source or dest — pipe:{conn.pipeGuid} src:{conn.sourceGuid} dst:{conn.destGuid}");
                 }
             }
         }
@@ -436,14 +467,14 @@ namespace CultivationGame.UI
             }
         }
 
-        private void RestoreMachineInventories(SaveData data, Dictionary<Vector3, IMachineConnectable> machinesByPosition)
+        private void RestoreMachineInventories(SaveData data, Dictionary<string, IMachineConnectable> machinesByGuid)
         {
             if (data.machineInventories == null || data.machineInventories.Count == 0) return;
 
             foreach (var invEntry in data.machineInventories)
             {
-                Vector3 pos = new Vector3(invEntry.machinePosX, invEntry.machinePosY, invEntry.machinePosZ);
-                if (!machinesByPosition.TryGetValue(pos, out var connectable)) continue;
+                if (string.IsNullOrEmpty(invEntry.machineGuid)) continue;
+                if (!machinesByGuid.TryGetValue(invEntry.machineGuid, out var connectable)) continue;
 
                 // Restore recipe
                 if (!string.IsNullOrEmpty(invEntry.recipeId) && connectable is BaseMachine bm)
@@ -490,8 +521,6 @@ namespace CultivationGame.UI
             else if (placed.GetComponent<SpiritPipe>() is SpiritPipe pipe)
                 pipe.SetMachineData(data);
         }
-
-        private static string PosKey(Vector3 p) => $"{p.x:F3}_{p.y:F3}_{p.z:F3}";
 
         private RecipeData FindRecipeByName(string recipeName)
         {

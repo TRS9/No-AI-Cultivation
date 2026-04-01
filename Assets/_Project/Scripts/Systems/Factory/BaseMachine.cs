@@ -103,6 +103,7 @@ namespace CultivationGame.Systems
 
         public void Interact(GameObject user)
         {
+            Debug.Log($"[BaseMachine] Interact called on '{name}', MachineData={(machineData != null ? machineData.machineName : "NULL")}");
             GameDataEvents.RaiseMachineInteracted(this);
         }
 
