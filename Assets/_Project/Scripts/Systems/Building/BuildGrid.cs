@@ -103,6 +103,9 @@ namespace CultivationGame.Systems
             }
         }
 
+        /// <summary>Clears all occupied cells (used when reloading a save mid-session).</summary>
+        public void ClearAllCells() => _occupiedCells.Clear();
+
         /// <summary>Returns a copy of the occupied-cell set (for saving).</summary>
         public HashSet<Vector2Int> GetOccupiedCells() => new(_occupiedCells);
 

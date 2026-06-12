@@ -30,9 +30,14 @@ namespace CultivationGame.Systems
 
         private void OnValidate()
         {
-            if (string.IsNullOrEmpty(uniqueId))
+#if UNITY_EDITOR
+            // Never bake a GUID into the prefab asset itself — every instance
+            // would silently share it, so collecting one essence would mark
+            // all copies as collected.
+            if (string.IsNullOrEmpty(uniqueId) &&
+                !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject))
                 uniqueId = System.Guid.NewGuid().ToString();
-
+#endif
             if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
             ApplyVisuals();
         }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using CultivationGame.Core;
 using CultivationGame.Data;
+using CultivationGame.Player;
 
 namespace CultivationGame.Systems
 {
@@ -18,6 +19,7 @@ namespace CultivationGame.Systems
         public bool IsDead => healthSystem != null && healthSystem.IsDead;
 
         private Transform _target;
+        private IDamageable _targetDamageable;
         private Vector3 _spawnPoint;
         private Vector3 _patrolTarget;
         private float _attackTimer;
@@ -214,7 +216,7 @@ namespace CultivationGame.Systems
 
         private void UpdateAttack()
         {
-            if (_target == null)
+            if (_target == null || (_targetDamageable != null && _targetDamageable.IsDead))
             {
                 SetState(EnemyState.Idle);
                 return;
@@ -271,7 +273,20 @@ namespace CultivationGame.Systems
         {
             if (IsDead) return;
 
-            if (healthSystem != null)
+            // Realm gate: attackers below the required cultivation realm cannot
+            // harm this enemy (they still draw aggro).
+            if (enemyData != null && enemyData.minimumRealm != null && attacker != null)
+            {
+                var attackerStats = attacker.GetComponent<PlayerStats>();
+                if (attackerStats != null &&
+                    (attackerStats.currentRealm == null ||
+                     attackerStats.currentRealm.realmIndex < enemyData.minimumRealm.realmIndex))
+                {
+                    damage = 0f;
+                }
+            }
+
+            if (healthSystem != null && damage > 0f)
             {
                 healthSystem.TakeDamage(damage);
                 GameDataEvents.RaiseEnemyDamaged(this, damage);
@@ -315,6 +330,7 @@ namespace CultivationGame.Systems
 
             // Only search once; the reference is cached for the lifetime of this enemy.
             _target = FindPlayerTransform();
+            _targetDamageable = _target != null ? _target.GetComponent<IDamageable>() : null;
         }
 
         private static Transform _cachedPlayer;
@@ -333,6 +349,9 @@ namespace CultivationGame.Systems
         private bool CanDetectTarget()
         {
             if (_target == null) return false;
+            // A dead player is no longer a target — enemies disengage instead of
+            // standing at the corpse attacking forever.
+            if (_targetDamageable != null && _targetDamageable.IsDead) return false;
             float sqrDist = (transform.position - _target.position).sqrMagnitude;
             return sqrDist <= enemyData.detectionRange * enemyData.detectionRange;
         }

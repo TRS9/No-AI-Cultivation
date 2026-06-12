@@ -61,10 +61,16 @@ namespace CultivationGame.Player
         public void AddQi(double amount)
         {
             if (currentRealm == null) return;
-            currentQi = System.Math.Min(currentQi + amount, currentRealm.qiCapacity);
+
+            double capacity = currentRealm.qiCapacity;
+            bool wasFull = currentQi >= capacity;
+
+            // Clamp both ends — network drain and crafting costs must never push qi negative.
+            currentQi = System.Math.Min(System.Math.Max(currentQi + amount, 0.0), capacity);
             GameEvents.RaiseQiChanged(currentQi, MaxQi);
 
-            if (currentQi >= currentRealm.qiCapacity)
+            // Rising edge only — meditation at full qi would otherwise fire this every frame.
+            if (!wasFull && currentQi >= capacity)
             {
                 GameEvents.RaiseQiMax();
             }

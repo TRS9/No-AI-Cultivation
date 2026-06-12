@@ -339,6 +339,16 @@ namespace CultivationGame.UI
             {
                 if (connectable.InputInventory == null) return;
 
+                // Enforce the connection range between source and destination —
+                // previously only the raycast length was limited.
+                if (_selectedSourceMono != null &&
+                    Vector3.Distance(_selectedSourceMono.transform.position, mono.transform.position)
+                        > maxConnectionRange)
+                {
+                    _instructionLabel.text = $"Too far apart (max {maxConnectionRange:F0}m) — pick a closer machine...";
+                    return;
+                }
+
                 // Disconnect the old connection before making a new one
                 if (_currentPipe.IsConnected)
                     _currentPipe.Disconnect();

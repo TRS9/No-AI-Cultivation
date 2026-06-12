@@ -21,6 +21,9 @@ namespace CultivationGame.Systems
             if (isExitPortal)
             {
                 if (!SceneTransitionData.HasPendingReturn) return;
+                // Leaving the minor realm — clear the flag so saves made afterwards
+                // don't carry stale realm data.
+                SceneTransitionData.IsMinorRealm = false;
                 SceneManager.LoadScene(SceneTransitionData.ReturnScene);
             }
             else

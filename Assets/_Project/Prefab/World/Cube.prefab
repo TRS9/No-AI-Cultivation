@@ -239,4 +239,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiritEssence
   essenceData: {fileID: 11400000, guid: da9e791fb6be681469e1ea815aff1af3, type: 2}
-  uniqueId: bef32860-d39b-4ed7-8ba2-48c42c8fa546
+  uniqueId: 

@@ -18,15 +18,24 @@ namespace CultivationGame.Systems
             SpawnerTimestamps = new Dictionary<string, long>();
         }
 
-        public static bool IsCollected(string id) => CollectedIds.Contains(id);
+        public static bool IsCollected(string id)
+            => !string.IsNullOrEmpty(id) && CollectedIds.Contains(id);
 
-        public static void MarkCollected(string id) => CollectedIds.Add(id);
+        public static void MarkCollected(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return;
+            CollectedIds.Add(id);
+        }
 
         public static void RecordSpawnerCollection(string id)
-            => SpawnerTimestamps[id] = DateTime.UtcNow.Ticks;
+        {
+            if (string.IsNullOrEmpty(id)) return;
+            SpawnerTimestamps[id] = DateTime.UtcNow.Ticks;
+        }
 
         public static float GetRemainingRespawn(string id, float respawnSeconds)
         {
+            if (string.IsNullOrEmpty(id)) return 0f;
             if (!SpawnerTimestamps.TryGetValue(id, out long ticks)) return 0f;
             var elapsed = (float)(DateTime.UtcNow - new DateTime(ticks)).TotalSeconds;
             return Mathf.Max(0f, respawnSeconds - elapsed);

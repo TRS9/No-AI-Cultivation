@@ -34,8 +34,7 @@ namespace CultivationGame.Systems
 
         private void Start()
         {
-            if (QiNetwork.Instance != null)
-                QiNetwork.Instance.RegisterConduit(this);
+            QiNetwork.GetOrCreate().RegisterConduit(this);
         }
 
         private void OnDestroy()

@@ -48,20 +48,28 @@ namespace CultivationGame.Player
 
         private void AttemptInteraction(InputAction.CallbackContext context)
         {
-            Debug.Log($"[PlayerInteractor] AttemptInteraction: {_nearbyCount} nearby colliders on layer mask {interactableLayer.value}");
+            // Interact with the closest interactable, not the first overlap hit —
+            // overlap results come back in arbitrary order.
+            IInteractable best = null;
+            float bestSqrDist = float.MaxValue;
+
             for (int i = 0; i < _nearbyCount; i++)
             {
                 var col = _nearbyColliders[i];
                 if (col == null) continue;
-                Debug.Log($"[PlayerInteractor] Collider[{i}]: '{col.name}' layer={col.gameObject.layer}");
+
                 var interactable = col.GetComponentInParent<IInteractable>();
-                if (interactable != null)
+                if (interactable == null) continue;
+
+                float sqrDist = (col.transform.position - transform.position).sqrMagnitude;
+                if (sqrDist < bestSqrDist)
                 {
-                    Debug.Log($"[PlayerInteractor] Found IInteractable: {interactable.GetType().Name} on '{(interactable as MonoBehaviour)?.name}'");
-                    interactable.Interact(gameObject);
-                    break;
+                    bestSqrDist = sqrDist;
+                    best = interactable;
                 }
             }
+
+            best?.Interact(gameObject);
         }
     }
 }

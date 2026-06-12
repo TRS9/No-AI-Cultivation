@@ -48,14 +48,12 @@ namespace CultivationGame.UI
 
         public void InitializeUI(VisualElement root)
         {
-            Debug.Log($"[MachineInspectUI] InitializeUI called, root={root != null}");
             _root = root;
             TryBindPanel();
         }
 
         private void OnEnable()
         {
-            Debug.Log("[MachineInspectUI] OnEnable — subscribing to events");
             GameDataEvents.OnMachineInteracted -= OnMachineInteracted;
             GameEvents.OnPanelStateChanged -= OnPanelStateChanged;
             GameDataEvents.OnMachineInteracted += OnMachineInteracted;
@@ -128,6 +126,13 @@ namespace CultivationGame.UI
             if (_currentConnectable == null || _panel == null) return;
             if (_panel.style.display == DisplayStyle.None) return;
 
+            // Close the panel when the inspected machine is removed from the world.
+            if (_currentConnectable is MonoBehaviour mb && mb == null)
+            {
+                RequestClose();
+                return;
+            }
+
             UpdateStatus();
             if (_currentMachine != null)
             {
@@ -148,9 +153,6 @@ namespace CultivationGame.UI
 
         private void OnMachineInteracted(MonoBehaviour machine)
         {
-            Debug.Log($"[MachineInspectUI] OnMachineInteracted: '{machine?.name}', panel={_panel != null}, " +
-                $"isIMachineConnectable={machine is IMachineConnectable}, GameStateManager={GameStateManager.Instance != null}");
-
             if (_panel == null)
                 TryBindPanel();
 
@@ -159,10 +161,6 @@ namespace CultivationGame.UI
                 _currentConnectable = connectable;
                 _currentMachine = machine as BaseMachine; // null for Splitter, Merger, etc.
                 GameStateManager.Instance?.OpenPanel(PanelId);
-            }
-            else
-            {
-                Debug.LogWarning($"[MachineInspectUI] Machine '{machine?.name}' is NOT IMachineConnectable — UI will not open.");
             }
         }
 
@@ -197,12 +195,8 @@ namespace CultivationGame.UI
         private void Open()
         {
             if (_panel == null || _currentConnectable == null)
-            {
-                Debug.LogWarning($"[MachineInspectUI] Open() aborted: panel={_panel != null}, connectable={_currentConnectable != null}");
                 return;
-            }
 
-            Debug.Log("[MachineInspectUI] Open() — showing panel");
             _panel.style.display = DisplayStyle.Flex;
 
             if (_machineNameLabel != null)
@@ -504,17 +498,9 @@ namespace CultivationGame.UI
             var snapshot = inventory.GetSnapshot();
             foreach (var kv in snapshot)
             {
-                int remaining = kv.Value;
-                while (remaining > 0)
-                {
-                    int removed = inventory.TryRemove(kv.Key, remaining);
-                    if (removed <= 0) break;
-
-                    for (int i = 0; i < removed; i++)
-                        playerInventory.AddItem(kv.Key);
-
-                    remaining -= removed;
-                }
+                int removed = inventory.TryRemove(kv.Key, kv.Value);
+                if (removed > 0)
+                    playerInventory.AddItem(kv.Key, removed); // one event per stack, not per item
             }
         }
     }

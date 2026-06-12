@@ -31,6 +31,7 @@ namespace CultivationGame.Player
         private Camera _mainCamera;
         private bool _isTransitioning;
         private bool _inSpiritSense;
+        private bool _desiredSpiritSense;
         private bool _isBuildMode;
         private InputActionMap _playerMap;
         private InputActionMap _buildModeMap;
@@ -148,7 +149,11 @@ namespace CultivationGame.Player
 
         private void HandleMeditationToggled(bool isMeditating)
         {
+            // Remember the latest request — toggles arriving mid-transition used to
+            // be dropped, desyncing the camera from the meditation state.
+            _desiredSpiritSense = isMeditating;
             if (_isTransitioning) return;
+            if (_inSpiritSense == isMeditating) return;
             StartCoroutine(TransitionCoroutine(isMeditating));
         }
 
@@ -163,6 +168,10 @@ namespace CultivationGame.Player
 
             _inSpiritSense = toSpiritSense;
             _isTransitioning = false;
+
+            // Catch up with a toggle that happened while we were animating.
+            if (_desiredSpiritSense != _inSpiritSense)
+                StartCoroutine(TransitionCoroutine(_desiredSpiritSense));
         }
 
         private IEnumerator TransitionToSpiritSense()

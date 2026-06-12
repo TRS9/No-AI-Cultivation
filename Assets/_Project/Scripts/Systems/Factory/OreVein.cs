@@ -23,6 +23,7 @@ namespace CultivationGame.Systems
         private Collider _collider;
         private int _remainingYield;
         private bool _isDepleted;
+        private bool _loadedFromSave;
         private static MaterialPropertyBlock _propertyBlock;
 
         // --- Public API ---
@@ -31,11 +32,16 @@ namespace CultivationGame.Systems
         public bool IsDepleted => _isDepleted;
         public string UniqueId => uniqueId;
 
+        /// <summary>
+        /// Restores the persisted yield. Called by SaveManager before Start();
+        /// Start() must not overwrite this state again.
+        /// </summary>
         public void LoadRemainingYield(int yield)
         {
             _remainingYield = yield;
             _isDepleted = yield <= 0;
-            SetDepleted(_isDepleted);
+            _loadedFromSave = true;
+            ApplyVisuals();
         }
 
         private void Awake()
@@ -46,11 +52,15 @@ namespace CultivationGame.Systems
 
         /// <summary>
         /// Called after procedural spawning to assign vein configuration at runtime.
+        /// Pass a deterministic <paramref name="persistentId"/> (e.g. derived from the
+        /// realm seed) so the same vein keeps the same identity across regenerations.
         /// </summary>
-        public void Initialize(OreVeinData data)
+        public void Initialize(OreVeinData data, string persistentId = null)
         {
             veinData = data;
-            if (string.IsNullOrEmpty(uniqueId))
+            if (!string.IsNullOrEmpty(persistentId))
+                uniqueId = persistentId;
+            else if (string.IsNullOrEmpty(uniqueId))
                 uniqueId = System.Guid.NewGuid().ToString();
         }
 
@@ -58,20 +68,33 @@ namespace CultivationGame.Systems
         {
             if (veinData == null) return;
 
+            if (_loadedFromSave)
+            {
+                // Saved state already applied — only resume a pending respawn timer.
+                if (_isDepleted && veinData.canRespawn)
+                {
+                    float remainingTime = WorldState.GetRemainingRespawn(uniqueId, veinData.respawnTimeSeconds);
+                    if (remainingTime > 0f)
+                        StartCoroutine(RespawnCoroutine(remainingTime));
+                    else
+                        Respawn(); // timer elapsed while the game was closed
+                }
+                ApplyVisuals();
+                return;
+            }
+
             // Check if this vein was depleted and is still respawning
             float remaining = WorldState.GetRemainingRespawn(uniqueId, veinData.respawnTimeSeconds);
             if (remaining > 0f)
             {
                 _isDepleted = true;
                 _remainingYield = 0;
-                SetDepleted(true);
                 StartCoroutine(RespawnCoroutine(remaining));
             }
             else
             {
                 _remainingYield = veinData.totalYield;
                 _isDepleted = false;
-                SetDepleted(false);
             }
 
             ApplyVisuals();
@@ -79,9 +102,13 @@ namespace CultivationGame.Systems
 
         private void OnValidate()
         {
-            if (string.IsNullOrEmpty(uniqueId))
+#if UNITY_EDITOR
+            // Never bake a GUID into the prefab asset itself — every instance
+            // would silently share it and corrupt collection/respawn persistence.
+            if (string.IsNullOrEmpty(uniqueId) &&
+                !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject))
                 uniqueId = System.Guid.NewGuid().ToString();
-
+#endif
             if (_meshRenderer == null) _meshRenderer = GetComponent<MeshRenderer>();
             ApplyVisuals();
         }
@@ -97,13 +124,12 @@ namespace CultivationGame.Systems
             if (inventory == null) return;
 
             int amount = Mathf.Min(veinData.yieldPerExtraction, _remainingYield);
-            for (int i = 0; i < amount; i++)
-                inventory.AddItem(veinData.resource);
+            if (amount <= 0) return;
 
+            inventory.AddItem(veinData.resource, amount);
             _remainingYield -= amount;
 
-            if (amount > 0)
-                GameDataEvents.RaiseResourceExtracted(veinData.resource, amount);
+            GameDataEvents.RaiseResourceExtracted(veinData.resource, amount);
 
             if (_remainingYield <= 0)
                 Deplete();
@@ -130,7 +156,7 @@ namespace CultivationGame.Systems
         {
             _isDepleted = true;
             _remainingYield = 0;
-            SetDepleted(true);
+            ApplyVisuals();
 
             if (veinData.canRespawn)
             {
@@ -142,30 +168,30 @@ namespace CultivationGame.Systems
         private IEnumerator RespawnCoroutine(float delay)
         {
             yield return new WaitForSeconds(delay);
+            Respawn();
+        }
+
+        private void Respawn()
+        {
             _remainingYield = veinData.totalYield;
             _isDepleted = false;
-            SetDepleted(false);
+            ApplyVisuals();
         }
 
-        private void SetDepleted(bool depleted)
-        {
-            // Visually indicate depletion (dim the vein)
-            if (_meshRenderer != null)
-            {
-                if (_propertyBlock == null) _propertyBlock = new MaterialPropertyBlock();
-                _meshRenderer.GetPropertyBlock(_propertyBlock);
-                Color color = veinData != null ? veinData.veinColor : Color.gray;
-                _propertyBlock.SetColor("_BaseColor", depleted ? color * 0.3f : color);
-                _meshRenderer.SetPropertyBlock(_propertyBlock);
-            }
-        }
-
+        /// <summary>
+        /// Single source of truth for the vein color — depleted veins are dimmed.
+        /// (Previously SetDepleted and ApplyVisuals fought over the same property.)
+        /// </summary>
         private void ApplyVisuals()
         {
-            if (veinData == null || _meshRenderer == null) return;
+            if (_meshRenderer == null) return;
+
             if (_propertyBlock == null) _propertyBlock = new MaterialPropertyBlock();
+            Color color = veinData != null ? veinData.veinColor : Color.gray;
+            if (_isDepleted) color *= 0.3f;
+
             _meshRenderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetColor("_BaseColor", veinData.veinColor);
+            _propertyBlock.SetColor("_BaseColor", color);
             _meshRenderer.SetPropertyBlock(_propertyBlock);
         }
     }

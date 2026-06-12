@@ -58,8 +58,8 @@ namespace CultivationGame.Systems
             playerStats.currentRealm = nextRealm;
             playerStats.currentQi = 0;
 
-            CultivationBuffs.DamageMultiplier = nextRealm.baseDamage / 5f;
-            CultivationBuffs.DefenseMultiplier = 1f + nextRealm.baseDefense * 0.1f;
+            // Realm-based combat scaling is read from currentRealm.baseDamage/baseDefense
+            // at the point of use — CultivationBuffs stays reserved for temporary pill buffs.
 
             Debug.Log($"Breakthrough successful! New realm: {nextRealm.realmName}");
 

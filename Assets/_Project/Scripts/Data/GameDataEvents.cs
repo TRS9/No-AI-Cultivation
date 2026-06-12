@@ -128,5 +128,11 @@ namespace CultivationGame.Data
         public static event LootDropped OnLootDropped;
         public static void RaiseLootDropped(ItemData item, int amount, UnityEngine.Vector3 position)
             => OnLootDropped?.Invoke(item, amount, position);
+
+        // --- Dialogue (Phase 7) ---
+        public delegate void DialogueRequested(NPCData npc);
+        public static event DialogueRequested OnDialogueRequested;
+        public static void RaiseDialogueRequested(NPCData npc)
+            => OnDialogueRequested?.Invoke(npc);
     }
 }

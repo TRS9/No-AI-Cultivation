@@ -44,9 +44,13 @@ namespace CultivationGame.Systems
 
         private void OnValidate()
         {
-            if (string.IsNullOrEmpty(uniqueId))
+#if UNITY_EDITOR
+            // Never bake a GUID into the prefab asset itself — instances would
+            // share it and their respawn timers would collide.
+            if (string.IsNullOrEmpty(uniqueId) &&
+                !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject))
                 uniqueId = System.Guid.NewGuid().ToString();
-
+#endif
             if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
             ApplyVisuals();
         }

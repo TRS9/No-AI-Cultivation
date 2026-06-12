@@ -107,4 +107,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Systems::CultivationGame.Systems.OreVein
   veinData: {fileID: 11400000, guid: bd64461442d1cf641be33c6b470c57b2, type: 2}
-  uniqueId: acb00cc1-f9d4-4a92-9679-0c2d9c9c4e17
+  uniqueId: 

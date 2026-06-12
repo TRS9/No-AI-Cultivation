@@ -50,6 +50,14 @@ namespace CultivationGame.Core
             OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
 
+        /// <summary>Brings a dead entity back to life at full health (player respawn).</summary>
+        public void Revive()
+        {
+            IsDead = false;
+            CurrentHealth = maxHealth;
+            OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+        }
+
         public void SetMaxHealth(float newMax, bool healToFull = false)
         {
             maxHealth = newMax;

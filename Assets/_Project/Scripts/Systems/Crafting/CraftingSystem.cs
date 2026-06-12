@@ -24,16 +24,25 @@ namespace CultivationGame.Systems
         public bool CanCraft(RecipeData recipe)
         {
             if (recipe == null || _isCrafting || playerInventory == null) return false;
+            return HasRequirements(recipe);
+        }
+
+        /// <summary>
+        /// Checks qi, realm, and ingredients. Used both before starting a craft and
+        /// again when it finishes — the player may have spent ingredients or qi
+        /// during the crafting duration.
+        /// </summary>
+        private bool HasRequirements(RecipeData recipe)
+        {
             if (playerStats != null && playerStats.currentQi < recipe.qiCost) return false;
             if (recipe.requiredRealm != null && playerStats != null &&
                 playerStats.currentRealm != null &&
                 playerStats.currentRealm.realmIndex < recipe.requiredRealm.realmIndex) return false;
 
-            var items = playerInventory.GetItems();
             foreach (var ingredient in recipe.inputs)
             {
                 if (ingredient.item == null) continue;
-                if (!items.TryGetValue(ingredient.item, out int count) || count < ingredient.amount)
+                if (!playerInventory.HasItem(ingredient.item, ingredient.amount))
                     return false;
             }
             return true;
@@ -62,19 +71,31 @@ namespace CultivationGame.Systems
                 }
             }
 
+            // Re-validate — ingredients/qi may have been consumed elsewhere while
+            // the craft was running. Never deduct what the player no longer has.
+            if (!HasRequirements(recipe))
+            {
+                _isCrafting = false;
+                GameDataEvents.RaiseCraftingFailed(recipe);
+                onComplete?.Invoke(false);
+                yield break;
+            }
+
             if (recipe.qiCost > 0)
                 GameEvents.RaiseAddQi(-recipe.qiCost);
 
             foreach (var ingredient in recipe.inputs)
-                RemoveItems(ingredient.item, ingredient.amount);
+            {
+                if (ingredient.item == null) continue;
+                playerInventory.RemoveItem(ingredient.item, ingredient.amount);
+            }
 
             bool success = recipe.successRate >= 1f || UnityEngine.Random.value <= recipe.successRate;
 
             if (success)
             {
                 foreach (var output in recipe.outputs)
-                    for (int i = 0; i < output.amount; i++)
-                        playerInventory.AddItem(output.item);
+                    playerInventory.AddItem(output.item, output.amount);
 
                 GameDataEvents.RaiseCraftingCompleted(recipe);
             }
@@ -85,16 +106,6 @@ namespace CultivationGame.Systems
 
             _isCrafting = false;
             onComplete?.Invoke(success);
-        }
-
-        private void RemoveItems(ItemData item, int amount)
-        {
-            if (item == null) return;
-            var items = playerInventory.GetItems();
-            if (!items.ContainsKey(item)) return;
-            items[item] -= amount;
-            if (items[item] <= 0) items.Remove(item);
-            GameEvents.RaiseInventoryChanged();
         }
     }
 }

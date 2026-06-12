@@ -27,6 +27,7 @@ namespace CultivationGame.Player
 
         private float _currentSpeed;
         private float _regenTimer;
+        private float _lastRaisedStamina = float.MinValue;
         private Vector2 _moveDirection;
         private Vector3 _targetMoveVector;
         private Vector3 _smoothedDirection;
@@ -66,12 +67,16 @@ namespace CultivationGame.Player
         {
             jump.action.performed += HandleJump;
             GameEvents.OnMeditationToggled += HandleMeditationBlock;
+            GameEvents.OnPlayerDied += HandlePlayerDied;
+            GameEvents.OnPlayerRespawned += HandlePlayerRespawned;
         }
 
         private void OnDisable()
         {
             jump.action.performed -= HandleJump;
             GameEvents.OnMeditationToggled -= HandleMeditationBlock;
+            GameEvents.OnPlayerDied -= HandlePlayerDied;
+            GameEvents.OnPlayerRespawned -= HandlePlayerRespawned;
         }
 
         private void Update()
@@ -176,7 +181,14 @@ namespace CultivationGame.Player
             }
 
             currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
-            GameEvents.RaiseStaminaChanged(currentStamina, maxStamina);
+
+            // Only notify the UI when the value actually moved — this runs every
+            // physics tick and used to rebuild the stamina bar 50×/s while idle.
+            if (!Mathf.Approximately(currentStamina, _lastRaisedStamina))
+            {
+                _lastRaisedStamina = currentStamina;
+                GameEvents.RaiseStaminaChanged(currentStamina, maxStamina);
+            }
         }
 
         private void ApplyMovement()
@@ -223,12 +235,26 @@ namespace CultivationGame.Player
 
         private void HandleMeditationBlock(bool isMeditating)
         {
-            isControlBlocked = isMeditating;
-            if (isMeditating)
+            SetControlBlocked(isMeditating);
+        }
+
+        private void HandlePlayerDied() => SetControlBlocked(true);
+
+        private void HandlePlayerRespawned() => SetControlBlocked(false);
+
+        private void SetControlBlocked(bool blocked)
+        {
+            isControlBlocked = blocked;
+            if (blocked)
             {
                 _moveDirection    = Vector2.zero;
                 _targetMoveVector = Vector3.zero;
                 rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+
+                // Update is skipped while blocked — freeze the locomotion animation
+                // explicitly so the character doesn't keep walking in place.
+                if (animator != null)
+                    animator.SetFloat("Speed", 0f);
             }
         }
     }

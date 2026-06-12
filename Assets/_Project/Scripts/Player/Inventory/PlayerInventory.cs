@@ -13,16 +13,21 @@ namespace CultivationGame.Player
 
         public void AddItem(ItemData item)
         {
-            if (item == null) return;
+            AddItem(item, 1);
+        }
 
-            if (items.ContainsKey(item))
-            {
-                items[item]++;
-            }
+        /// <summary>
+        /// Adds a whole stack in one call and raises a single InventoryChanged event.
+        /// Loot drops and storage transfers use this to avoid one UI rebuild per item.
+        /// </summary>
+        public void AddItem(ItemData item, int amount)
+        {
+            if (item == null || amount <= 0) return;
+
+            if (items.TryGetValue(item, out int count))
+                items[item] = count + amount;
             else
-            {
-                items.Add(item, 1);
-            }
+                items.Add(item, amount);
 
             GameEvents.RaiseInventoryChanged();
         }

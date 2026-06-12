@@ -80,7 +80,8 @@ namespace CultivationGame.Systems
 
             // Try center first
             float centerY = SampleY(0f, 0f);
-            if (centerY > waterHeight && SampleSlope(0f, 0f) < maxSlope)
+            if (centerY > waterHeight && SampleSlope(0f, 0f) < maxSlope
+                && !SpawnObstructed(0f, centerY, 0f))
                 return new Vector3(0f, centerY + 1.5f, 0f);
 
             // Spiral search outward
@@ -96,6 +97,7 @@ namespace CultivationGame.Systems
                     float y = SampleY(x, z);
                     if (y <= waterHeight) continue;
                     if (SampleSlope(x, z) > maxSlope) continue;
+                    if (SpawnObstructed(x, y, z)) continue;
 
                     return new Vector3(x, y + 1.5f, z);
                 }
@@ -104,6 +106,17 @@ namespace CultivationGame.Systems
             // Fallback — center clamped above water
             float fallbackY = Mathf.Max(SampleY(0f, 0f), waterHeight) + 1.5f;
             return new Vector3(0f, fallbackY, 0f);
+        }
+
+        /// <summary>
+        /// True when decorations/props occupy the candidate spawn spot. The sphere
+        /// floats above the surface so the terrain collider itself is not detected,
+        /// while prop colliders extending upward are.
+        /// </summary>
+        private bool SpawnObstructed(float x, float groundY, float z)
+        {
+            return Physics.CheckSphere(new Vector3(x, groundY + 1.6f, z), 0.9f,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
         }
 
         // -------------------------------------------------------------------------
@@ -424,13 +437,16 @@ namespace CultivationGame.Systems
 
             if (water.GetComponent<Collider>() == null)
             {
+                // Trigger only — a solid collider on the ground-check layer would let
+                // the player walk on the water surface instead of wading into lakes.
                 var col = water.AddComponent<BoxCollider>();
-                col.size   = new Vector3(1f, 0.1f, 1f);
-                col.center = Vector3.zero;
+                col.size      = new Vector3(1f, 0.1f, 1f);
+                col.center    = Vector3.zero;
+                col.isTrigger = true;
             }
 
-            if (_terrainLayer != -1)
-                SetLayerRecursive(water, _terrainLayer, _interactableLayer);
+            // Built-in Water layer (4) — excluded from ground checks and build raycasts.
+            SetLayerRecursive(water, 4, -1);
         }
 
         // -------------------------------------------------------------------------
@@ -748,6 +764,7 @@ namespace CultivationGame.Systems
             float safeRadius = _halfSize * 0.8f;
             float waterHeight = config.water.enabled ? config.water.waterLevel * config.maxHeight : -1f;
             var   placed      = new List<Vector2>();
+            int   veinIndex   = 0;
 
             foreach (var entry in config.availableResources)
             {
@@ -774,9 +791,12 @@ namespace CultivationGame.Systems
                     // Slope check — reject steep terrain
                     if (SampleSlope(candidate.x, candidate.y) > config.maxVeinSlopeDegrees) continue;
 
-                    // Physics overlap check — avoid spawning inside other objects
+                    // Physics overlap check — avoid spawning inside other objects.
+                    // The probe floats above the surface so the terrain collider
+                    // itself never triggers a rejection.
                     Vector3 worldPos = new Vector3(candidate.x, groundY + 0.5f, candidate.y);
-                    if (Physics.CheckSphere(worldPos, 1f))
+                    if (Physics.CheckSphere(new Vector3(candidate.x, groundY + 1.6f, candidate.y), 0.9f,
+                            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
                         continue;
 
                     var instance = TryInstantiate(entry.oreVeinData.prefab, worldPos, Quaternion.identity,
@@ -786,7 +806,14 @@ namespace CultivationGame.Systems
                     {
                         var oreVein = instance.GetComponent<OreVein>();
                         if (oreVein != null)
-                            oreVein.Initialize(entry.oreVeinData);
+                        {
+                            // Deterministic ID — the same seed regenerates the same
+                            // world, so vein identity must survive regeneration for
+                            // depletion state to persist across save/load.
+                            oreVein.Initialize(entry.oreVeinData,
+                                $"realm_{SceneTransitionData.RealmSeed}_vein_{veinIndex}");
+                            veinIndex++;
+                        }
 
                         if (_interactableLayer != -1)
                             SetLayerRecursive(instance, _interactableLayer, -1);

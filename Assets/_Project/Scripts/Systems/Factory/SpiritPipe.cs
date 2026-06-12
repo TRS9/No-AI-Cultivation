@@ -92,6 +92,15 @@ namespace CultivationGame.Systems
         {
             if (_source == null || _destination == null) return;
 
+            // Self-heal: if either endpoint machine was destroyed (removed by the
+            // player), its C# inventory object would otherwise keep accepting items
+            // into the void. Disconnect instead of transferring into a ghost buffer.
+            if ((_source as MonoBehaviour) == null || (_destination as MonoBehaviour) == null)
+            {
+                Disconnect();
+                return;
+            }
+
             var sourceOutput = _source.OutputInventory;
             var destInput = _destination.InputInventory;
 
