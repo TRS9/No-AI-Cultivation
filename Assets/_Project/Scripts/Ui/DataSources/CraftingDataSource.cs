@@ -206,6 +206,11 @@ namespace CultivationGame.UI
 
         private void RefreshCraftableState()
         {
+            // Runs on every inventory change — pointless while the panel is closed,
+            // since BuildRecipeList recomputes everything on open.
+            if (GameStateManager.Instance == null || !GameStateManager.Instance.IsPanelOpen("Crafting"))
+                return;
+
             for (int i = 0; i < Recipes.Count; i++)
             {
                 var slot = Recipes[i];

@@ -8,6 +8,8 @@ namespace CultivationGame.Systems
     /// Core machine component. Handles input/output inventories, recipe selection,
     /// and timer-based processing. Attach to any placed machine prefab.
     /// Requires Qi from the QiNetwork to operate (IsPowered must be true).
+    /// Idle machines only re-check their recipe when something relevant changed
+    /// (inventory contents, recipe, power) instead of every frame.
     /// </summary>
     public class BaseMachine : MonoBehaviour, IInteractable, IMachineConnectable
     {
@@ -27,6 +29,8 @@ namespace CultivationGame.Systems
         private float _processingDuration;
         private bool _isProcessing;
         private bool _isStalled;
+        private bool _isPowered;
+        private bool _recheckRecipe = true;
 
         // --- Public API ---
         public MachineData MachineData => machineData;
@@ -36,9 +40,18 @@ namespace CultivationGame.Systems
         public bool IsProcessing => _isProcessing;
 
         /// <summary>
-        /// Set by QiNetwork each frame. Machine only processes when powered.
+        /// Set by QiNetwork. Machine only processes when powered.
+        /// A rising edge triggers a recipe re-check so idle machines wake up.
         /// </summary>
-        public bool IsPowered { get; set; }
+        public bool IsPowered
+        {
+            get => _isPowered;
+            set
+            {
+                if (value && !_isPowered) _recheckRecipe = true;
+                _isPowered = value;
+            }
+        }
 
         public float ProcessingProgress => _processingDuration > 0f
             ? Mathf.Clamp01(_processingTimer / _processingDuration) : 0f;
@@ -50,12 +63,15 @@ namespace CultivationGame.Systems
         {
             _inputInventory = new MachineInventory(inputCapacity);
             _outputInventory = new MachineInventory(outputCapacity);
+
+            // Any inventory change may unblock processing (inputs arrived, output drained).
+            _inputInventory.OnChanged += MarkRecipeDirty;
+            _outputInventory.OnChanged += MarkRecipeDirty;
         }
 
         private void Start()
         {
-            if (QiNetwork.Instance != null)
-                QiNetwork.Instance.RegisterMachine(this);
+            QiNetwork.GetOrCreate().RegisterMachine(this);
         }
 
         private void OnDestroy()
@@ -85,25 +101,29 @@ namespace CultivationGame.Systems
                     CompleteProcessing();
                 }
             }
-            else
+            else if (_recheckRecipe)
             {
+                _recheckRecipe = false;
                 TryStartProcessing();
             }
         }
 
+        private void MarkRecipeDirty() => _recheckRecipe = true;
+
         public void SetMachineData(MachineData data)
         {
             machineData = data;
+            _recheckRecipe = true;
         }
 
         public void SetRecipe(RecipeData recipe)
         {
             currentRecipe = recipe;
+            _recheckRecipe = true;
         }
 
         public void Interact(GameObject user)
         {
-            Debug.Log($"[BaseMachine] Interact called on '{name}', MachineData={(machineData != null ? machineData.machineName : "NULL")}");
             GameDataEvents.RaiseMachineInteracted(this);
         }
 
@@ -160,6 +180,7 @@ namespace CultivationGame.Systems
         private void CompleteProcessing()
         {
             _isProcessing = false;
+            _recheckRecipe = true; // immediately try the next cycle
 
             if (currentRecipe == null) return;
 

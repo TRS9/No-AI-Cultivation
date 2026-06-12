@@ -23,7 +23,10 @@ namespace CultivationGame.Systems
 
         // Reset static state on every play-mode start (even if Domain Reload is disabled).
         [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnLoad()
+        private static void ResetOnLoad() => ResetAll();
+
+        /// <summary>Clears all transition state. Used by play-mode init and New Game.</summary>
+        public static void ResetAll()
         {
             HasPendingReturn      = false;
             HasPendingDestination = false;

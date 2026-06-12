@@ -43,14 +43,8 @@ namespace CultivationGame.Systems
             {
                 GameDataEvents.RaiseLootDropped(result.item, result.amount, transform.position);
 
-                if (inventory != null)
-                {
-                    for (int i = 0; i < result.amount; i++)
-                    {
-                        inventory.AddItem(result.item);
-                    }
-                    Debug.Log($"Loot: {result.amount}x {result.item.name} added to inventory.");
-                }
+                // Batch add — one inventory event per stack instead of one per item.
+                inventory?.AddItem(result.item, result.amount);
             }
         }
     }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using System.Linq;
 using CultivationGame.Core;
 using CultivationGame.Data;
 using CultivationGame.Player;
@@ -9,6 +8,17 @@ using CultivationGame.Systems;
 
 namespace CultivationGame.UI
 {
+    /// <summary>
+    /// Persistent save/load coordinator.
+    ///
+    /// Lives across scene loads (DontDestroyOnLoad) so saving works from every
+    /// scene, quitting anywhere autosaves, and portal transitions no longer
+    /// re-read the save file (which used to roll back unsaved progress).
+    ///
+    /// Machines are tagged with a scene key ("Universe", "Grotto",
+    /// "MinorRealm#&lt;seed&gt;") so each scene only saves/restores its own
+    /// buildings while entries from other scenes are preserved in the file.
+    /// </summary>
     [DefaultExecutionOrder(-100)]
     public class SaveManager : MonoBehaviour
     {
@@ -25,181 +35,207 @@ namespace CultivationGame.UI
         [Header("Machine References")]
         [Tooltip("All MachineData assets in the project. Used to look up machines by name when loading.")]
         public List<MachineData> allMachines;
-        [Tooltip("The build grid used to track occupied cells.")]
+        [Tooltip("The build grid used to track occupied cells. Re-resolved per scene.")]
         public BuildGrid buildGrid;
         [Tooltip("Recipe database for restoring machine recipes on load.")]
         public RecipeDatabase recipeDatabase;
         [Tooltip("Layer mask that placed machines should be assigned to (must match PlayerInteractor's interactableLayer).")]
         [SerializeField] private LayerMask machineLayer;
 
+        [Header("Scenes")]
+        [Tooltip("Scene loaded when starting a new game.")]
+        [SerializeField] private string mainSceneName = "Universe";
+
         private int _interactableLayerIndex;
+        private SaveData _data;               // in-memory save state (carries all scenes)
+        private bool _pendingPlayerRestore;   // apply player block on next scene restore
 
         public static SaveManager Instance { get; private set; }
 
+        // ------------------------------------------------------------------ //
+        //  Lifecycle
+        // ------------------------------------------------------------------ //
+
         private void Awake()
         {
-            if (Instance == null) Instance = this;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
 
             _interactableLayerIndex = LayerMask.NameToLayer("Interactable");
             if (_interactableLayerIndex < 0)
             {
-                Debug.LogWarning("[SaveManager] 'Interactable' layer not found \u2014 falling back to machineLayer.");
+                Debug.LogWarning("[SaveManager] 'Interactable' layer not found — falling back to machineLayer.");
                 _interactableLayerIndex = LayerHelper.GetLayerFromMask(machineLayer);
             }
 
-            Load();
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+            _data = SaveSystem.LoadGame();
+            if (_data == null) return;
+
+            ApplyWorldState(_data);
+            _pendingPlayerRestore = true;
+
+            // Redirect to the scene that was active when the game was saved.
+            // Scene restoration happens in OnSceneLoaded (fires for the initial
+            // scene as well, since we subscribed during Awake).
+            string savedScene = string.IsNullOrEmpty(_data.currentScene)
+                ? SceneManager.GetActiveScene().name : _data.currentScene;
+            if (savedScene != SceneManager.GetActiveScene().name)
+            {
+                PrepareSceneTransition(_data);
+                SceneManager.LoadScene(savedScene);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+            }
         }
 
         private void OnApplicationQuit() => Save();
 
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            RefreshSceneRefs();
+            if (_data == null) return;
+            RestoreCurrentScene();
+        }
+
+        /// <summary>
+        /// Re-resolves references that are scene-local (build grid) or may have
+        /// been replaced (player after New Game).
+        /// </summary>
+        private void RefreshSceneRefs()
+        {
+            if (buildGrid == null) buildGrid = FindFirstObjectByType<BuildGrid>();
+
+            if (playerStats == null) playerStats = FindFirstObjectByType<PlayerStats>();
+            if (playerStats != null)
+            {
+                if (playerInventory == null) playerInventory = playerStats.GetComponent<PlayerInventory>();
+                if (playerTransform == null) playerTransform = playerStats.transform;
+                if (playerRigidbody == null) playerRigidbody = playerStats.GetComponent<Rigidbody>();
+            }
+        }
+
+        /// <summary>
+        /// Scene identity used to partition machine save entries. Minor realms are
+        /// keyed by seed so each generated world keeps its own buildings.
+        /// </summary>
+        private static string CurrentSceneKey()
+        {
+            string name = SceneManager.GetActiveScene().name;
+            return SceneTransitionData.IsMinorRealm
+                ? $"{name}#{SceneTransitionData.RealmSeed}"
+                : name;
+        }
+
+        // Legacy saves predate scene keys; all of their machines were saved in the main scene.
+        private string NormalizeKey(string key)
+            => string.IsNullOrEmpty(key) ? mainSceneName : key;
+
+        // ------------------------------------------------------------------ //
+        //  Save
+        // ------------------------------------------------------------------ //
+
         public void Save()
         {
-            var data = new SaveData();
+            if (_data == null) _data = new SaveData();
 
             if (playerStats != null && playerInventory != null && playerTransform != null)
             {
-                data.currentQi = playerStats.currentQi;
-                data.currentRealmIndex = playerStats.currentRealm?.realmIndex ?? 0;
-                data.positionX = playerTransform.position.x;
-                data.positionY = playerTransform.position.y;
-                data.positionZ = playerTransform.position.z;
-                data.rotationY = playerTransform.eulerAngles.y;
+                _data.currentQi = playerStats.currentQi;
+                _data.currentRealmIndex = playerStats.currentRealm?.realmIndex ?? 0;
+                _data.positionX = playerTransform.position.x;
+                _data.positionY = playerTransform.position.y;
+                _data.positionZ = playerTransform.position.z;
+                _data.rotationY = playerTransform.eulerAngles.y;
 
+                _data.inventoryEntries.Clear();
                 foreach (var kvp in playerInventory.GetItems())
-                    data.inventoryEntries.Add(new InventorySaveEntry { essenceId = kvp.Key.ItemId, count = kvp.Value });
+                    _data.inventoryEntries.Add(new InventorySaveEntry { essenceId = kvp.Key.ItemId, count = kvp.Value });
             }
             else
             {
-                Debug.LogWarning("[SaveManager] Player references missing \u2014 saving machines only.");
+                Debug.LogWarning("[SaveManager] Player references missing — saving machines only.");
             }
 
             // World state
-            data.collectedEssenceIds = new List<string>(WorldState.CollectedIds);
+            _data.collectedEssenceIds = new List<string>(WorldState.CollectedIds);
+            _data.spawnerEntries.Clear();
             foreach (var kv in WorldState.SpawnerTimestamps)
-                data.spawnerEntries.Add(new SpawnerSaveEntry { spawnerId = kv.Key, collectedAtTicks = kv.Value });
+                _data.spawnerEntries.Add(new SpawnerSaveEntry { spawnerId = kv.Key, collectedAtTicks = kv.Value });
 
             // Scene persistence
-            data.currentScene = SceneManager.GetActiveScene().name;
+            _data.currentScene = SceneManager.GetActiveScene().name;
             if (SceneTransitionData.HasPendingReturn)
             {
-                data.returnScene = SceneTransitionData.ReturnScene;
-                data.returnPositionX = SceneTransitionData.ReturnPosition.x;
-                data.returnPositionY = SceneTransitionData.ReturnPosition.y;
-                data.returnPositionZ = SceneTransitionData.ReturnPosition.z;
-                data.returnRotationY = SceneTransitionData.ReturnRotationY;
+                _data.returnScene = SceneTransitionData.ReturnScene;
+                _data.returnPositionX = SceneTransitionData.ReturnPosition.x;
+                _data.returnPositionY = SceneTransitionData.ReturnPosition.y;
+                _data.returnPositionZ = SceneTransitionData.ReturnPosition.z;
+                _data.returnRotationY = SceneTransitionData.ReturnRotationY;
             }
 
             // Minor Realm — persist biome + seed so the same world can be regenerated on load
             if (SceneTransitionData.IsMinorRealm)
             {
-                data.realmBiome = SceneTransitionData.RealmBiome.ToString();
-                data.realmSeed  = SceneTransitionData.RealmSeed;
+                _data.realmBiome = SceneTransitionData.RealmBiome.ToString();
+                _data.realmSeed  = SceneTransitionData.RealmSeed;
+            }
+            else
+            {
+                _data.realmBiome = null;
+                _data.realmSeed = 0;
             }
 
-            // Placed machines
-            SaveMachines(data);
+            // Placed machines — replace this scene's entries, keep all other scenes'
+            MergeMachineEntries();
 
-            Debug.Log($"[SaveManager] Saving {data.buildingEntries.Count} machines, {data.inventoryEntries.Count} inventory items.");
-
-            SaveSystem.SaveGame(data);
+            SaveSystem.SaveGame(_data);
         }
 
-        public void Load()
+        /// <summary>
+        /// Replaces the current scene's machine/pipe/inventory entries with a fresh
+        /// scan while preserving entries belonging to other scenes.
+        /// </summary>
+        private void MergeMachineEntries()
         {
-            var data = SaveSystem.LoadGame();
-            if (data == null) return;
+            string key = CurrentSceneKey();
 
-            // Clear stale static data only after confirming a save file exists,
-            // otherwise a missing save wipes the current world state for nothing.
-            WorldState.Clear();
-            foreach (var id in data.collectedEssenceIds)
-                WorldState.CollectedIds.Add(id);
-            foreach (var e in data.spawnerEntries)
-                WorldState.SpawnerTimestamps[e.spawnerId] = e.collectedAtTicks;
-
-            // Redirect to the scene that was active when the game was saved
-            var savedScene = string.IsNullOrEmpty(data.currentScene)
-                ? SceneManager.GetActiveScene().name : data.currentScene;
-            if (savedScene != SceneManager.GetActiveScene().name)
+            var removedGuids = new HashSet<string>();
+            _data.buildingEntries.RemoveAll(e =>
             {
-                // Restore return point so the exit portal knows where to go
-                if (!string.IsNullOrEmpty(data.returnScene))
-                    SceneTransitionData.SetReturn(data.returnScene,
-                        new Vector3(data.returnPositionX, data.returnPositionY, data.returnPositionZ),
-                        data.returnRotationY);
+                if (NormalizeKey(e.sceneKey) != key) return false;
+                removedGuids.Add(e.guid);
+                return true;
+            });
+            _data.pipeConnections.RemoveAll(p => removedGuids.Contains(p.pipeGuid));
+            _data.machineInventories.RemoveAll(m => removedGuids.Contains(m.machineGuid));
 
-                // If the saved scene is a Minor Realm, restore biome + seed so
-                // MinorRealmGenerator recreates the exact same world.
-                if (!string.IsNullOrEmpty(data.realmBiome) &&
-                    System.Enum.TryParse<CultivationGame.Core.BiomeType>(data.realmBiome, out var biome))
-                    SceneTransitionData.SetRealm(biome, data.realmSeed);
-
-                SceneManager.LoadScene(savedScene);
-                return; // Target scene's SaveManager will apply player state
-            }
-
-            // Restore placed machines (independent of player references)
-            LoadMachines(data);
-
-            if (playerStats == null || playerInventory == null || playerTransform == null)
-            {
-                Debug.LogWarning("[SaveManager] Player references missing — skipping player state restoration.");
-                return;
-            }
-
-            // Restore realm
-            var realm = allRealms?.Find(r => r.realmIndex == data.currentRealmIndex);
-            if (realm != null) playerStats.currentRealm = realm;
-            playerStats.currentQi = data.currentQi;
-            GameEvents.RaiseQiChanged(playerStats.currentQi, playerStats.MaxQi);
-            GameEvents.RaiseRealmChanged(playerStats.RealmName, playerStats.SubStage);
-
-            // Restore position — must set rb.position directly so the physics world
-            // matches the transform; otherwise the Rigidbody overrides the teleport.
-            var pos = new Vector3(data.positionX, data.positionY, data.positionZ);
-            playerTransform.position = pos;
-            playerTransform.eulerAngles = new Vector3(0f, data.rotationY, 0f);
-            if (playerRigidbody != null)
-            {
-                playerRigidbody.position = pos;
-                playerRigidbody.linearVelocity = Vector3.zero;
-                playerRigidbody.angularVelocity = Vector3.zero;
-            }
-
-            // Restore inventory
-            var loaded = new Dictionary<ItemData, int>();
-            foreach (var entry in data.inventoryEntries)
-            {
-                var item = allItems?.Find(i => i.ItemId == entry.essenceId);
-                if (item != null) loaded[item] = entry.count;
-            }
-            playerInventory.LoadInventory(loaded);
+            SaveMachinesOfType<BaseMachine>(_data, key);
+            SaveMachinesOfType<ResourceExtractor>(_data, key);
+            SaveMachinesOfType<StorageContainer>(_data, key);
+            SaveMachinesOfType<QiConduit>(_data, key);
+            SaveMachinesOfType<Splitter>(_data, key);
+            SaveMachinesOfType<Merger>(_data, key);
+            SaveSpiritPipes(_data, key);
+            SaveOreVeins(_data);
         }
 
-        // ------------------------------------------------------------------ //
-        //  Machine Save
-        // ------------------------------------------------------------------ //
-
-        private void SaveMachines(SaveData data)
+        private void SaveMachinesOfType<T>(SaveData data, string sceneKey) where T : MonoBehaviour, IMachineConnectable
         {
-            SaveMachinesOfType<BaseMachine>(data);
-            SaveMachinesOfType<ResourceExtractor>(data);
-            SaveMachinesOfType<StorageContainer>(data);
-            SaveMachinesOfType<QiConduit>(data);
-            SaveMachinesOfType<Splitter>(data);
-            SaveMachinesOfType<Merger>(data);
-            SaveSpiritPipes(data);
-            SaveOreVeins(data);
-        }
-
-        private void SaveMachinesOfType<T>(SaveData data) where T : MonoBehaviour, IMachineConnectable
-        {
-#if UNITY_2023_1_OR_NEWER
             var machines = FindObjectsByType<T>(FindObjectsSortMode.None);
-#else
-            var machines = FindObjectsOfType<T>();
-#endif
-            Debug.Log($"[SaveManager] FindObjectsByType<{typeof(T).Name}>() found {machines.Length} instances.");
             foreach (var machine in machines)
             {
                 var md = machine.MachineData;
@@ -209,15 +245,7 @@ namespace CultivationGame.UI
                     continue;
                 }
 
-                var guidComp = machine.GetComponent<MachineGuid>();
-                string guid = guidComp != null ? guidComp.Guid : null;
-                if (string.IsNullOrEmpty(guid))
-                {
-                    Debug.LogWarning($"[SaveManager] Machine '{md.name}' at {machine.transform.position} has no GUID — assigning one now.");
-                    if (guidComp == null) guidComp = machine.gameObject.AddComponent<MachineGuid>();
-                    guidComp.AssignNewGuid();
-                    guid = guidComp.Guid;
-                }
+                string guid = EnsureGuid(machine.gameObject, md.name);
 
                 int rot = Mathf.RoundToInt(machine.transform.eulerAngles.y / 90f) % 4;
                 data.buildingEntries.Add(new BuildingSaveEntry
@@ -227,33 +255,23 @@ namespace CultivationGame.UI
                     posX = machine.transform.position.x,
                     posY = machine.transform.position.y,
                     posZ = machine.transform.position.z,
-                    rotation = rot
+                    rotation = rot,
+                    sceneKey = sceneKey
                 });
 
                 SaveMachineInventory(data, machine, guid);
             }
         }
 
-        private void SaveSpiritPipes(SaveData data)
+        private void SaveSpiritPipes(SaveData data, string sceneKey)
         {
-#if UNITY_2023_1_OR_NEWER
             var pipes = FindObjectsByType<SpiritPipe>(FindObjectsSortMode.None);
-#else
-            var pipes = FindObjectsOfType<SpiritPipe>();
-#endif
             foreach (var pipe in pipes)
             {
                 var md = pipe.MachineData;
                 if (md == null) continue;
 
-                var guidComp = pipe.GetComponent<MachineGuid>();
-                string guid = guidComp != null ? guidComp.Guid : null;
-                if (string.IsNullOrEmpty(guid))
-                {
-                    if (guidComp == null) guidComp = pipe.gameObject.AddComponent<MachineGuid>();
-                    guidComp.AssignNewGuid();
-                    guid = guidComp.Guid;
-                }
+                string guid = EnsureGuid(pipe.gameObject, md.name);
 
                 int rot = Mathf.RoundToInt(pipe.transform.eulerAngles.y / 90f) % 4;
                 data.buildingEntries.Add(new BuildingSaveEntry
@@ -263,7 +281,8 @@ namespace CultivationGame.UI
                     posX = pipe.transform.position.x,
                     posY = pipe.transform.position.y,
                     posZ = pipe.transform.position.z,
-                    rotation = rot
+                    rotation = rot,
+                    sceneKey = sceneKey
                 });
 
                 // Save connection state
@@ -286,13 +305,30 @@ namespace CultivationGame.UI
             }
         }
 
+        private static string EnsureGuid(GameObject machineObject, string machineName)
+        {
+            var guidComp = machineObject.GetComponent<MachineGuid>();
+            if (guidComp == null) guidComp = machineObject.AddComponent<MachineGuid>();
+            if (string.IsNullOrEmpty(guidComp.Guid))
+            {
+                Debug.LogWarning($"[SaveManager] Machine '{machineName}' had no GUID — assigning one now.");
+                guidComp.AssignNewGuid();
+            }
+            return guidComp.Guid;
+        }
+
         private void SaveOreVeins(SaveData data)
         {
-#if UNITY_2023_1_OR_NEWER
+            // Vein IDs are globally unique — update entries for veins present in this
+            // scene, keep the rest (they belong to other scenes / other realm seeds).
             var veins = FindObjectsByType<OreVein>(FindObjectsSortMode.None);
-#else
-            var veins = FindObjectsOfType<OreVein>();
-#endif
+            var sceneVeinIds = new HashSet<string>();
+            foreach (var vein in veins)
+                if (!string.IsNullOrEmpty(vein.UniqueId))
+                    sceneVeinIds.Add(vein.UniqueId);
+
+            data.oreVeinEntries.RemoveAll(e => sceneVeinIds.Contains(e.veinId));
+
             foreach (var vein in veins)
             {
                 if (string.IsNullOrEmpty(vein.UniqueId)) continue;
@@ -335,32 +371,171 @@ namespace CultivationGame.UI
         }
 
         // ------------------------------------------------------------------ //
-        //  Machine Load
+        //  Load
         // ------------------------------------------------------------------ //
 
-        private void LoadMachines(SaveData data)
+        /// <summary>
+        /// Re-reads the save file mid-session (pause menu "Load"). Existing placed
+        /// machines are removed before restoring so nothing is duplicated.
+        /// </summary>
+        public void Load()
         {
-            if (data.buildingEntries == null || data.buildingEntries.Count == 0)
+            var fresh = SaveSystem.LoadGame();
+            if (fresh == null) return;
+
+            _data = fresh;
+            ApplyWorldState(_data);
+            _pendingPlayerRestore = true;
+
+            string savedScene = string.IsNullOrEmpty(_data.currentScene)
+                ? SceneManager.GetActiveScene().name : _data.currentScene;
+            if (savedScene != SceneManager.GetActiveScene().name)
             {
-                Debug.Log("[SaveManager] No machines to load.");
-                RestoreOreVeins(data);
+                PrepareSceneTransition(_data);
+                SceneManager.LoadScene(savedScene);
+                return; // OnSceneLoaded restores the target scene
+            }
+
+            // Same scene: clear existing machines, then restore from the file.
+            foreach (var guidComp in FindObjectsByType<MachineGuid>(FindObjectsSortMode.None))
+                DestroyImmediate(guidComp.gameObject);
+            if (buildGrid != null) buildGrid.ClearAllCells();
+
+            RestoreCurrentScene();
+        }
+
+        /// <summary>
+        /// Deletes the save and restarts with a genuinely clean state: persistent
+        /// player destroyed, static world/buff/transition state reset.
+        /// </summary>
+        public void NewGame()
+        {
+            SaveSystem.DeleteSave();
+            _data = null;
+            _pendingPlayerRestore = false;
+
+            WorldState.Clear();
+            CultivationBuffs.ResetAll();
+            SceneTransitionData.ResetAll();
+            Time.timeScale = 1f;
+
+            // The persistent player carries qi/realm/inventory — it must go so the
+            // freshly loaded scene's player (with default values) takes over.
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) Destroy(player);
+            playerStats = null;
+            playerInventory = null;
+            playerTransform = null;
+            playerRigidbody = null;
+
+            SceneManager.LoadScene(mainSceneName);
+        }
+
+        private void ApplyWorldState(SaveData data)
+        {
+            WorldState.Clear();
+            foreach (var id in data.collectedEssenceIds)
+                WorldState.CollectedIds.Add(id);
+            foreach (var e in data.spawnerEntries)
+                WorldState.SpawnerTimestamps[e.spawnerId] = e.collectedAtTicks;
+        }
+
+        /// <summary>Restores return point and realm seed before redirecting scenes.</summary>
+        private static void PrepareSceneTransition(SaveData data)
+        {
+            if (!string.IsNullOrEmpty(data.returnScene))
+                SceneTransitionData.SetReturn(data.returnScene,
+                    new Vector3(data.returnPositionX, data.returnPositionY, data.returnPositionZ),
+                    data.returnRotationY);
+
+            if (!string.IsNullOrEmpty(data.realmBiome) &&
+                System.Enum.TryParse<BiomeType>(data.realmBiome, out var biome))
+                SceneTransitionData.SetRealm(biome, data.realmSeed);
+        }
+
+        private void RestoreCurrentScene()
+        {
+            RestoreMachinesForScene(_data);
+            RestoreOreVeins(_data);
+
+            if (_pendingPlayerRestore)
+            {
+                ApplyPlayerState(_data);
+                _pendingPlayerRestore = false;
+            }
+        }
+
+        private void ApplyPlayerState(SaveData data)
+        {
+            if (playerStats == null || playerInventory == null || playerTransform == null)
+            {
+                Debug.LogWarning("[SaveManager] Player references missing — skipping player state restoration.");
                 return;
             }
+
+            // Restore realm
+            var realm = allRealms?.Find(r => r.realmIndex == data.currentRealmIndex);
+            if (realm != null) playerStats.currentRealm = realm;
+            playerStats.currentQi = data.currentQi;
+            GameEvents.RaiseQiChanged(playerStats.currentQi, playerStats.MaxQi);
+            GameEvents.RaiseRealmChanged(playerStats.RealmName, playerStats.SubStage);
+
+            // Restore position — must set rb.position directly so the physics world
+            // matches the transform; otherwise the Rigidbody overrides the teleport.
+            var pos = new Vector3(data.positionX, data.positionY, data.positionZ);
+            playerTransform.position = pos;
+            playerTransform.eulerAngles = new Vector3(0f, data.rotationY, 0f);
+            if (playerRigidbody != null)
+            {
+                playerRigidbody.position = pos;
+                playerRigidbody.linearVelocity = Vector3.zero;
+                playerRigidbody.angularVelocity = Vector3.zero;
+            }
+
+            // Route the saved position through the destination mechanism so
+            // SceneEntryPoint re-teleports to the SAME spot (instead of consuming
+            // the pending return point, which the exit portal still needs).
+            SceneTransitionData.SetDestination(pos, data.rotationY);
+
+            // Restore inventory
+            var loaded = new Dictionary<ItemData, int>();
+            foreach (var entry in data.inventoryEntries)
+            {
+                var item = allItems?.Find(i => i.ItemId == entry.essenceId);
+                if (item != null) loaded[item] = entry.count;
+            }
+            playerInventory.LoadInventory(loaded);
+        }
+
+        // ------------------------------------------------------------------ //
+        //  Machine restore
+        // ------------------------------------------------------------------ //
+
+        private void RestoreMachinesForScene(SaveData data)
+        {
+            if (data.buildingEntries == null || data.buildingEntries.Count == 0) return;
             if (allMachines == null || allMachines.Count == 0)
             {
                 Debug.LogWarning("[SaveManager] allMachines list is empty — cannot load machines. Assign MachineData assets in the inspector.");
-                RestoreOreVeins(data);
                 return;
             }
 
-            Debug.Log($"[SaveManager] Loading {data.buildingEntries.Count} machines...");
+            string key = CurrentSceneKey();
 
-            // Build GUID → machine lookups for inventory + pipe connection restoration
+            // Idempotency: never instantiate a machine whose GUID already exists
+            // (protects against double restoration).
+            var existingGuids = new HashSet<string>();
+            foreach (var existing in FindObjectsByType<MachineGuid>(FindObjectsSortMode.None))
+                if (!string.IsNullOrEmpty(existing.Guid))
+                    existingGuids.Add(existing.Guid);
+
             var machinesByGuid = new Dictionary<string, IMachineConnectable>();
             var pipesByGuid = new Dictionary<string, SpiritPipe>();
 
             foreach (var entry in data.buildingEntries)
             {
+                if (NormalizeKey(entry.sceneKey) != key) continue;
+
                 var md = allMachines.Find(m => m.name == entry.machineId);
                 if (md == null || md.prefab == null)
                 {
@@ -373,6 +548,8 @@ namespace CultivationGame.UI
                 if (string.IsNullOrEmpty(guid))
                     guid = System.Guid.NewGuid().ToString();
 
+                if (existingGuids.Contains(guid)) continue;
+
                 Vector3 position = new Vector3(entry.posX, entry.posY, entry.posZ);
                 Quaternion rotation = Quaternion.Euler(0f, entry.rotation * 90f, 0f);
 
@@ -383,8 +560,8 @@ namespace CultivationGame.UI
                 var guidComp = placed.AddComponent<MachineGuid>();
                 guidComp.SetGuid(guid);
 
-                // Wire machine data
-                WireMachineData(placed, md);
+                // Wire machine data (shared with PlacementController)
+                MachineWiring.Wire(placed, md);
 
                 // Set layer for interaction and removal detection
                 LayerHelper.SetLayerRecursive(placed, _interactableLayerIndex);
@@ -404,14 +581,8 @@ namespace CultivationGame.UI
                     pipesByGuid[guid] = pipe;
             }
 
-            // Restore inventories after all machines have been instantiated
             RestoreMachineInventories(data, machinesByGuid);
-
-            // Restore pipe connections
             RestorePipeConnections(data, pipesByGuid, machinesByGuid);
-
-            // Restore ore vein yields
-            RestoreOreVeins(data);
         }
 
         private void RestorePipeConnections(SaveData data,
@@ -454,11 +625,7 @@ namespace CultivationGame.UI
             foreach (var entry in data.oreVeinEntries)
                 yieldByVeinId[entry.veinId] = entry.remainingYield;
 
-#if UNITY_2023_1_OR_NEWER
             var veins = FindObjectsByType<OreVein>(FindObjectsSortMode.None);
-#else
-            var veins = FindObjectsOfType<OreVein>();
-#endif
             foreach (var vein in veins)
             {
                 if (string.IsNullOrEmpty(vein.UniqueId)) continue;
@@ -503,24 +670,6 @@ namespace CultivationGame.UI
         // ------------------------------------------------------------------ //
         //  Helpers
         // ------------------------------------------------------------------ //
-
-        private static void WireMachineData(GameObject placed, MachineData data)
-        {
-            if (placed.GetComponent<BaseMachine>() is BaseMachine bm)
-                bm.SetMachineData(data);
-            else if (placed.GetComponent<ResourceExtractor>() is ResourceExtractor ext)
-                ext.SetMachineData(data);
-            else if (placed.GetComponent<StorageContainer>() is StorageContainer sc)
-                sc.SetMachineData(data);
-            else if (placed.GetComponent<QiConduit>() is QiConduit conduit)
-                conduit.SetMachineData(data);
-            else if (placed.GetComponent<Splitter>() is Splitter splitter)
-                splitter.SetMachineData(data);
-            else if (placed.GetComponent<Merger>() is Merger merger)
-                merger.SetMachineData(data);
-            else if (placed.GetComponent<SpiritPipe>() is SpiritPipe pipe)
-                pipe.SetMachineData(data);
-        }
 
         private RecipeData FindRecipeByName(string recipeName)
         {

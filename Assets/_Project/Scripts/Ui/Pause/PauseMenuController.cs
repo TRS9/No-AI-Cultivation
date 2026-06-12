@@ -81,7 +81,17 @@ namespace CultivationGame.UI
 
         private void OnNewGame()
         {
+            if (SaveManager.Instance != null)
+            {
+                SaveManager.Instance.NewGame();
+                return;
+            }
+
+            // Fallback when no SaveManager exists (e.g. testing a sub-scene directly)
             SaveSystem.DeleteSave();
+            WorldState.Clear();
+            CultivationBuffs.ResetAll();
+            SceneTransitionData.ResetAll();
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }

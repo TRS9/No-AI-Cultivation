@@ -109,6 +109,8 @@ namespace CultivationGame.Systems
         private bool TryPullFrom(IMachineConnectable source)
         {
             if (source?.OutputInventory == null) return false;
+            // Skip sources whose machine GameObject was destroyed.
+            if (source is MonoBehaviour mono && mono == null) return false;
 
             ItemData item = source.OutputInventory.GetFirstItem();
             if (item == null) return false;

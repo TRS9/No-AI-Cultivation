@@ -101,6 +101,11 @@ namespace CultivationGame.Core
         public static void RaisePlayerDied()
             => OnPlayerDied?.Invoke();
 
+        public delegate void PlayerRespawned();
+        public static event PlayerRespawned OnPlayerRespawned;
+        public static void RaisePlayerRespawned()
+            => OnPlayerRespawned?.Invoke();
+
         public delegate void PlayerAttack();
         public static event PlayerAttack OnPlayerAttack;
         public static void RaisePlayerAttack()

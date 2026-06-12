@@ -244,25 +244,9 @@ namespace CultivationGame.Systems
             // Ensure the prefab has the correct machine component (add at runtime if missing)
             EnsureMachineComponent(placed, _selectedMachine.machineType);
 
-            // Wire machine data to the placed component
-            bool wired = true;
-            if (placed.GetComponent<BaseMachine>() is BaseMachine bm)
-                bm.SetMachineData(_selectedMachine);
-            else if (placed.GetComponent<ResourceExtractor>() is ResourceExtractor ext)
-                ext.SetMachineData(_selectedMachine);
-            else if (placed.GetComponent<StorageContainer>() is StorageContainer sc)
-                sc.SetMachineData(_selectedMachine);
-            else if (placed.GetComponent<QiConduit>() is QiConduit conduit)
-                conduit.SetMachineData(_selectedMachine);
-            else if (placed.GetComponent<Splitter>() is Splitter splitter)
-                splitter.SetMachineData(_selectedMachine);
-            else if (placed.GetComponent<Merger>() is Merger merger)
-                merger.SetMachineData(_selectedMachine);
-            else if (placed.GetComponent<SpiritPipe>() is SpiritPipe pipe)
-                pipe.SetMachineData(_selectedMachine);
-            else
+            // Wire machine data to the placed component (shared with SaveManager)
+            if (!MachineWiring.Wire(placed, _selectedMachine))
             {
-                wired = false;
                 Debug.LogWarning($"[PlacementController] Prefab '{_selectedMachine.machineName}' has NO recognized machine component! " +
                     $"Components: {string.Join(", ", placed.GetComponents<Component>().Select(c => c.GetType().Name))}");
             }
@@ -273,9 +257,6 @@ namespace CultivationGame.Systems
 
             if (placed.GetComponentInChildren<Collider>() == null)
                 Debug.LogWarning($"[PlacementController] Placed machine '{placed.name}' has NO collider — interaction will not work!");
-
-            Debug.Log($"[PlacementController] Placed '{placed.name}' at {position}. Wired={wired} " +
-                $"HasCollider={placed.GetComponentInChildren<Collider>() != null} Layer={placed.layer} GUID={machineGuid.Guid}");
 
             // Mark grid cells as occupied
             buildGrid.OccupyCells(position, _selectedMachine.gridSize, _rotation);
@@ -381,6 +362,18 @@ namespace CultivationGame.Systems
             if (mb == null || data == null) return;
 
             Vector3 position = mb.transform.position;
+
+            // Disconnect any pipes attached to the removed machine so they don't
+            // keep transferring items into the destroyed machine's orphaned inventory.
+            if (connectable != null)
+            {
+                foreach (var attachedPipe in FindObjectsByType<SpiritPipe>(FindObjectsSortMode.None))
+                {
+                    if (ReferenceEquals(attachedPipe.Source, connectable) ||
+                        ReferenceEquals(attachedPipe.Destination, connectable))
+                        attachedPipe.Disconnect();
+                }
+            }
 
             // Free the grid cells
             // Determine rotation from the object's Y euler angle

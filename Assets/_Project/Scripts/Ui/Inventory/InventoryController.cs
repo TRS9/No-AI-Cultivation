@@ -114,6 +114,9 @@ namespace CultivationGame.UI
             switch (e.PropertyName)
             {
                 case nameof(InventoryDataSource.Items):
+                    // The grid is rebuilt on open anyway — skip rebuilds while hidden
+                    // so automated extractors don't churn UI elements in the background.
+                    if (_panel == null || _panel.style.display == DisplayStyle.None) return;
                     ApplyFilterAndRebuild();
                     break;
             }

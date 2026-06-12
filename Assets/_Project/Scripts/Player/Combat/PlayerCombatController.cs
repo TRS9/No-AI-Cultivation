@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 using CultivationGame.Core;
 using CultivationGame.Data;
 
@@ -38,6 +39,12 @@ namespace CultivationGame.Player
         [Header("Animation")]
         public Animator animator;
 
+        [Header("Respawn")]
+        [Tooltip("Seconds after death before the player respawns at the scene entry point.")]
+        public float respawnDelay = 3f;
+        [Tooltip("Fraction of current Qi lost on death (0–1).")]
+        [Range(0f, 1f)] public float deathQiLossFraction = 0.2f;
+
         public bool IsDead => healthSystem != null && healthSystem.IsDead;
         public bool IsDodging { get; private set; }
         public bool IsAttacking { get; private set; }
@@ -48,11 +55,22 @@ namespace CultivationGame.Player
         private Vector3 _dodgeDirection;
         private float _dodgeElapsed;
         private PlayerMovement _playerMovement;
+        private Vector3? _respawnPosition;
+        private readonly HashSet<IDamageable> _hitThisSwing = new HashSet<IDamageable>();
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
             _playerMovement = GetComponent<PlayerMovement>();
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene,
+            UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            // Re-record the respawn anchor for the new scene; the first Update after
+            // the scene's Start phase (post SceneEntryPoint teleport) captures it.
+            _respawnPosition = null;
         }
 
         private void Start()
@@ -85,6 +103,7 @@ namespace CultivationGame.Player
 
         private void OnDestroy()
         {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
             if (healthSystem != null)
             {
                 healthSystem.OnHealthChanged -= HandleHealthChanged;
@@ -94,6 +113,9 @@ namespace CultivationGame.Player
 
         private void Update()
         {
+            if (_respawnPosition == null && !IsDead)
+                _respawnPosition = transform.position;
+
             if (_attackTimer > 0f) _attackTimer -= Time.deltaTime;
             if (_dodgeTimer > 0f) _dodgeTimer -= Time.deltaTime;
 
@@ -134,10 +156,13 @@ namespace CultivationGame.Player
             Vector3 attackCenter = transform.position + transform.forward * attackForwardOffset;
             Collider[] hits = Physics.OverlapSphere(attackCenter, attackRadius, enemyLayer);
 
+            _hitThisSwing.Clear();
             foreach (Collider hit in hits)
             {
-                IDamageable target = hit.GetComponent<IDamageable>();
-                if (target != null && !target.IsDead)
+                // Parent lookup supports enemies whose colliders sit on child objects;
+                // the set prevents multi-collider enemies from taking the hit twice.
+                IDamageable target = hit.GetComponentInParent<IDamageable>();
+                if (target != null && !target.IsDead && _hitThisSwing.Add(target))
                 {
                     target.TakeDamage(damage, gameObject);
                 }
@@ -257,7 +282,36 @@ namespace CultivationGame.Player
         private void HandlePlayerDied()
         {
             GameEvents.RaisePlayerDied();
-            Debug.Log("Player has been defeated!");
+            StartCoroutine(RespawnCoroutine());
+        }
+
+        private IEnumerator RespawnCoroutine()
+        {
+            // Stop the body where it fell.
+            if (_rb != null)
+            {
+                _rb.linearVelocity = Vector3.zero;
+                _rb.angularVelocity = Vector3.zero;
+            }
+
+            yield return new WaitForSeconds(respawnDelay);
+
+            // Death penalty: lose part of the accumulated Qi.
+            if (playerStats != null && deathQiLossFraction > 0f)
+                GameEvents.RaiseAddQi(-playerStats.currentQi * deathQiLossFraction);
+
+            // Return to the spot where the player entered the scene.
+            Vector3 spawn = _respawnPosition ?? transform.position;
+            transform.SetPositionAndRotation(spawn, transform.rotation);
+            if (_rb != null)
+            {
+                _rb.position = spawn;
+                _rb.linearVelocity = Vector3.zero;
+                _rb.angularVelocity = Vector3.zero;
+            }
+
+            healthSystem.Revive();
+            GameEvents.RaisePlayerRespawned();
         }
     }
 }

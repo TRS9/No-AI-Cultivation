@@ -107,6 +107,8 @@ namespace CultivationGame.Systems
         private bool TryForward(ItemData item, IMachineConnectable destination)
         {
             if (destination?.InputInventory == null) return false;
+            // Skip destinations whose machine GameObject was destroyed.
+            if (destination is MonoBehaviour mono && mono == null) return false;
             if (!destination.InputInventory.HasSpace()) return false;
 
             int removed = _inputInventory.TryRemove(item, 1);

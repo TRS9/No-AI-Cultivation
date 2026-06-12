@@ -11,8 +11,12 @@ namespace CultivationGame.Systems
     /// determines which machines are powered (within range of a connected conduit),
     /// and deducts Qi from the player pool each frame.
     ///
-    /// Like power lines in Satisfactory: conduits form a chain from the player's
-    /// base outward. Machines near a connected conduit receive power.
+    /// Like power lines in Satisfactory: conduits form a chain from the Qi source
+    /// outward. Machines near a connected conduit receive power.
+    ///
+    /// If no QiNetwork exists in the scene, one is created on demand the first
+    /// time a machine or conduit registers (GetOrCreate). The Qi source falls
+    /// back to the first CraftingStation, then the player, then this transform.
     /// </summary>
     public class QiNetwork : MonoBehaviour
     {
@@ -20,9 +24,12 @@ namespace CultivationGame.Systems
 
         [Header("Qi Source")]
         [Tooltip("Position of the Qi source (player base / meditation spot). " +
-                 "Conduits within range of this point are automatically connected.")]
+                 "Conduits within range of this point are automatically connected. " +
+                 "Falls back to the first CraftingStation, then the player.")]
         [SerializeField] private Transform qiSourcePoint;
         [SerializeField] private float qiSourceRadius = 10f;
+
+        private const float PowerUpdateInterval = 0.25f;
 
         private readonly List<QiConduit> _conduits = new();
         private readonly List<BaseMachine> _machines = new();
@@ -30,11 +37,33 @@ namespace CultivationGame.Systems
 
         private bool _networkDirty = true;
         private float _totalDemand;
+        private float _powerUpdateTimer;
+        private bool _sourceIsMobile;
+        private bool _playerHasQi = true;
 
         // --- Public API ---
         public float TotalDemand => _totalDemand;
         public int ConnectedConduitCount => _connectedConduits.Count;
         public ReadOnlyCollection<BaseMachine> RegisteredMachines => _machines.AsReadOnly();
+
+        /// <summary>
+        /// Returns the active QiNetwork, creating one at runtime if no scene object
+        /// provides it. Keeps machines functional in scenes without manual setup.
+        /// </summary>
+        public static QiNetwork GetOrCreate()
+        {
+            if (Instance != null) return Instance;
+
+            var existing = FindFirstObjectByType<QiNetwork>();
+            if (existing != null)
+            {
+                Instance = existing;
+                return existing;
+            }
+
+            var go = new GameObject("QiNetwork (Runtime)");
+            return go.AddComponent<QiNetwork>();
+        }
 
         private void Awake()
         {
@@ -44,6 +73,18 @@ namespace CultivationGame.Systems
                 return;
             }
             Instance = this;
+
+            ResolveQiSource();
+        }
+
+        private void OnEnable()
+        {
+            GameEvents.OnQiChanged += HandleQiChanged;
+        }
+
+        private void OnDisable()
+        {
+            GameEvents.OnQiChanged -= HandleQiChanged;
         }
 
         private void OnDestroy()
@@ -52,15 +93,54 @@ namespace CultivationGame.Systems
                 Instance = null;
         }
 
+        private void HandleQiChanged(double current, double max)
+        {
+            bool hasQi = current > 0.0;
+            if (hasQi != _playerHasQi)
+            {
+                _playerHasQi = hasQi;
+                _networkDirty = true; // re-evaluate power immediately
+            }
+        }
+
+        private void ResolveQiSource()
+        {
+            if (qiSourcePoint != null) return;
+
+            var station = FindFirstObjectByType<CraftingStation>();
+            if (station != null)
+            {
+                qiSourcePoint = station.transform;
+                return;
+            }
+
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                qiSourcePoint = player.transform;
+                _sourceIsMobile = true;
+            }
+        }
+
         private void LateUpdate()
         {
-            if (_networkDirty)
+            _powerUpdateTimer -= Time.deltaTime;
+            bool powerTick = _powerUpdateTimer <= 0f;
+
+            bool rebuilt = false;
+            if (_networkDirty || (powerTick && _sourceIsMobile))
             {
                 RebuildConnectivity();
                 _networkDirty = false;
+                rebuilt = true;
             }
 
-            UpdatePowerState();
+            if (powerTick || rebuilt)
+            {
+                _powerUpdateTimer = PowerUpdateInterval;
+                UpdatePowerState();
+            }
+
             ConsumeQi();
         }
 
@@ -89,7 +169,10 @@ namespace CultivationGame.Systems
         public void RegisterMachine(BaseMachine machine)
         {
             if (!_machines.Contains(machine))
+            {
                 _machines.Add(machine);
+                _networkDirty = true;
+            }
         }
 
         public void UnregisterMachine(BaseMachine machine)
@@ -122,10 +205,10 @@ namespace CultivationGame.Systems
 
             // Seed: conduits within range of the Qi source
             var queue = new Queue<QiConduit>();
+            float sourceRadiusSq = qiSourceRadius * qiSourceRadius;
             foreach (var conduit in _conduits)
             {
-                float dist = Vector3.Distance(conduit.transform.position, sourcePos);
-                if (dist <= qiSourceRadius)
+                if ((conduit.transform.position - sourcePos).sqrMagnitude <= sourceRadiusSq)
                 {
                     _connectedConduits.Add(conduit);
                     queue.Enqueue(conduit);
@@ -136,15 +219,13 @@ namespace CultivationGame.Systems
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
+                float connectRadiusSq = current.ConnectionRadius * current.ConnectionRadius;
                 foreach (var other in _conduits)
                 {
                     if (_connectedConduits.Contains(other)) continue;
 
-                    float dist = Vector3.Distance(
-                        current.transform.position,
-                        other.transform.position);
-
-                    if (dist <= current.ConnectionRadius)
+                    float distSq = (current.transform.position - other.transform.position).sqrMagnitude;
+                    if (distSq <= connectRadiusSq)
                     {
                         _connectedConduits.Add(other);
                         queue.Enqueue(other);
@@ -184,11 +265,15 @@ namespace CultivationGame.Systems
             if (machine.MachineData != null && machine.MachineData.qiConsumptionRate <= 0f)
                 return true;
 
+            // Power is cut for consuming machines when the player has no Qi left.
+            if (!_playerHasQi)
+                return false;
+
             Vector3 machinePos = machine.transform.position;
             foreach (var conduit in _connectedConduits)
             {
-                float dist = Vector3.Distance(machinePos, conduit.transform.position);
-                if (dist <= conduit.MachineRadius)
+                float radiusSq = conduit.MachineRadius * conduit.MachineRadius;
+                if ((machinePos - conduit.transform.position).sqrMagnitude <= radiusSq)
                     return true;
             }
             return false;
@@ -200,7 +285,8 @@ namespace CultivationGame.Systems
 
         /// <summary>
         /// Sum up Qi demand from all active, powered machines and deduct from player.
-        /// If player doesn't have enough Qi, cut power to all machines.
+        /// When the player runs dry, HandleQiChanged flips _playerHasQi and the next
+        /// power update stalls all consuming machines.
         /// </summary>
         private void ConsumeQi()
         {
@@ -219,7 +305,8 @@ namespace CultivationGame.Systems
 
             float qiToDeduct = _totalDemand * Time.deltaTime;
 
-            // Deduct Qi from the player via the existing AddQi event (negative value)
+            // Deduct Qi from the player via the existing AddQi event (negative value).
+            // PlayerStats clamps at 0 — it can never go negative.
             GameEvents.RaiseAddQi(-qiToDeduct);
 
             // Raise network status event for UI

@@ -54,6 +54,8 @@ namespace CultivationGame.Systems
 
         private void Update()
         {
+            // Machines never move once placed, so line positions are set once in
+            // CreateLine — this loop only removes lines whose pipe or endpoints died.
             _toRemove.Clear();
 
             foreach (var kv in _lines)
@@ -61,18 +63,19 @@ namespace CultivationGame.Systems
                 var pipe = kv.Key;
                 var lr = kv.Value;
 
-                if (pipe == null || lr == null || !pipe.IsConnected)
+                bool endpointDestroyed = pipe != null && pipe.IsConnected &&
+                    ((pipe.Source as MonoBehaviour) == null ||
+                     (pipe.Destination as MonoBehaviour) == null);
+
+                if (pipe == null || lr == null || !pipe.IsConnected || endpointDestroyed)
                 {
-                    if (lr != null) Destroy(lr.gameObject);
+                    if (lr != null)
+                    {
+                        if (lr.material != null) Destroy(lr.material);
+                        Destroy(lr.gameObject);
+                    }
                     _toRemove.Add(pipe);
-                    continue;
                 }
-
-                var src = pipe.Source as MonoBehaviour;
-                var dst = pipe.Destination as MonoBehaviour;
-
-                if (src != null && dst != null)
-                    SetLinePositions(lr, src.transform, dst.transform);
             }
 
             foreach (var key in _toRemove)
@@ -130,7 +133,13 @@ namespace CultivationGame.Systems
         {
             if (!_lines.TryGetValue(pipe, out var lr)) return;
 
-            if (lr != null) Destroy(lr.gameObject);
+            if (lr != null)
+            {
+                // The material was created per-line in CreateLine and is not
+                // destroyed with the GameObject — release it explicitly.
+                if (lr.material != null) Destroy(lr.material);
+                Destroy(lr.gameObject);
+            }
             _lines.Remove(pipe);
         }
 

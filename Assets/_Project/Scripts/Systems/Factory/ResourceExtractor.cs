@@ -24,6 +24,7 @@ namespace CultivationGame.Systems
         private MachineInventory _outputInventory;
         private OreVein _targetVein;
         private float _extractionTimer;
+        private float _baseExtractionInterval;
 
         // --- Public API ---
         public MachineData MachineData => machineData;
@@ -35,6 +36,7 @@ namespace CultivationGame.Systems
         private void Awake()
         {
             _outputInventory = new MachineInventory(outputCapacity);
+            _baseExtractionInterval = extractionInterval;
         }
 
         private void Start()
@@ -67,10 +69,11 @@ namespace CultivationGame.Systems
         public void SetMachineData(MachineData data)
         {
             machineData = data;
+            // Derive from the base value so repeated calls don't compound the speedup.
             if (data != null && data.processingSpeed > 0f)
-            {
-                extractionInterval = Mathf.Max(0.5f, extractionInterval / data.processingSpeed);
-            }
+                extractionInterval = Mathf.Max(0.5f, _baseExtractionInterval / data.processingSpeed);
+            else
+                extractionInterval = _baseExtractionInterval;
         }
 
         public void Interact(GameObject user)
@@ -86,7 +89,7 @@ namespace CultivationGame.Systems
 
             foreach (var col in colliders)
             {
-                var vein = col.GetComponent<OreVein>();
+                var vein = col.GetComponentInParent<OreVein>();
                 if (vein == null || vein.IsDepleted) continue;
 
                 float dist = Vector3.Distance(transform.position, col.transform.position);

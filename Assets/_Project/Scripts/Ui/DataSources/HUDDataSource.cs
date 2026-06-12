@@ -253,6 +253,9 @@ namespace CultivationGame.UI
         {
             QiProgress = maxQi > 0 ? (float)(currentQi / maxQi) : 0f;
             QiLabel = $"Qi\n{currentQi:F0}/{maxQi:F0}";
+            // Derive readiness from the value itself so a save loaded at full qi
+            // shows the breakthrough button without waiting for a QiMax event.
+            BreakthroughReady = maxQi > 0 && currentQi >= maxQi;
         }
 
         private void HandleQiMax()

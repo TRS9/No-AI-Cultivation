@@ -31,6 +31,20 @@ namespace CultivationGame.UI
         {
             BuildUI(root);
             Hide();
+
+            GameDataEvents.OnDialogueRequested -= HandleDialogueRequested;
+            GameDataEvents.OnDialogueRequested += HandleDialogueRequested;
+        }
+
+        private void OnDisable()
+        {
+            GameDataEvents.OnDialogueRequested -= HandleDialogueRequested;
+        }
+
+        private void HandleDialogueRequested(NPCData npc)
+        {
+            if (npc == null) return;
+            StartDialogue(npc, npc.startNode);
         }
 
         private void Update()

@@ -69,6 +69,10 @@ namespace CultivationGame.Data
         public string machineId; // MachineData asset name
         public float posX, posY, posZ;
         public int rotation; // 0-3
+
+        // Scene this machine belongs to ("Universe", "Grotto", "MinorRealm#<seed>").
+        // Empty on legacy saves — treated as the main scene.
+        public string sceneKey;
     }
 
     [Serializable]
