@@ -45,6 +45,7 @@ namespace CultivationGame.Systems
         private int _rotation; // 0, 1, 2, 3 → 0°, 90°, 180°, 270°
         private int _interactableLayerIndex;
         private float _pivotYOffset; // distance from pivot to bottom of mesh
+        private Material _lastGhostMaterial;
 
         public bool IsPlacing => _isPlacing;
 
@@ -70,6 +71,7 @@ namespace CultivationGame.Systems
 
         private void OnEnable()
         {
+            GameEvents.OnBuildModeToggled += HandleBuildMode;
             if (placeAction != null)
                 placeAction.action.performed += OnPlace;
             if (cancelAction != null)
@@ -82,6 +84,7 @@ namespace CultivationGame.Systems
 
         private void OnDisable()
         {
+            GameEvents.OnBuildModeToggled -= HandleBuildMode;
             if (placeAction != null)
                 placeAction.action.performed -= OnPlace;
             if (cancelAction != null)
@@ -127,6 +130,8 @@ namespace CultivationGame.Systems
 
             _selectedMachine = machine;
             _rotation = 0;
+            _canPlace = false;
+            _lastGhostMaterial = null;
             _isPlacing = true;
 
             // Instantiate ghost preview (prefer dedicated ghost prefab, fall back to real prefab)
@@ -186,6 +191,11 @@ namespace CultivationGame.Systems
             GameDataEvents.RaiseBuildModeGhostCancelled();
         }
 
+        private void HandleBuildMode(bool enabled)
+        {
+            if (!enabled && _isPlacing) CancelPlacement();
+        }
+
         // ------------------------------------------------------------------ //
         //  Ghost position & validity
         // ------------------------------------------------------------------ //
@@ -199,6 +209,7 @@ namespace CultivationGame.Systems
             Ray ray = cam.ScreenPointToRay(ScreenCenter);
             if (!Physics.Raycast(ray, out RaycastHit hit, 500f, terrainLayer))
             {
+                _canPlace = false;
                 _ghostInstance.SetActive(false);
                 return;
             }
@@ -224,6 +235,8 @@ namespace CultivationGame.Systems
 
         private void OnPlace(InputAction.CallbackContext ctx)
         {
+            // Input can arrive before Update; validate current resources and cells again.
+            if (_isPlacing && _ghostInstance != null) UpdateGhostPosition();
             if (!_isPlacing || !_canPlace || _selectedMachine == null) return;
             if (_ghostInstance == null || !_ghostInstance.activeSelf) return;
 
@@ -347,7 +360,8 @@ namespace CultivationGame.Systems
 
         private void SetGhostMaterial(Material mat)
         {
-            if (_ghostRenderers == null || mat == null) return;
+            if (_ghostRenderers == null || mat == null || mat == _lastGhostMaterial) return;
+            _lastGhostMaterial = mat;
             for (int i = 0; i < _ghostRenderers.Length; i++)
             {
                 var mats = _cachedMaterialArrays[i];
@@ -360,12 +374,15 @@ namespace CultivationGame.Systems
         private bool HasBuildResources(MachineData machine)
         {
             if (machine.buildCost == null || machine.buildCost.Length == 0) return true;
-            if (playerInventory == null) return true;
+            if (playerInventory == null) return false;
 
             foreach (var cost in machine.buildCost)
             {
                 if (cost.item == null) continue;
-                if (!playerInventory.HasItem(cost.item, cost.amount))
+                long total = 0;
+                foreach (var other in machine.buildCost)
+                    if (other.item == cost.item) total += other.amount;
+                if (total > int.MaxValue || !playerInventory.HasItem(cost.item, (int)total))
                     return false;
             }
             return true;

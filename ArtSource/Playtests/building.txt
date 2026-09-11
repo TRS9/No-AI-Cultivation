@@ -1,0 +1,2 @@
+Furnace placed via catalogue click, R rotation and LMB input at (338.00, 1.00, 272.00); rotation=(0.00, 90.00, 0.00); GUID=7e7092e9-5867-4dfd-bb1b-3a93a21924bf; cells blocked=True
+Final check: paced drag assigned Furnace to hotbar 1; readable label confirmed; digit 1 selected green BuildPreviewValid ghost; exiting Build Mode cancelled and removed ghost.

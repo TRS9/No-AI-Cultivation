@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using CultivationGame.Core;
 using CultivationGame.Data;
 using CultivationGame.Player;
+using CultivationGame.Systems;
 
 namespace CultivationGame.UI
 {
@@ -38,6 +39,9 @@ namespace CultivationGame.UI
         private MachineData _dragPayload;
         private VisualElement _dragGhost;
         private int _dragOverSlotIndex = -1;
+        private Vector2 _dragStart;
+        private int _pointerId = -1;
+        private PlacementController _placement;
 
         private const string PanelId = "MachineCatalogue";
 
@@ -48,6 +52,7 @@ namespace CultivationGame.UI
         public void InitializeUI(VisualElement root)
         {
             _root = root;
+            _placement = FindFirstObjectByType<PlacementController>();
 
             // Prefer elements defined in UXML; fall back to programmatic creation
             _panel = root.Q<VisualElement>("MachineCataloguePanel");
@@ -209,6 +214,10 @@ namespace CultivationGame.UI
                 var label = new Label(data.Name);
                 label.AddToClassList("catalogue-slot__label");
                 slot.Add(label);
+                slot.tooltip = "Click to place; drag to a hotbar slot. " +
+                    (machine.buildCost == null || machine.buildCost.Length == 0 ? "No material cost." :
+                    string.Join(", ", System.Array.ConvertAll(machine.buildCost, cost =>
+                        cost.item != null ? cost.amount + " " + cost.item.name : "")));
 
                 // Drag start
                 var captured = machine;
@@ -230,6 +239,9 @@ namespace CultivationGame.UI
 
             _isDragging = true;
             _dragPayload = machine;
+            _dragStart = evt.position;
+            _pointerId = evt.pointerId;
+            _root.CapturePointer(_pointerId);
 
             // Floating ghost that follows the pointer
             _dragGhost = new VisualElement();
@@ -260,6 +272,13 @@ namespace CultivationGame.UI
             int slotIndex = FindHotbarSlotAtPosition(evt.position);
             if (slotIndex >= 0 && hotbarData != null && _dragPayload != null)
                 hotbarData.SetSlot(slotIndex, _dragPayload);
+            else if (Vector2.Distance(_dragStart, evt.position) < 12 && _dragPayload != null)
+            {
+                var machine = _dragPayload;
+                Close();
+                _placement?.StartPlacement(machine);
+                return;
+            }
 
             ClearDragOverHighlight();
             CancelDrag();
@@ -267,6 +286,9 @@ namespace CultivationGame.UI
 
         private void CancelDrag()
         {
+            if (_pointerId >= 0 && _root != null && _root.HasPointerCapture(_pointerId))
+                _root.ReleasePointer(_pointerId);
+            _pointerId = -1;
             if (_dragGhost != null)
             {
                 _dragGhost.parent?.Remove(_dragGhost);

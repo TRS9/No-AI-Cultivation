@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:17Z" duration="4,7440606">
+  <test-suite type="TestSuite" id="1012" name="No AI Cultivation" fullname="No AI Cultivation" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:17Z" duration="4.744061" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1006" name="Game.Movement.Tests.dll" fullname="C:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Library/ScriptAssemblies/Game.Movement.Tests.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:17Z" duration="4.704981" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18592" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1007" name="CultivationGame" fullname="CultivationGame" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:17Z" duration="4.691487" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1008" name="Tests" fullname="CultivationGame.Tests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:17Z" duration="4.685519" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="PlayerMovementTests" fullname="CultivationGame.Tests.PlayerMovementTests" classname="CultivationGame.Tests.PlayerMovementTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:17Z" duration="4.679083" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1002" name="Jump_HasBoundedHeight_AndSettlesWithoutHorizontalDrift" fullname="CultivationGame.Tests.PlayerMovementTests.Jump_HasBoundedHeight_AndSettlesWithoutHorizontalDrift" methodname="Jump_HasBoundedHeight_AndSettlesWithoutHorizontalDrift" classname="CultivationGame.Tests.PlayerMovementTests" runstate="Runnable" seed="1230800043" result="Passed" start-time="2026-09-11 09:28:13Z" end-time="2026-09-11 09:28:15Z" duration="1.942971" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1005" name="MeditationAndDeath_BlockMovementAndJump_UntilBothAreCleared" fullname="CultivationGame.Tests.PlayerMovementTests.MeditationAndDeath_BlockMovementAndJump_UntilBothAreCleared" methodname="MeditationAndDeath_BlockMovementAndJump_UntilBothAreCleared" classname="CultivationGame.Tests.PlayerMovementTests" runstate="Runnable" seed="593687627" result="Passed" start-time="2026-09-11 09:28:15Z" end-time="2026-09-11 09:28:15Z" duration="0.476097" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="SprintRelease_BrakesWithinPointThreeFiveMetres" fullname="CultivationGame.Tests.PlayerMovementTests.SprintRelease_BrakesWithinPointThreeFiveMetres" methodname="SprintRelease_BrakesWithinPointThreeFiveMetres" classname="CultivationGame.Tests.PlayerMovementTests" runstate="Runnable" seed="1560275088" result="Passed" start-time="2026-09-11 09:28:15Z" end-time="2026-09-11 09:28:16Z" duration="0.875216" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1004" name="UphillSprint_StaysGrounded" fullname="CultivationGame.Tests.PlayerMovementTests.UphillSprint_StaysGrounded" methodname="UphillSprint_StaysGrounded" classname="CultivationGame.Tests.PlayerMovementTests" runstate="Runnable" seed="2119998868" result="Passed" start-time="2026-09-11 09:28:16Z" end-time="2026-09-11 09:28:17Z" duration="1.362159" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\trs13\OneDrive\Dokumente\Cultivation Games\Unity\No AI Cultivation\ArtSource\Playtests\Tests-PlayMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

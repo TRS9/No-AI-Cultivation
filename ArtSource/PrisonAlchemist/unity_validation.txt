@@ -1,0 +1,54 @@
+Player: Player, world (339.00, 1.00, 270.00), scale (1.00, 1.00, 1.00)
+Capsule: height 2, radius 0,5, center (0.00, 0.00, 0.00)
+Animator: PrisonAlchemistVisual, humanoid True, root motion False
+Visual offset: (0.00, -1.00, 0.00)
+Mapped humanoid bones: 51
+Parameter: Speed (Float)
+Parameter: IsGrounded (Bool)
+Parameter: Jump (Trigger)
+Parameter: VerticalSpeed (Float)
+Parameter: LocomotionRate (Float)
+Parameter: Meditating (Bool)
+Parameter: Crafting (Bool)
+Parameter: Dead (Bool)
+Parameter: Attack (Trigger)
+Parameter: Dodge (Trigger)
+Parameter: Hurt (Trigger)
+Clip: Idle, 3,000s, loop True
+Clip: Walk, 0,800s, loop True
+Clip: Run, 0,667s, loop True
+Clip: Jump, 0,300s, loop False
+Clip: Fall, 1,000s, loop True
+Clip: Land, 0,300s, loop False
+Clip: Meditate, 3,000s, loop True
+Clip: Death, 1,000s, loop False
+Clip: Dodge, 0,333s, loop False
+Clip: Attack, 0,400s, loop False
+Clip: Hurt, 0,300s, loop False
+Clip: Craft, 1,000s, loop True
+Animation import warnings: 0
+Retarget warnings: 0
+Controller speed 0: Idle weight=1,00
+  Skinned mesh: 9050 vertices; bounds Center: (0.00, -0.02, 0.95), Extents: (0.50, 0.23, 1.05); 1 materials
+  Skinned mesh: 2970 vertices; bounds Center: (0.00, -0.02, 0.95), Extents: (0.48, 0.23, 1.05); 1 materials
+  Skinned mesh: 5274 vertices; bounds Center: (0.00, -0.02, 0.95), Extents: (0.50, 0.23, 1.05); 1 materials
+Controller speed 1,8: Walk weight=1,00
+  Skinned mesh: 9050 vertices; bounds Center: (0.02, -0.08, 0.91), Extents: (0.46, 0.38, 1.01); 1 materials
+  Skinned mesh: 2970 vertices; bounds Center: (0.02, -0.08, 0.91), Extents: (0.45, 0.37, 1.01); 1 materials
+  Skinned mesh: 5274 vertices; bounds Center: (0.02, -0.08, 0.91), Extents: (0.46, 0.38, 1.01); 1 materials
+Controller speed 4,8: Run weight=1,00
+  Skinned mesh: 9050 vertices; bounds Center: (0.00, -0.06, 0.89), Extents: (0.42, 0.52, 0.98); 1 materials
+  Skinned mesh: 2970 vertices; bounds Center: (0.00, -0.05, 0.89), Extents: (0.42, 0.52, 0.99); 1 materials
+  Skinned mesh: 5274 vertices; bounds Center: (0.00, -0.06, 0.89), Extents: (0.42, 0.52, 0.98); 1 materials
+Jump trigger: Jump
+  Skinned mesh: 9050 vertices; bounds Center: (0.00, -0.12, 0.97), Extents: (0.43, 0.31, 1.04); 1 materials
+  Skinned mesh: 2970 vertices; bounds Center: (0.00, -0.12, 0.97), Extents: (0.43, 0.31, 1.04); 1 materials
+  Skinned mesh: 5274 vertices; bounds Center: (0.00, -0.12, 0.97), Extents: (0.43, 0.31, 1.04); 1 materials
+Variable-airtime check: sustained Fall after 1.5 seconds descending.
+Grounded recovery: Idle
+Meditate: Meditate
+Craft: Craft
+Attack: Attack
+Hurt: Hurt
+Death: Death
+In-place instance position after evaluation: (0.00, 0.00, 0.00)

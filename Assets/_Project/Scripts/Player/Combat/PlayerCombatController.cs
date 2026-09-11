@@ -54,6 +54,7 @@ namespace CultivationGame.Player
         private Rigidbody _rb;
         private Vector3 _dodgeDirection;
         private float _dodgeElapsed;
+        private bool _building;
         private PlayerMovement _playerMovement;
         private Vector3? _respawnPosition;
         private readonly HashSet<IDamageable> _hitThisSwing = new HashSet<IDamageable>();
@@ -87,6 +88,7 @@ namespace CultivationGame.Player
 
         private void OnEnable()
         {
+            GameEvents.OnBuildModeToggled += BuildModeChanged;
             if (attackAction != null)
                 attackAction.action.performed += HandleAttackInput;
             if (dodgeAction != null)
@@ -95,6 +97,7 @@ namespace CultivationGame.Player
 
         private void OnDisable()
         {
+            GameEvents.OnBuildModeToggled -= BuildModeChanged;
             if (attackAction != null)
                 attackAction.action.performed -= HandleAttackInput;
             if (dodgeAction != null)
@@ -119,6 +122,10 @@ namespace CultivationGame.Player
             if (_attackTimer > 0f) _attackTimer -= Time.deltaTime;
             if (_dodgeTimer > 0f) _dodgeTimer -= Time.deltaTime;
 
+        }
+
+        private void FixedUpdate()
+        {
             if (IsDodging) UpdateDodge();
         }
 
@@ -126,7 +133,8 @@ namespace CultivationGame.Player
 
         private void HandleAttackInput(InputAction.CallbackContext context)
         {
-            if (IsDead || IsDodging || IsAttacking) return;
+            if (_building) return;
+            if (IsDead || IsDodging || IsAttacking || (_playerMovement != null && _playerMovement.IsControlBlocked)) return;
             if (_attackTimer > 0f) return;
 
             PerformAttack();
@@ -134,7 +142,8 @@ namespace CultivationGame.Player
 
         private void HandleDodgeInput(InputAction.CallbackContext context)
         {
-            if (IsDead || IsDodging) return;
+            if (_building) return;
+            if (IsDead || IsDodging || (_playerMovement != null && (_playerMovement.IsControlBlocked || !_playerMovement.IsGrounded()))) return;
             if (_dodgeTimer > 0f) return;
 
             // Check stamina
@@ -162,7 +171,7 @@ namespace CultivationGame.Player
                 // Parent lookup supports enemies whose colliders sit on child objects;
                 // the set prevents multi-collider enemies from taking the hit twice.
                 IDamageable target = hit.GetComponentInParent<IDamageable>();
-                if (target != null && !target.IsDead && _hitThisSwing.Add(target))
+                if (target != null && !ReferenceEquals(target, this) && !target.IsDead && _hitThisSwing.Add(target))
                 {
                     target.TakeDamage(damage, gameObject);
                 }
@@ -231,7 +240,7 @@ namespace CultivationGame.Player
 
         private void UpdateDodge()
         {
-            _dodgeElapsed += Time.deltaTime;
+            _dodgeElapsed += Time.fixedDeltaTime;
             if (_dodgeElapsed >= dodgeDuration)
             {
                 IsDodging = false;
@@ -273,6 +282,8 @@ namespace CultivationGame.Player
         }
 
         // --- Event Handlers ---
+
+        private void BuildModeChanged(bool building) => _building = building;
 
         private void HandleHealthChanged(float current, float max)
         {

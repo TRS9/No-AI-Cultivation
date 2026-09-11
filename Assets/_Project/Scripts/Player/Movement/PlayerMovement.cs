@@ -8,10 +8,13 @@ namespace CultivationGame.Player
     {
         [Header("Physics & Movement")]
         public Rigidbody rb;
-        public float moveSpeed = 5f;
-        public float sprintSpeed = 10f;
-        public float acceleration = 5f;
-        public float jumpForce = 5f;
+        public float moveSpeed = 1.8f;
+        public float sprintSpeed = 4.8f;
+        public float acceleration = 22f;
+        public float braking = 45f;
+        public float airAcceleration = 7f;
+        public float fallGravityMultiplier = 2f;
+        public float jumpForce = 6f;
         public float rotationSpeed = 600f;
         public LayerMask groundLayer;
         public float maxDistanceRay = 1.1f;
@@ -31,16 +34,21 @@ namespace CultivationGame.Player
         private Vector2 _moveDirection;
         private Vector3 _targetMoveVector;
         private Vector3 _smoothedDirection;
-        private bool _wasGrounded;
-        private float _airborneTime;
-        private const float LandingResetThreshold = 0.6f;
+        private CapsuleCollider _capsule;
+        private PlayerCombatController _combat;
+        private Vector3 _groundNormal = Vector3.up;
+        private float _jumpBufferedUntil = float.NegativeInfinity;
+        private bool _jumpConsumed;
+        private bool _dead;
+        private bool _meditating;
+        public bool IsControlBlocked => isControlBlocked;
 
         // Cached per-physics-frame ground state — used by Update and input callbacks
         // so IsGrounded() isn't re-evaluated on different threads/timings.
         private bool _isGrounded;
 
         // Coyote time: allow jumping within this window after walking off a ledge
-        private float _lastGroundedTime;
+        private float _lastGroundedTime = float.NegativeInfinity;
         private const float CoyoteTime = 0.15f;
 
         private Camera _camera;
@@ -57,6 +65,8 @@ namespace CultivationGame.Player
 
         private void Start()
         {
+            _capsule = GetComponent<CapsuleCollider>();
+            _combat = GetComponent<PlayerCombatController>();
             currentStamina = maxStamina;
             GameEvents.RaiseStaminaChanged(currentStamina, maxStamina);
             rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -65,7 +75,7 @@ namespace CultivationGame.Player
 
         private void OnEnable()
         {
-            jump.action.performed += HandleJump;
+            if (jump != null) jump.action.performed += HandleJump;
             GameEvents.OnMeditationToggled += HandleMeditationBlock;
             GameEvents.OnPlayerDied += HandlePlayerDied;
             GameEvents.OnPlayerRespawned += HandlePlayerRespawned;
@@ -73,7 +83,7 @@ namespace CultivationGame.Player
 
         private void OnDisable()
         {
-            jump.action.performed -= HandleJump;
+            if (jump != null) jump.action.performed -= HandleJump;
             GameEvents.OnMeditationToggled -= HandleMeditationBlock;
             GameEvents.OnPlayerDied -= HandlePlayerDied;
             GameEvents.OnPlayerRespawned -= HandlePlayerRespawned;
@@ -81,25 +91,43 @@ namespace CultivationGame.Player
 
         private void Update()
         {
-            if (isControlBlocked) return;
-            ReadInput();
+            if (!isControlBlocked) ReadInput();
             UpdateAnimation();
         }
 
         private void FixedUpdate()
         {
-            _isGrounded = IsGrounded();
-            if (_isGrounded) _lastGroundedTime = Time.time;
-
+            _isGrounded = ProbeGround();
+            if (_isGrounded)
+            {
+                _lastGroundedTime = Time.time;
+                _jumpConsumed = false;
+            }
+            if (!isControlBlocked && !_jumpConsumed && Time.time <= _jumpBufferedUntil &&
+                (_isGrounded || Time.time - _lastGroundedTime <= CoyoteTime))
+            {
+                _jumpConsumed = true;
+                _isGrounded = false;
+                _jumpBufferedUntil = float.NegativeInfinity;
+                _lastGroundedTime = float.NegativeInfinity;
+                Vector3 velocity = rb.linearVelocity;
+                velocity.y = 0;
+                rb.linearVelocity = velocity;
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                animator?.SetTrigger("Jump");
+            }
+            if (_combat != null && _combat.IsDodging) return;
             ComputeMoveVector();
             HandleStaminaAndSpeed(_isGrounded);
             ApplyMovement();
             ApplyRotation();
+            if (!_isGrounded && rb.linearVelocity.y < 0)
+                rb.AddForce(Physics.gravity * (Mathf.Max(1, fallGravityMultiplier) - 1), ForceMode.Acceleration);
         }
 
         private void ReadInput()
         {
-            _moveDirection = move.action.ReadValue<Vector2>();
+            _moveDirection = move != null ? Vector2.ClampMagnitude(move.action.ReadValue<Vector2>(), 1) : Vector2.zero;
         }
 
         // Runs in FixedUpdate so direction is computed once per physics tick,
@@ -144,35 +172,19 @@ namespace CultivationGame.Player
 
         private void HandleStaminaAndSpeed(bool isGrounded)
         {
-            bool justLanded = isGrounded && !_wasGrounded;
-
-            if (!isGrounded)
-            {
-                _airborneTime += Time.fixedDeltaTime;
-            }
-            else if (justLanded && _airborneTime >= LandingResetThreshold)
-            {
-                // Dampen speed on landing instead of freezing — smooth transition back to walk
-                _currentSpeed = Mathf.Min(_currentSpeed, moveSpeed * 0.3f);
-            }
-
-            // Update state before reset so landing animation triggers can read _airborneTime
-            // on the same frame the landing is detected (justLanded above has already consumed it).
-            _wasGrounded = isGrounded;
-            if (isGrounded) _airborneTime = 0f;
-
             bool isMoving    = _moveDirection.sqrMagnitude > 0.01f;
-            bool isSprinting = sprint.action.IsPressed() && currentStamina > 0 && isMoving && isGrounded;
+            bool isSprinting = sprint != null && sprint.action.IsPressed() && currentStamina > 0 && isMoving && isGrounded;
 
             if (isSprinting)
             {
-                _currentSpeed  = Mathf.MoveTowards(_currentSpeed, sprintSpeed, acceleration * Time.fixedDeltaTime);
+                _currentSpeed = sprintSpeed;
                 currentStamina -= staminaDrainRate * Time.fixedDeltaTime;
                 _regenTimer    = staminaRegenDelay;
             }
             else
             {
-                _currentSpeed = Mathf.MoveTowards(_currentSpeed, moveSpeed, acceleration * Time.fixedDeltaTime);
+                if (isGrounded) _currentSpeed = moveSpeed;
+                else _currentSpeed = Mathf.Max(_currentSpeed, moveSpeed);
 
                 if (_regenTimer > 0)
                     _regenTimer -= Time.fixedDeltaTime;
@@ -193,24 +205,26 @@ namespace CultivationGame.Player
 
         private void ApplyMovement()
         {
-            rb.linearVelocity = new Vector3(
-                _targetMoveVector.x * _currentSpeed,
-                rb.linearVelocity.y,
-                _targetMoveVector.z * _currentSpeed
-            );
+            Vector3 velocity = rb.linearVelocity;
+            Vector3 horizontal = new Vector3(velocity.x, 0, velocity.z);
+            Vector3 desired = _targetMoveVector * _currentSpeed * _moveDirection.magnitude;
+            float rate = _isGrounded ? (_moveDirection.sqrMagnitude > .01f ? acceleration : braking) : airAcceleration;
+            horizontal = Vector3.MoveTowards(horizontal, desired, rate * Time.fixedDeltaTime);
+            if (isControlBlocked) horizontal = Vector3.zero;
+            float vertical = velocity.y;
+            if (_isGrounded && !_jumpConsumed)
+            {
+                Vector3 tangent = Vector3.ProjectOnPlane(horizontal, _groundNormal);
+                horizontal.x = tangent.x; horizontal.z = tangent.z;
+                vertical = tangent.y - .5f;
+            }
+            rb.linearVelocity = new Vector3(horizontal.x, vertical, horizontal.z);
         }
 
         private void HandleJump(InputAction.CallbackContext context)
         {
-            bool canJump = _isGrounded || (Time.time - _lastGroundedTime <= CoyoteTime);
-            if (canJump)
-            {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                _lastGroundedTime = 0f; // consume the coyote window so it can't be used twice
-
-                if (animator != null)
-                    animator.SetTrigger("Jump");
-            }
+            if (isControlBlocked || (_combat != null && _combat.IsDodging)) return;
+            _jumpBufferedUntil = Time.time + .12f;
         }
 
         private void UpdateAnimation()
@@ -222,31 +236,50 @@ namespace CultivationGame.Player
             animator.SetBool("IsGrounded", _isGrounded); // cached value — not a fresh raycast
         }
 
-        public bool IsGrounded()
+        public bool IsGrounded() => _isGrounded;
+
+        private bool ProbeGround()
         {
-            // Sphere cast from feet rather than a single ray from pivot —
-            // handles slopes, steps, and uneven terrain correctly.
-            return Physics.CheckSphere(
-                transform.position + Vector3.down * (maxDistanceRay - groundCheckRadius),
-                groundCheckRadius,
-                groundLayer
-            );
+            // Uphill travel has positive vertical velocity too. Only suppress
+            // the probe during a rising jump, not while following a slope.
+            if (_capsule == null || (rb.linearVelocity.y > .1f && (!_isGrounded || _jumpConsumed))) return false;
+            Bounds bounds = _capsule.bounds;
+            float radius = Mathf.Min(bounds.extents.x, bounds.extents.z) * .9f;
+            Vector3 origin = new Vector3(bounds.center.x, bounds.min.y + radius + .05f, bounds.center.z);
+            if (Physics.SphereCast(origin, radius, Vector3.down, out RaycastHit hit, .11f,
+                groundLayer, QueryTriggerInteraction.Ignore) && Vector3.Dot(hit.normal, Vector3.up) >= .65f)
+            {
+                _groundNormal = hit.normal;
+                return true;
+            }
+            _groundNormal = Vector3.up;
+            return false;
         }
 
-        private void HandleMeditationBlock(bool isMeditating)
+        private void HandleMeditationBlock(bool meditating)
         {
-            SetControlBlocked(isMeditating);
+            _meditating = meditating;
+            SetControlBlocked(_dead || _meditating);
         }
 
-        private void HandlePlayerDied() => SetControlBlocked(true);
+        private void HandlePlayerDied()
+        {
+            _dead = true;
+            SetControlBlocked(true);
+        }
 
-        private void HandlePlayerRespawned() => SetControlBlocked(false);
+        private void HandlePlayerRespawned()
+        {
+            _dead = false;
+            SetControlBlocked(_meditating);
+        }
 
         private void SetControlBlocked(bool blocked)
         {
             isControlBlocked = blocked;
             if (blocked)
             {
+                _jumpBufferedUntil = float.NegativeInfinity;
                 _moveDirection    = Vector2.zero;
                 _targetMoveVector = Vector3.zero;
                 rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);

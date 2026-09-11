@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="74" result="Passed" total="74" passed="74" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0,4220823">
+  <test-suite type="TestSuite" id="1000" name="No AI Cultivation" fullname="No AI Cultivation" runstate="Runnable" testcasecount="74" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0.422082" total="74" passed="74" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1087" name="Game.Tests.dll" fullname="C:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Library/ScriptAssemblies/Game.Tests.dll" runstate="Runnable" testcasecount="74" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0.397631" total="74" passed="74" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18592" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1088" name="CultivationGame" fullname="CultivationGame" runstate="Runnable" testcasecount="74" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0.395650" total="74" passed="74" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1089" name="Tests" fullname="CultivationGame.Tests" runstate="Runnable" testcasecount="74" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0.393766" total="74" passed="74" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1002" name="BaseMachineTests" fullname="CultivationGame.Tests.BaseMachineTests" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.089407" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1005" name="DuplicateInputsRequireCombinedQuantity" fullname="CultivationGame.Tests.BaseMachineTests.DuplicateInputsRequireCombinedQuantity" methodname="DuplicateInputsRequireCombinedQuantity" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" seed="476911541" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.035650" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1004" name="FullOutputRetainsBatchUntilSpaceIsAvailable" fullname="CultivationGame.Tests.BaseMachineTests.FullOutputRetainsBatchUntilSpaceIsAvailable" methodname="FullOutputRetainsBatchUntilSpaceIsAvailable" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" seed="343542580" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.004302" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="RecipeChangeDoesNotChangePaidBatchOutput" fullname="CultivationGame.Tests.BaseMachineTests.RecipeChangeDoesNotChangePaidBatchOutput" methodname="RecipeChangeDoesNotChangePaidBatchOutput" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" seed="2015042052" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.005312" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1008" name="SaveManagerRoundTripKeepsActiveAndSelectedRecipesSeparate" fullname="CultivationGame.Tests.BaseMachineTests.SaveManagerRoundTripKeepsActiveAndSelectedRecipesSeparate" methodname="SaveManagerRoundTripKeepsActiveAndSelectedRecipesSeparate" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" seed="1598090159" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.010071" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1007" name="SerializedBatchResumesWithoutPayingTwice" fullname="CultivationGame.Tests.BaseMachineTests.SerializedBatchResumesWithoutPayingTwice" methodname="SerializedBatchResumesWithoutPayingTwice" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" seed="828621837" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.003624" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1006" name="WrongMachineOrMissingPowerDoesNotConsumeInputs" fullname="CultivationGame.Tests.BaseMachineTests.WrongMachineOrMissingPowerDoesNotConsumeInputs" methodname="WrongMachineOrMissingPowerDoesNotConsumeInputs" classname="CultivationGame.Tests.BaseMachineTests" runstate="Runnable" seed="458904511" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.002801" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1009" name="CraftingRequirementsTests" fullname="CultivationGame.Tests.CraftingRequirementsTests" classname="CultivationGame.Tests.CraftingRequirementsTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.018617" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1010" name="IncompleteRecipesAndInsufficientDuplicateIngredientsCannotCraft" fullname="CultivationGame.Tests.CraftingRequirementsTests.IncompleteRecipesAndInsufficientDuplicateIngredientsCannotCraft" methodname="IncompleteRecipesAndInsufficientDuplicateIngredientsCannotCraft" classname="CultivationGame.Tests.CraftingRequirementsTests" runstate="Runnable" seed="1757192656" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.005666" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1011" name="LootSystemTests" fullname="CultivationGame.Tests.LootSystemTests" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0.062146" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1016" name="GenerateLoot_AmountWithinMinMax" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_AmountWithinMinMax" methodname="GenerateLoot_AmountWithinMinMax" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1420360540" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.009207" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1013" name="GenerateLoot_EmptyTable_ReturnsEmptyList" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_EmptyTable_ReturnsEmptyList" methodname="GenerateLoot_EmptyTable_ReturnsEmptyList" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="2140671552" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.002767" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1019" name="GenerateLoot_EnemyDataNullLootTable_ReturnsEmpty" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_EnemyDataNullLootTable_ReturnsEmpty" methodname="GenerateLoot_EnemyDataNullLootTable_ReturnsEmpty" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1904753452" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.000590" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1018" name="GenerateLoot_FromEnemyData_UsesLootTable" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_FromEnemyData_UsesLootTable" methodname="GenerateLoot_FromEnemyData_UsesLootTable" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1116586760" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.002714" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1014" name="GenerateLoot_GuaranteedDrop_AlwaysReturnsItem" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_GuaranteedDrop_AlwaysReturnsItem" methodname="GenerateLoot_GuaranteedDrop_AlwaysReturnsItem" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1861154354" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:19Z" duration="0.003211" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1017" name="GenerateLoot_MultipleGuaranteedDrops_ReturnsAll" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_MultipleGuaranteedDrops_ReturnsAll" methodname="GenerateLoot_MultipleGuaranteedDrops_ReturnsAll" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1811248139" result="Passed" start-time="2026-09-11 09:13:19Z" end-time="2026-09-11 09:13:20Z" duration="0.002445" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1015" name="GenerateLoot_NullItem_IsSkipped" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_NullItem_IsSkipped" methodname="GenerateLoot_NullItem_IsSkipped" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1722068550" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000344" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1012" name="GenerateLoot_NullTable_ReturnsEmptyList" fullname="CultivationGame.Tests.LootSystemTests.GenerateLoot_NullTable_ReturnsEmptyList" methodname="GenerateLoot_NullTable_ReturnsEmptyList" classname="CultivationGame.Tests.LootSystemTests" runstate="Runnable" seed="1848230015" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000244" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1020" name="MachineInventoryTests" fullname="CultivationGame.Tests.MachineInventoryTests" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.056687" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1039" name="CachedTotalStaysCorrectAcrossMutationsAndLoad" fullname="CultivationGame.Tests.MachineInventoryTests.CachedTotalStaysCorrectAcrossMutationsAndLoad" methodname="CachedTotalStaysCorrectAcrossMutationsAndLoad" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1325759743" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.006682" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1040" name="CapacityCheckCannotOverflow" fullname="CultivationGame.Tests.MachineInventoryTests.CapacityCheckCannotOverflow" methodname="CapacityCheckCannotOverflow" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="990681791" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001854" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1034" name="Clear_EmptiesInventoryCompletely" fullname="CultivationGame.Tests.MachineInventoryTests.Clear_EmptiesInventoryCompletely" methodname="Clear_EmptiesInventoryCompletely" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1694693004" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001268" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1035" name="GetSnapshot_ReturnsIndependentCopy" fullname="CultivationGame.Tests.MachineInventoryTests.GetSnapshot_ReturnsIndependentCopy" methodname="GetSnapshot_ReturnsIndependentCopy" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="76603688" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001298" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1037" name="GetSnapshot_ThenLoadFrom_RoundTrip_PreservesData" fullname="CultivationGame.Tests.MachineInventoryTests.GetSnapshot_ThenLoadFrom_RoundTrip_PreservesData" methodname="GetSnapshot_ThenLoadFrom_RoundTrip_PreservesData" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="2073597975" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001233" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="HasSpace_ReturnsCorrectResult" fullname="CultivationGame.Tests.MachineInventoryTests.HasSpace_ReturnsCorrectResult" methodname="HasSpace_ReturnsCorrectResult" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="849692621" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001303" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1038" name="LoadFrom_OnEmptyData_ClearsPreviousContent" fullname="CultivationGame.Tests.MachineInventoryTests.LoadFrom_OnEmptyData_ClearsPreviousContent" methodname="LoadFrom_OnEmptyData_ClearsPreviousContent" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1478699891" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001259" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1036" name="LoadFrom_RestoresInventoryState" fullname="CultivationGame.Tests.MachineInventoryTests.LoadFrom_RestoresInventoryState" methodname="LoadFrom_RestoresInventoryState" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="652587691" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001222" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1033" name="OnChanged_FiresOnAddAndRemove" fullname="CultivationGame.Tests.MachineInventoryTests.OnChanged_FiresOnAddAndRemove" methodname="OnChanged_FiresOnAddAndRemove" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1525853830" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002021" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1032" name="SequentialAddRemoveAdd_MaintainsCorrectState" fullname="CultivationGame.Tests.MachineInventoryTests.SequentialAddRemoveAdd_MaintainsCorrectState" methodname="SequentialAddRemoveAdd_MaintainsCorrectState" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1508842037" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001656" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1026" name="TotalCount_MultipleDifferentItems_SumsCorrectly" fullname="CultivationGame.Tests.MachineInventoryTests.TotalCount_MultipleDifferentItems_SumsCorrectly" methodname="TotalCount_MultipleDifferentItems_SumsCorrectly" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1402992204" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001509" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="TryAdd_CapacityZero_TreatsAsUnlimited" fullname="CultivationGame.Tests.MachineInventoryTests.TryAdd_CapacityZero_TreatsAsUnlimited" methodname="TryAdd_CapacityZero_TreatsAsUnlimited" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1365883689" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001541" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="TryAdd_ExceedingCapacity_OnlyAddsWhatFits" fullname="CultivationGame.Tests.MachineInventoryTests.TryAdd_ExceedingCapacity_OnlyAddsWhatFits" methodname="TryAdd_ExceedingCapacity_OnlyAddsWhatFits" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1572563707" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001759" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1030" name="TryAdd_NullItem_ReturnsZeroAndNoException" fullname="CultivationGame.Tests.MachineInventoryTests.TryAdd_NullItem_ReturnsZeroAndNoException" methodname="TryAdd_NullItem_ReturnsZeroAndNoException" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1924721453" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002654" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="TryAdd_SameItem_AccumulatesCount" fullname="CultivationGame.Tests.MachineInventoryTests.TryAdd_SameItem_AccumulatesCount" methodname="TryAdd_SameItem_AccumulatesCount" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1367209575" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002081" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1021" name="TryAdd_UntilCapacityFull_DoesNotExceedMaxCapacity" fullname="CultivationGame.Tests.MachineInventoryTests.TryAdd_UntilCapacityFull_DoesNotExceedMaxCapacity" methodname="TryAdd_UntilCapacityFull_DoesNotExceedMaxCapacity" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1765151286" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001601" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="TryRemove_ExceedingAvailable_RemovesOnlyAvailable" fullname="CultivationGame.Tests.MachineInventoryTests.TryRemove_ExceedingAvailable_RemovesOnlyAvailable" methodname="TryRemove_ExceedingAvailable_RemovesOnlyAvailable" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1617733083" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002459" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1029" name="TryRemove_FromEmptyInventory_ReturnsZero" fullname="CultivationGame.Tests.MachineInventoryTests.TryRemove_FromEmptyInventory_ReturnsZero" methodname="TryRemove_FromEmptyInventory_ReturnsZero" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="114509051" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002944" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1031" name="TryRemove_NullItem_ReturnsZeroAndNoException" fullname="CultivationGame.Tests.MachineInventoryTests.TryRemove_NullItem_ReturnsZeroAndNoException" methodname="TryRemove_NullItem_ReturnsZeroAndNoException" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="1628152136" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002529" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="TryRemove_WithSufficientItems_RemovesCorrectAmount" fullname="CultivationGame.Tests.MachineInventoryTests.TryRemove_WithSufficientItems_RemovesCorrectAmount" methodname="TryRemove_WithSufficientItems_RemovesCorrectAmount" classname="CultivationGame.Tests.MachineInventoryTests" runstate="Runnable" seed="934037565" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001477" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1041" name="MachineWiringTests" fullname="CultivationGame.Tests.MachineWiringTests" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.024778" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1054" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.013824" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1042" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Furnace,CultivationGame.Systems.BaseMachine)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Furnace,CultivationGame.Systems.BaseMachine)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="1630730017" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001740" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1043" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Crusher,CultivationGame.Systems.BaseMachine)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Crusher,CultivationGame.Systems.BaseMachine)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="1452506424" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000268" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1044" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Mixer,CultivationGame.Systems.BaseMachine)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Mixer,CultivationGame.Systems.BaseMachine)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="333427406" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000241" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1045" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Distiller,CultivationGame.Systems.BaseMachine)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Distiller,CultivationGame.Systems.BaseMachine)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="1800292549" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000254" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1046" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Condenser,CultivationGame.Systems.BaseMachine)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Condenser,CultivationGame.Systems.BaseMachine)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="812387930" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000240" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1047" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(PillPress,CultivationGame.Systems.BaseMachine)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(PillPress,CultivationGame.Systems.BaseMachine)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="649282609" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000240" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1048" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Storage,CultivationGame.Systems.StorageContainer)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Storage,CultivationGame.Systems.StorageContainer)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="383333941" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001476" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1049" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(SpiritPipe,CultivationGame.Systems.SpiritPipe)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(SpiritPipe,CultivationGame.Systems.SpiritPipe)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="2046672295" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000687" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1050" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(ResourceExtractor,CultivationGame.Systems.ResourceExtractor)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(ResourceExtractor,CultivationGame.Systems.ResourceExtractor)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="92110225" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000684" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1051" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Splitter,CultivationGame.Systems.Splitter)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Splitter,CultivationGame.Systems.Splitter)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="1187407765" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000703" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1052" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Merger,CultivationGame.Systems.Merger)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(Merger,CultivationGame.Systems.Merger)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="166562969" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001483" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1053" name="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(QiConduit,CultivationGame.Systems.QiConduit)" fullname="CultivationGame.Tests.MachineWiringTests.VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce(QiConduit,CultivationGame.Systems.QiConduit)" methodname="VisualOnlyPrefabReceivesBehaviorAndDataExactlyOnce" classname="CultivationGame.Tests.MachineWiringTests" runstate="Runnable" seed="868313923" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001295" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1055" name="PortalPersistenceTests" fullname="CultivationGame.Tests.PortalPersistenceTests" classname="CultivationGame.Tests.PortalPersistenceTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.020877" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1059" name="PortalsCaptureBeforeChangingSceneIdentity" fullname="CultivationGame.Tests.PortalPersistenceTests.PortalsCaptureBeforeChangingSceneIdentity" classname="CultivationGame.Tests.PortalPersistenceTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.013495" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1056" name="PortalsCaptureBeforeChangingSceneIdentity(False,False)" fullname="CultivationGame.Tests.PortalPersistenceTests.PortalsCaptureBeforeChangingSceneIdentity(False,False)" methodname="PortalsCaptureBeforeChangingSceneIdentity" classname="CultivationGame.Tests.PortalPersistenceTests" runstate="Runnable" seed="513194399" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.003213" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1057" name="PortalsCaptureBeforeChangingSceneIdentity(True,False)" fullname="CultivationGame.Tests.PortalPersistenceTests.PortalsCaptureBeforeChangingSceneIdentity(True,False)" methodname="PortalsCaptureBeforeChangingSceneIdentity" classname="CultivationGame.Tests.PortalPersistenceTests" runstate="Runnable" seed="446231984" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000608" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1058" name="PortalsCaptureBeforeChangingSceneIdentity(False,True)" fullname="CultivationGame.Tests.PortalPersistenceTests.PortalsCaptureBeforeChangingSceneIdentity(False,True)" methodname="PortalsCaptureBeforeChangingSceneIdentity" classname="CultivationGame.Tests.PortalPersistenceTests" runstate="Runnable" seed="67832968" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.000232" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1060" name="RecipeDatabaseLookupTests" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.048911" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1072" name="FindRecipe_Duplicates_ReturnsFirstMatch" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_Duplicates_ReturnsFirstMatch" methodname="FindRecipe_Duplicates_ReturnsFirstMatch" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="1453560410" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.005065" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1066" name="FindRecipe_ExactMatch_ReturnsCorrectRecipe" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_ExactMatch_ReturnsCorrectRecipe" methodname="FindRecipe_ExactMatch_ReturnsCorrectRecipe" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="380625529" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002620" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1071" name="FindRecipe_FewerInputsThanRequired_ReturnsNull" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_FewerInputsThanRequired_ReturnsNull" methodname="FindRecipe_FewerInputsThanRequired_ReturnsNull" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="1204842568" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002380" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1067" name="FindRecipe_NoMatch_ReturnsNull" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_NoMatch_ReturnsNull" methodname="FindRecipe_NoMatch_ReturnsNull" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="360868760" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002252" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1068" name="FindRecipe_NullInputs_ReturnsNull" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_NullInputs_ReturnsNull" methodname="FindRecipe_NullInputs_ReturnsNull" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="977282273" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002249" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1069" name="FindRecipe_SubsetInputs_ReturnsNull" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_SubsetInputs_ReturnsNull" methodname="FindRecipe_SubsetInputs_ReturnsNull" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="1770096773" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002407" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1070" name="FindRecipe_WrongAmounts_ReturnsNull" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.FindRecipe_WrongAmounts_ReturnsNull" methodname="FindRecipe_WrongAmounts_ReturnsNull" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="1995138855" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002459" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1064" name="GetAllRecipes_EmptyDatabase_ReturnsEmptyList" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.GetAllRecipes_EmptyDatabase_ReturnsEmptyList" methodname="GetAllRecipes_EmptyDatabase_ReturnsEmptyList" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="310130699" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002585" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1065" name="GetAllRecipes_NullList_ReturnsEmptyList" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.GetAllRecipes_NullList_ReturnsEmptyList" methodname="GetAllRecipes_NullList_ReturnsEmptyList" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="958046494" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002140" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1063" name="GetAllRecipes_ReturnsCompleteList" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.GetAllRecipes_ReturnsCompleteList" methodname="GetAllRecipes_ReturnsCompleteList" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="1157209340" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002512" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1062" name="GetRecipesForMachine_NoMatch_ReturnsEmptyList" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.GetRecipesForMachine_NoMatch_ReturnsEmptyList" methodname="GetRecipesForMachine_NoMatch_ReturnsEmptyList" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="972821137" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002919" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1073" name="GetRecipesForMachine_NullAllRecipes_ReturnsEmptyList" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.GetRecipesForMachine_NullAllRecipes_ReturnsEmptyList" methodname="GetRecipesForMachine_NullAllRecipes_ReturnsEmptyList" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="362621264" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.003516" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1061" name="GetRecipesForMachine_ReturnsOnlyMatchingRecipes" fullname="CultivationGame.Tests.RecipeDatabaseLookupTests.GetRecipesForMachine_ReturnsOnlyMatchingRecipes" methodname="GetRecipesForMachine_ReturnsOnlyMatchingRecipes" classname="CultivationGame.Tests.RecipeDatabaseLookupTests" runstate="Runnable" seed="107603072" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002502" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1074" name="RecipeDataValidationTests" fullname="CultivationGame.Tests.RecipeDataValidationTests" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.032470" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1075" name="IsValid_WithEmptyInputs_ReturnsFalse" fullname="CultivationGame.Tests.RecipeDataValidationTests.IsValid_WithEmptyInputs_ReturnsFalse" methodname="IsValid_WithEmptyInputs_ReturnsFalse" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="60195780" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.003655" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1077" name="IsValid_WithNoOutputs_ReturnsFalse" fullname="CultivationGame.Tests.RecipeDataValidationTests.IsValid_WithNoOutputs_ReturnsFalse" methodname="IsValid_WithNoOutputs_ReturnsFalse" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="94289704" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001705" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1076" name="IsValid_WithNullInputs_ReturnsFalse" fullname="CultivationGame.Tests.RecipeDataValidationTests.IsValid_WithNullInputs_ReturnsFalse" methodname="IsValid_WithNullInputs_ReturnsFalse" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="632086631" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001179" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1078" name="IsValid_WithNullOutputs_ReturnsFalse" fullname="CultivationGame.Tests.RecipeDataValidationTests.IsValid_WithNullOutputs_ReturnsFalse" methodname="IsValid_WithNullOutputs_ReturnsFalse" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="1038736335" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001484" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1082" name="IsValid_WithValidRecipe_ReturnsTrue" fullname="CultivationGame.Tests.RecipeDataValidationTests.IsValid_WithValidRecipe_ReturnsTrue" methodname="IsValid_WithValidRecipe_ReturnsTrue" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="1688586296" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001472" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1081" name="RequiredMachine_IsCorrectlySet" fullname="CultivationGame.Tests.RecipeDataValidationTests.RequiredMachine_IsCorrectlySet" methodname="RequiredMachine_IsCorrectlySet" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="967753979" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.003348" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1080" name="Validate_CraftingDurationNegative_ReturnsWarning" fullname="CultivationGame.Tests.RecipeDataValidationTests.Validate_CraftingDurationNegative_ReturnsWarning" methodname="Validate_CraftingDurationNegative_ReturnsWarning" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="1367961101" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002909" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1079" name="Validate_CraftingDurationZero_ReturnsWarning" fullname="CultivationGame.Tests.RecipeDataValidationTests.Validate_CraftingDurationZero_ReturnsWarning" methodname="Validate_CraftingDurationZero_ReturnsWarning" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="1347416626" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.002857" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1083" name="Validate_ValidRecipe_ReturnsNoMessages" fullname="CultivationGame.Tests.RecipeDataValidationTests.Validate_ValidRecipe_ReturnsNoMessages" methodname="Validate_ValidRecipe_ReturnsNoMessages" classname="CultivationGame.Tests.RecipeDataValidationTests" runstate="Runnable" seed="1887302077" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.001608" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1084" name="SaveSystemTests" fullname="CultivationGame.Tests.SaveSystemTests" classname="CultivationGame.Tests.SaveSystemTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.033946" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1086" name="FailedTemporaryWritePreservesExistingSave" fullname="CultivationGame.Tests.SaveSystemTests.FailedTemporaryWritePreservesExistingSave" methodname="FailedTemporaryWritePreservesExistingSave" classname="CultivationGame.Tests.SaveSystemTests" runstate="Runnable" seed="769863721" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.012067" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1085" name="FirstSaveAndReplacementLeaveCompleteFile" fullname="CultivationGame.Tests.SaveSystemTests.FirstSaveAndReplacementLeaveCompleteFile" methodname="FirstSaveAndReplacementLeaveCompleteFile" classname="CultivationGame.Tests.SaveSystemTests" runstate="Runnable" seed="495108348" result="Passed" start-time="2026-09-11 09:13:20Z" end-time="2026-09-11 09:13:20Z" duration="0.011489" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\trs13\OneDrive\Dokumente\Cultivation Games\Unity\No AI Cultivation\ArtSource\Playtests\Tests-EditMode.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

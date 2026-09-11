@@ -170,6 +170,17 @@ namespace CultivationGame.UI
                     icon.style.backgroundImage = new StyleBackground(machineData.icon);
                     slot.Add(icon);
                 }
+                else
+                {
+                    var name = new Label(machineData.machineName);
+                    name.style.whiteSpace = WhiteSpace.Normal;
+                    name.style.fontSize = 11;
+                    name.style.color = new Color(.95f, .85f, .6f);
+                    name.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    name.style.flexGrow = 1;
+                    slot.Add(name);
+                }
+                slot.tooltip = machineData.machineName;
             }
             else
             {
