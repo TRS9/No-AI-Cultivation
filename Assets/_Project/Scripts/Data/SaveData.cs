@@ -89,6 +89,9 @@ namespace CultivationGame.Data
     {
         public string machineGuid; // GUID as identifier
         public string recipeId;    // current recipe name
+        public string processingRecipeId; // paid-for batch; may differ from next selected recipe
+        public float processingTimer;
+        public float processingDuration;
         public List<InventorySaveEntry> inputItems = new List<InventorySaveEntry>();
         public List<InventorySaveEntry> outputItems = new List<InventorySaveEntry>();
     }

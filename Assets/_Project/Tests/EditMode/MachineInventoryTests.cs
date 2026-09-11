@@ -294,5 +294,33 @@ namespace CultivationGame.Tests
             Assert.AreEqual(0, inv.TotalCount());
             Assert.IsEmpty(inv.Items);
         }
+
+        [Test]
+        public void CachedTotalStaysCorrectAcrossMutationsAndLoad()
+        {
+            var inv = new MachineInventory(10);
+            var view = inv.Items;
+            inv.TryAdd(_itemA, 8);
+            inv.TryAdd(_itemB, 8);
+            Assert.AreEqual(10, inv.TotalCount());
+            inv.TryRemove(_itemA, 3);
+            Assert.AreEqual(7, inv.TotalCount());
+            inv.LoadFrom(new System.Collections.Generic.Dictionary<ItemData, int> { { _itemB, 4 } });
+            Assert.AreEqual(4, inv.TotalCount());
+            Assert.AreEqual(4, view[_itemB]);
+            Assert.IsFalse(view.ContainsKey(_itemA));
+            inv.Clear();
+            Assert.AreEqual(0, inv.TotalCount());
+            Assert.IsEmpty(view);
+        }
+
+        [Test]
+        public void CapacityCheckCannotOverflow()
+        {
+            var inv = new MachineInventory(100);
+            inv.TryAdd(_itemA, 1);
+            Assert.IsFalse(inv.HasSpace(int.MaxValue));
+            Assert.IsFalse(inv.HasSpace(-1));
+        }
     }
 }

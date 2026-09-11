@@ -62,18 +62,32 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1641307324088301414}
+      addedObject: {fileID: 5032318070449097571}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5032318070449097571}
+      addedObject: {fileID: 2122240359779901697}
   m_SourcePrefab: {fileID: 100100000, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
 --- !u!1 &5408596954486789598 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
   m_PrefabInstance: {fileID: 5174173729373874319}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &1641307324088301414
-MeshCollider:
+--- !u!114 &5032318070449097571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5408596954486789598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 243f3e0aa8cb4a0997148e0417c87dbe, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Systems::CultivationGame.Systems.OreVein
+  veinData: {fileID: 11400000, guid: bd64461442d1cf641be33c6b470c57b2, type: 2}
+  uniqueId:
+--- !u!65 &2122240359779901697
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -90,21 +104,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 5461320835613783329, guid: 09402cea47621184f8509fde79e66c0c, type: 3}
---- !u!114 &5032318070449097571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5408596954486789598}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 243f3e0aa8cb4a0997148e0417c87dbe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game.Systems::CultivationGame.Systems.OreVein
-  veinData: {fileID: 11400000, guid: bd64461442d1cf641be33c6b470c57b2, type: 2}
-  uniqueId: 
+  serializedVersion: 3
+  m_Size: {x: 0.018956508, y: 0.017049532, z: 0.0035491916}
+  m_Center: {x: 0.000021914486, y: 0.000028174836, z: -0.000009165204}

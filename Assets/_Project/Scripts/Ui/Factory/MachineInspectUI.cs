@@ -278,7 +278,9 @@ namespace CultivationGame.UI
             if (_currentMachine != null)
             {
                 string powerIcon = _currentMachine.IsPowered ? "\u26A1" : "\u2B1C";
-                if (_currentMachine.IsProcessing)
+                if (_currentMachine.IsWaitingForOutput)
+                    _statusLabel.text = "Status: Ausgabe voll";
+                else if (_currentMachine.IsProcessing)
                     _statusLabel.text = $"Status: {powerIcon} Verarbeitet...";
                 else if (!_currentMachine.IsPowered)
                     _statusLabel.text = $"Status: {powerIcon} Kein Strom";

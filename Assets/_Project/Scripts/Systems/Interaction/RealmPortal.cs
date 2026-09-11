@@ -20,6 +20,7 @@ namespace CultivationGame.Systems
             BiomeType biome = PickBiome();
             int seed = Random.Range(0, int.MaxValue);
 
+            SceneTransitionData.CaptureBeforeTransition();
             SceneTransitionData.SetRealm(biome, seed);
             SceneTransitionData.SetReturn(
                 SceneManager.GetActiveScene().name,

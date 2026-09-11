@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using CultivationGame.Data;
 
@@ -14,10 +15,13 @@ namespace CultivationGame.Systems
     {
         [SerializeField] [Tooltip("Maximum total item count this inventory can hold across all item types.")] private int maxCapacity = 100;
 
-        private Dictionary<ItemData, int> _items = new();
+        private readonly Dictionary<ItemData, int> _items = new();
+        private ReadOnlyDictionary<ItemData, int> _readOnlyItems;
+        private int _totalCount;
 
         public int MaxCapacity => maxCapacity;
-        public Dictionary<ItemData, int> Items => _items;
+        public IReadOnlyDictionary<ItemData, int> Items =>
+            _readOnlyItems ??= new ReadOnlyDictionary<ItemData, int>(_items);
 
         public event Action OnChanged;
 
@@ -30,14 +34,13 @@ namespace CultivationGame.Systems
 
         public int TotalCount()
         {
-            int total = 0;
-            foreach (var kv in _items) total += kv.Value;
-            return total;
+            return _totalCount;
         }
 
         public bool HasSpace(int amount = 1)
         {
-            return maxCapacity <= 0 || TotalCount() + amount <= maxCapacity;
+            return amount >= 0 && (long)_totalCount + amount <=
+                (maxCapacity > 0 ? maxCapacity : int.MaxValue);
         }
 
         public bool HasItem(ItemData item, int amount = 1)
@@ -54,7 +57,7 @@ namespace CultivationGame.Systems
 
             int canAdd = maxCapacity > 0
                 ? Mathf.Min(amount, maxCapacity - TotalCount())
-                : amount;
+                : Mathf.Min(amount, int.MaxValue - _totalCount);
 
             if (canAdd <= 0) return 0;
 
@@ -63,6 +66,7 @@ namespace CultivationGame.Systems
             else
                 _items[item] = canAdd;
 
+            _totalCount += canAdd;
             OnChanged?.Invoke();
             return canAdd;
         }
@@ -79,6 +83,7 @@ namespace CultivationGame.Systems
             _items[item] -= removed;
             if (_items[item] <= 0) _items.Remove(item);
 
+            _totalCount -= removed;
             OnChanged?.Invoke();
             return removed;
         }
@@ -96,6 +101,7 @@ namespace CultivationGame.Systems
         public void Clear()
         {
             _items.Clear();
+            _totalCount = 0;
             OnChanged?.Invoke();
         }
 
@@ -106,7 +112,16 @@ namespace CultivationGame.Systems
 
         public void LoadFrom(Dictionary<ItemData, int> data)
         {
-            _items = new Dictionary<ItemData, int>(data);
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            long total = 0;
+            foreach (var entry in data)
+                if (entry.Key != null && entry.Value > 0) total += entry.Value;
+            if (total > int.MaxValue) throw new ArgumentOutOfRangeException(nameof(data));
+
+            _items.Clear();
+            foreach (var entry in data)
+                if (entry.Key != null && entry.Value > 0) _items.Add(entry.Key, entry.Value);
+            _totalCount = (int)total;
             OnChanged?.Invoke();
         }
     }

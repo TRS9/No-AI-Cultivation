@@ -74,6 +74,7 @@ namespace CultivationGame.UI
             }
 
             SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneTransitionData.BeforeSceneTransition += Save;
 
             _data = SaveSystem.LoadGame();
             if (_data == null) return;
@@ -86,9 +87,9 @@ namespace CultivationGame.UI
             // scene as well, since we subscribed during Awake).
             string savedScene = string.IsNullOrEmpty(_data.currentScene)
                 ? SceneManager.GetActiveScene().name : _data.currentScene;
+            PrepareSceneTransition(_data);
             if (savedScene != SceneManager.GetActiveScene().name)
             {
-                PrepareSceneTransition(_data);
                 SceneManager.LoadScene(savedScene);
             }
         }
@@ -99,6 +100,7 @@ namespace CultivationGame.UI
             {
                 Instance = null;
                 SceneManager.sceneLoaded -= OnSceneLoaded;
+                SceneTransitionData.BeforeSceneTransition -= Save;
             }
         }
 
@@ -185,6 +187,10 @@ namespace CultivationGame.UI
                 _data.returnPositionY = SceneTransitionData.ReturnPosition.y;
                 _data.returnPositionZ = SceneTransitionData.ReturnPosition.z;
                 _data.returnRotationY = SceneTransitionData.ReturnRotationY;
+            }
+            else
+            {
+                _data.returnScene = null;
             }
 
             // Minor Realm — persist biome + seed so the same world can be regenerated on load
@@ -348,6 +354,7 @@ namespace CultivationGame.UI
                 ? bm.CurrentRecipe.name : null;
 
             bool hasContent = recipeId != null
+                || (connectable is BaseMachine active && active.IsProcessing)
                 || (input != null && input.TotalCount() > 0)
                 || (output != null && output != input && output.TotalCount() > 0);
 
@@ -358,6 +365,13 @@ namespace CultivationGame.UI
                 machineGuid = machineGuid,
                 recipeId = recipeId
             };
+
+            if (connectable is BaseMachine processing && processing.IsProcessing && processing.ProcessingRecipe != null)
+            {
+                entry.processingRecipeId = processing.ProcessingRecipe.name;
+                entry.processingTimer = processing.ProcessingTimer;
+                entry.processingDuration = processing.ProcessingDuration;
+            }
 
             if (input != null)
                 foreach (var kvp in input.GetSnapshot())
@@ -389,9 +403,13 @@ namespace CultivationGame.UI
 
             string savedScene = string.IsNullOrEmpty(_data.currentScene)
                 ? SceneManager.GetActiveScene().name : _data.currentScene;
-            if (savedScene != SceneManager.GetActiveScene().name)
+            bool savedMinorRealm = !string.IsNullOrEmpty(_data.realmBiome);
+            bool regenerateRealm = savedMinorRealm &&
+                (!SceneTransitionData.IsMinorRealm || SceneTransitionData.RealmSeed != _data.realmSeed ||
+                 SceneTransitionData.RealmBiome.ToString() != _data.realmBiome);
+            PrepareSceneTransition(_data);
+            if (savedScene != SceneManager.GetActiveScene().name || regenerateRealm)
             {
-                PrepareSceneTransition(_data);
                 SceneManager.LoadScene(savedScene);
                 return; // OnSceneLoaded restores the target scene
             }
@@ -443,6 +461,7 @@ namespace CultivationGame.UI
         /// <summary>Restores return point and realm seed before redirecting scenes.</summary>
         private static void PrepareSceneTransition(SaveData data)
         {
+            SceneTransitionData.ResetAll();
             if (!string.IsNullOrEmpty(data.returnScene))
                 SceneTransitionData.SetReturn(data.returnScene,
                     new Vector3(data.returnPositionX, data.returnPositionY, data.returnPositionZ),
@@ -557,8 +576,10 @@ namespace CultivationGame.UI
                 placed.name = md.machineName;
 
                 // Restore persistent GUID
-                var guidComp = placed.AddComponent<MachineGuid>();
+                var guidComp = placed.GetComponent<MachineGuid>();
+                if (guidComp == null) guidComp = placed.AddComponent<MachineGuid>();
                 guidComp.SetGuid(guid);
+                existingGuids.Add(guid);
 
                 // Wire machine data (shared with PlacementController)
                 MachineWiring.Wire(placed, md);
@@ -649,6 +670,10 @@ namespace CultivationGame.UI
                     var recipe = FindRecipeByName(invEntry.recipeId);
                     if (recipe != null) bm.SetRecipe(recipe);
                 }
+
+                if (!string.IsNullOrEmpty(invEntry.processingRecipeId) && connectable is BaseMachine processing)
+                    processing.RestoreProcessing(FindRecipeByName(invEntry.processingRecipeId),
+                        invEntry.processingTimer, invEntry.processingDuration);
 
                 // Restore input inventory
                 if (connectable.InputInventory != null && invEntry.inputItems != null && invEntry.inputItems.Count > 0)

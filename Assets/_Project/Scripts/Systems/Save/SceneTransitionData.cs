@@ -5,6 +5,9 @@ namespace CultivationGame.Systems
 {
     public static class SceneTransitionData
     {
+        // Raised before changing the scene identity or unloading its objects.
+        public static event System.Action BeforeSceneTransition;
+        public static void CaptureBeforeTransition() => BeforeSceneTransition?.Invoke();
         // Return point — where to go when exiting back to the outer world
         public static string ReturnScene;
         public static Vector3 ReturnPosition;
@@ -23,7 +26,11 @@ namespace CultivationGame.Systems
 
         // Reset static state on every play-mode start (even if Domain Reload is disabled).
         [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnLoad() => ResetAll();
+        private static void ResetOnLoad()
+        {
+            BeforeSceneTransition = null;
+            ResetAll();
+        }
 
         /// <summary>Clears all transition state. Used by play-mode init and New Game.</summary>
         public static void ResetAll()

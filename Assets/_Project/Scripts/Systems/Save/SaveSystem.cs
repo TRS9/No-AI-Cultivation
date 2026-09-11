@@ -7,7 +7,6 @@ namespace CultivationGame.Systems
     public static class SaveSystem
     {
         private static string SavePath => Path.Combine(Application.persistentDataPath, "cultivator_save.json");
-        private static string TempPath => SavePath + ".tmp";
 
         public static void SaveGame(SaveData data)
         {
@@ -17,16 +16,28 @@ namespace CultivationGame.Systems
 
                 // Write to temp file first, then rename atomically
                 // so a crash mid-write never corrupts the existing save.
-                File.WriteAllText(TempPath, json);
-                if (File.Exists(SavePath)) File.Delete(SavePath);
-                File.Move(TempPath, SavePath);
+                WriteAtomically(SavePath, json);
 
                 Debug.Log($"Spiel gespeichert unter: {SavePath}");
             }
             catch (System.Exception e)
             {
                 Debug.LogError($"Speichern fehlgeschlagen: {e.Message}");
-                if (File.Exists(TempPath)) File.Delete(TempPath);
+            }
+        }
+
+        private static void WriteAtomically(string path, string json)
+        {
+            string tempPath = path + ".tmp";
+            try
+            {
+                File.WriteAllText(tempPath, json);
+                if (File.Exists(path)) File.Replace(tempPath, path, null);
+                else File.Move(tempPath, path);
+            }
+            finally
+            {
+                if (File.Exists(tempPath)) File.Delete(tempPath);
             }
         }
 

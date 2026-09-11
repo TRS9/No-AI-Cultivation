@@ -7145,6 +7145,7 @@ MonoBehaviour:
   machineLayer:
     serializedVersion: 2
     m_Bits: 128
+  mainSceneName: Universe
 --- !u!4 &398477573
 Transform:
   m_ObjectHideFlags: 0
@@ -8164,10 +8165,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5032318070449097571, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
-      propertyPath: uniqueId
-      value: b65fe8a1-b45e-4d18-8ff0-f4382815e67e
-      objectReference: {fileID: 0}
     - target: {fileID: 4631075814576852836, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_LocalPosition.x
       value: 332.40964
@@ -8207,6 +8204,10 @@ PrefabInstance:
     - target: {fileID: 4631075814576852836, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032318070449097571, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
+      propertyPath: uniqueId
+      value: b65fe8a1-b45e-4d18-8ff0-f4382815e67e
       objectReference: {fileID: 0}
     - target: {fileID: 5408596954486789598, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_Name
@@ -25792,10 +25793,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5032318070449097571, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
-      propertyPath: uniqueId
-      value: d6f6c83a-91d0-4c6f-97da-0f066cbe7925
-      objectReference: {fileID: 0}
     - target: {fileID: 4631075814576852836, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_LocalPosition.x
       value: 330.52753
@@ -25835,6 +25832,10 @@ PrefabInstance:
     - target: {fileID: 4631075814576852836, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032318070449097571, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
+      propertyPath: uniqueId
+      value: d6f6c83a-91d0-4c6f-97da-0f066cbe7925
       objectReference: {fileID: 0}
     - target: {fileID: 5408596954486789598, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_Name
@@ -33562,7 +33563,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1747133379}
-  - component: {fileID: 1747133378}
   m_Layer: 0
   m_Name: BuildMenuController
   m_TagString: Untagged
@@ -33570,22 +33570,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1747133378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1747133377}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14d35f68c80744fa90b7637e997e7b1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.BuildMenuController
-  buildMenuData: {fileID: 11400000, guid: 1e5c5bb26fd7461cada6ffd6141e76fa, type: 2}
-  placementController: {fileID: 704936437}
-  playerInventory: {fileID: 1152538032}
-  _isOpen: 0
 --- !u!4 &1747133379
 Transform:
   m_ObjectHideFlags: 0
@@ -36963,10 +36947,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5032318070449097571, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
-      propertyPath: uniqueId
-      value: ec0138ff-cdf0-4a64-bf11-11ca27d01ffb
-      objectReference: {fileID: 0}
     - target: {fileID: 4631075814576852836, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_LocalPosition.x
       value: 327.40967
@@ -37006,6 +36986,10 @@ PrefabInstance:
     - target: {fileID: 4631075814576852836, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5032318070449097571, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
+      propertyPath: uniqueId
+      value: ec0138ff-cdf0-4a64-bf11-11ca27d01ffb
       objectReference: {fileID: 0}
     - target: {fileID: 5408596954486789598, guid: 3180ddbc10c4eb24c8f67629877a4020, type: 3}
       propertyPath: m_Name
@@ -37832,7 +37816,6 @@ GameObject:
   - component: {fileID: 1982406400}
   - component: {fileID: 1982406399}
   - component: {fileID: 1982406398}
-  - component: {fileID: 1982406410}
   - component: {fileID: 1982406409}
   - component: {fileID: 1982406408}
   - component: {fileID: 1982406407}
@@ -38053,22 +38036,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.UI::CultivationGame.UI.DialogueUI
   typewriterSpeed: 0.03
---- !u!114 &1982406410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1982406395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14d35f68c80744fa90b7637e997e7b1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game.UI::CultivationGame.UI.BuildMenuController
-  buildMenuData: {fileID: 11400000, guid: 1e5c5bb26fd7461cada6ffd6141e76fa, type: 2}
-  placementController: {fileID: 704936437}
-  playerInventory: {fileID: 1152538032}
-  _isOpen: 0
 --- !u!114 &1982406411
 MonoBehaviour:
   m_ObjectHideFlags: 0

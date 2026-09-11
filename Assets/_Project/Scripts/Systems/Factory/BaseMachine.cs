@@ -31,6 +31,7 @@ namespace CultivationGame.Systems
         private bool _isStalled;
         private bool _isPowered;
         private bool _recheckRecipe = true;
+        private RecipeData _processingRecipe;
 
         // --- Public API ---
         public MachineData MachineData => machineData;
@@ -38,6 +39,8 @@ namespace CultivationGame.Systems
         public MachineInventory InputInventory => _inputInventory;
         public MachineInventory OutputInventory => _outputInventory;
         public bool IsProcessing => _isProcessing;
+        public bool IsWaitingForOutput => _isProcessing && _processingTimer >= _processingDuration;
+        public RecipeData ProcessingRecipe => _processingRecipe;
 
         /// <summary>
         /// Set by QiNetwork. Machine only processes when powered.
@@ -84,6 +87,11 @@ namespace CultivationGame.Systems
         {
             if (_isProcessing)
             {
+                if (IsWaitingForOutput)
+                {
+                    CompleteProcessing();
+                    return;
+                }
                 if (!IsPowered)
                 {
                     if (!_isStalled)
@@ -95,7 +103,7 @@ namespace CultivationGame.Systems
                 }
 
                 _isStalled = false;
-                _processingTimer += Time.deltaTime;
+                _processingTimer = Mathf.Min(_processingTimer + Time.deltaTime, _processingDuration);
                 if (_processingTimer >= _processingDuration)
                 {
                     CompleteProcessing();
@@ -147,21 +155,23 @@ namespace CultivationGame.Systems
 
         private void TryStartProcessing()
         {
-            if (currentRecipe == null || machineData == null) return;
+            if (currentRecipe == null || !currentRecipe.IsValid || machineData == null) return;
+            if (currentRecipe.requiredMachine != machineData.machineType) return;
             if (!IsPowered) return;
 
             // Check all inputs are available
             foreach (var input in currentRecipe.inputs)
             {
                 if (input.item == null) continue;
-                if (!_inputInventory.HasItem(input.item, input.amount)) return;
+                // Repeated ingredient rows must be checked as one requirement.
+                long required = 0;
+                foreach (var other in currentRecipe.inputs)
+                    if (other.item == input.item) required += other.amount;
+                if (required > int.MaxValue || !_inputInventory.HasItem(input.item, (int)required)) return;
             }
 
             // Check output has space for all outputs
-            int totalOutput = 0;
-            foreach (var output in currentRecipe.outputs)
-                totalOutput += output.amount;
-            if (!_outputInventory.HasSpace(totalOutput)) return;
+            if (!HasOutputSpace(currentRecipe)) return;
 
             // Consume inputs
             foreach (var input in currentRecipe.inputs)
@@ -174,24 +184,49 @@ namespace CultivationGame.Systems
             float speedMult = machineData.processingSpeed > 0f ? machineData.processingSpeed : 1f;
             _processingDuration = currentRecipe.craftingDuration / speedMult;
             _processingTimer = 0f;
+            _processingRecipe = currentRecipe;
+            _isProcessing = true;
+        }
+
+        private bool HasOutputSpace(RecipeData recipe)
+        {
+            long total = 0;
+            foreach (var output in recipe.outputs) total += output.amount;
+            return total <= int.MaxValue && _outputInventory.HasSpace((int)total);
+        }
+
+        /// <summary>Resume a paid-for batch without consuming its ingredients again.</summary>
+        public void RestoreProcessing(RecipeData recipe, float timer, float duration)
+        {
+            if (recipe == null || !recipe.IsValid || machineData == null ||
+                recipe.requiredMachine != machineData.machineType ||
+                float.IsNaN(timer) || float.IsInfinity(timer) ||
+                float.IsNaN(duration) || float.IsInfinity(duration) || duration < 0f) return;
+
+            _processingRecipe = recipe;
+            _processingDuration = duration;
+            _processingTimer = Mathf.Clamp(timer, 0f, duration);
             _isProcessing = true;
         }
 
         private void CompleteProcessing()
         {
+            // Other systems can fill the output while a batch is running. Keep
+            // the completed batch until its entire output fits, avoiding item loss.
+            if (_processingRecipe == null || !HasOutputSpace(_processingRecipe)) return;
+            var completedRecipe = _processingRecipe;
             _isProcessing = false;
+            _processingRecipe = null;
             _recheckRecipe = true; // immediately try the next cycle
 
-            if (currentRecipe == null) return;
-
             // Produce outputs (always succeeds — factory precision)
-            foreach (var output in currentRecipe.outputs)
+            foreach (var output in completedRecipe.outputs)
             {
                 if (output.item == null) continue;
                 _outputInventory.TryAdd(output.item, output.amount);
             }
 
-            GameDataEvents.RaiseMachineProcessingCompleted(this, currentRecipe);
+            GameDataEvents.RaiseMachineProcessingCompleted(this, completedRecipe);
         }
     }
 }

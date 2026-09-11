@@ -109,6 +109,7 @@ namespace CultivationGame.Systems
             if (destination?.InputInventory == null) return false;
             // Skip destinations whose machine GameObject was destroyed.
             if (destination is MonoBehaviour mono && mono == null) return false;
+            if (destination is StorageContainer storage && !storage.AcceptsItem(item)) return false;
             if (!destination.InputInventory.HasSpace()) return false;
 
             int removed = _inputInventory.TryRemove(item, 1);

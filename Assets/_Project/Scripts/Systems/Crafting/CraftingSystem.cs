@@ -23,7 +23,7 @@ namespace CultivationGame.Systems
 
         public bool CanCraft(RecipeData recipe)
         {
-            if (recipe == null || _isCrafting || playerInventory == null) return false;
+            if (recipe == null || !recipe.IsValid || _isCrafting || playerInventory == null) return false;
             return HasRequirements(recipe);
         }
 
@@ -34,6 +34,7 @@ namespace CultivationGame.Systems
         /// </summary>
         private bool HasRequirements(RecipeData recipe)
         {
+            if (!recipe.IsValid) return false;
             if (playerStats != null && playerStats.currentQi < recipe.qiCost) return false;
             if (recipe.requiredRealm != null && playerStats != null &&
                 playerStats.currentRealm != null &&
@@ -42,7 +43,10 @@ namespace CultivationGame.Systems
             foreach (var ingredient in recipe.inputs)
             {
                 if (ingredient.item == null) continue;
-                if (!playerInventory.HasItem(ingredient.item, ingredient.amount))
+                long required = 0;
+                foreach (var other in recipe.inputs)
+                    if (other.item == ingredient.item) required += other.amount;
+                if (required > int.MaxValue || !playerInventory.HasItem(ingredient.item, (int)required))
                     return false;
             }
             return true;

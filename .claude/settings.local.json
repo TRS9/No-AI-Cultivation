@@ -39,7 +39,16 @@
       "Bash(do)",
       "Read(//c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Data/Generated/**)",
       "Bash(grep -r 5a2473de51614a5aa641fe17791a8324 'c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/' --include=*.meta -l)",
-      "Bash(grep -h \"m_Name\\\\|prefab\" \"c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Data/Machines/\"*.asset)"
+      "Bash(grep -h \"m_Name\\\\|prefab\" \"c:/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project/Data/Machines/\"*.asset)",
+      "Bash(cd \"/c/Users/trs13/OneDrive/Dokumente/Cultivation Games/Unity/No AI Cultivation/Assets/_Project\" && echo \"=== essencePrefabs / cavePrefabs refs in MinorRealm configs ===\" && ls \"Data/Minor Worlds\" 2>/dev/null | head -20 && echo \"=== Prefabs folder ===\" && find Prefabs -name \"*.prefab\" 2>/dev/null | head -30)",
+      "Bash(grep -v \"Scripts\\\\\\\\\\\\\\\\Data\\\\\\\\\\\\\\\\IInventory\")",
+      "Bash(dotnet build *)",
+      "Bash(awk '/^--- !u!4 &398477573/,/^--- !u!/{print} /^--- !u!4 &398477573/{found=1} found && /m_Father/{exit}' Scenes/Universe.unity)",
+      "PowerShell(\\(Get-Command gh -ErrorAction SilentlyContinue\\).Source; if \\(-not $?\\) { \"checking default locations\"; Test-Path \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" })",
+      "Bash(curl -s -H \"User-Agent: claude-code\" https://api.github.com/repos/TRS9/No-AI-Cultivation/pulls/138)",
+      "Bash(grep -o '\"body\": *\"[^\"]\\\\{0,80\\\\}')",
+      "Bash(curl -s -H \"User-Agent: claude-code\" https://api.github.com/repos/TRS9/No-AI-Cultivation/pulls/138 -o /tmp/pr138.json)",
+      "Read(//tmp/**)"
     ]
   }
 }

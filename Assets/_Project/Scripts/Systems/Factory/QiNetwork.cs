@@ -34,6 +34,8 @@ namespace CultivationGame.Systems
         private readonly List<QiConduit> _conduits = new();
         private readonly List<BaseMachine> _machines = new();
         private readonly HashSet<QiConduit> _connectedConduits = new();
+        private readonly Queue<QiConduit> _connectivityQueue = new();
+        private ReadOnlyCollection<BaseMachine> _registeredMachines;
 
         private bool _networkDirty = true;
         private float _totalDemand;
@@ -44,7 +46,8 @@ namespace CultivationGame.Systems
         // --- Public API ---
         public float TotalDemand => _totalDemand;
         public int ConnectedConduitCount => _connectedConduits.Count;
-        public ReadOnlyCollection<BaseMachine> RegisteredMachines => _machines.AsReadOnly();
+        public ReadOnlyCollection<BaseMachine> RegisteredMachines =>
+            _registeredMachines ??= _machines.AsReadOnly();
 
         /// <summary>
         /// Returns the active QiNetwork, creating one at runtime if no scene object
@@ -204,7 +207,8 @@ namespace CultivationGame.Systems
                 : transform.position;
 
             // Seed: conduits within range of the Qi source
-            var queue = new Queue<QiConduit>();
+            var queue = _connectivityQueue;
+            queue.Clear();
             float sourceRadiusSq = qiSourceRadius * qiSourceRadius;
             foreach (var conduit in _conduits)
             {
@@ -296,6 +300,7 @@ namespace CultivationGame.Systems
             {
                 if (machine == null || !machine.IsPowered) continue;
                 if (!machine.IsProcessing) continue;
+                if (machine.IsWaitingForOutput) continue;
                 if (machine.MachineData == null) continue;
 
                 _totalDemand += machine.MachineData.qiConsumptionRate;

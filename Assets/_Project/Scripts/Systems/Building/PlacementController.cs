@@ -116,7 +116,7 @@ namespace CultivationGame.Systems
         public void StartPlacement(MachineData machine)
         {
             if (machine == null) return;
-            if (machine.prefab == null && machine.ghostPrefab == null)
+            if (machine.prefab == null)
             {
                 Debug.LogWarning($"[PlacementController] '{machine.machineName}' has no prefab assigned — cannot place.");
                 return;
@@ -238,11 +238,9 @@ namespace CultivationGame.Systems
             placed.name = _selectedMachine.machineName;
 
             // Assign persistent GUID for save/load identification
-            var machineGuid = placed.AddComponent<MachineGuid>();
+            var machineGuid = placed.GetComponent<MachineGuid>();
+            if (machineGuid == null) machineGuid = placed.AddComponent<MachineGuid>();
             machineGuid.AssignNewGuid();
-
-            // Ensure the prefab has the correct machine component (add at runtime if missing)
-            EnsureMachineComponent(placed, _selectedMachine.machineType);
 
             // Wire machine data to the placed component (shared with SaveManager)
             if (!MachineWiring.Wire(placed, _selectedMachine))
@@ -271,50 +269,6 @@ namespace CultivationGame.Systems
         private void OnCancel(InputAction.CallbackContext ctx)
         {
             if (_isPlacing) CancelPlacement();
-        }
-
-        /// <summary>
-        /// Adds the correct machine MonoBehaviour to the placed GameObject
-        /// based on its MachineType, if the component is not already present.
-        /// </summary>
-        private static void EnsureMachineComponent(GameObject placed, MachineType type)
-        {
-            switch (type)
-            {
-                case MachineType.Furnace:
-                case MachineType.Crusher:
-                case MachineType.Mixer:
-                case MachineType.Distiller:
-                case MachineType.Condenser:
-                case MachineType.PillPress:
-                    if (!placed.GetComponent<BaseMachine>())
-                        placed.AddComponent<BaseMachine>();
-                    break;
-                case MachineType.ResourceExtractor:
-                    if (!placed.GetComponent<ResourceExtractor>())
-                        placed.AddComponent<ResourceExtractor>();
-                    break;
-                case MachineType.Storage:
-                    if (!placed.GetComponent<StorageContainer>())
-                        placed.AddComponent<StorageContainer>();
-                    break;
-                case MachineType.QiConduit:
-                    if (!placed.GetComponent<QiConduit>())
-                        placed.AddComponent<QiConduit>();
-                    break;
-                case MachineType.Splitter:
-                    if (!placed.GetComponent<Splitter>())
-                        placed.AddComponent<Splitter>();
-                    break;
-                case MachineType.Merger:
-                    if (!placed.GetComponent<Merger>())
-                        placed.AddComponent<Merger>();
-                    break;
-                case MachineType.SpiritPipe:
-                    if (!placed.GetComponent<SpiritPipe>())
-                        placed.AddComponent<SpiritPipe>();
-                    break;
-            }
         }
 
         private void OnRotate(InputAction.CallbackContext ctx)
